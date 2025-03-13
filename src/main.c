@@ -1,13 +1,8 @@
-#include "graphics.h"
-#include <windows.h>
+#include "../include/graphics.h"
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
-    // Добавляем директорию, где лежат DLL, в путь поиска Windows.
-    if (!SetDllDirectory("C:\\msys64\\mingw64\\bin")) {
-        printf("Ошибка установки директории DLL: %d\n", GetLastError());
-    }
     // Инициализация графики
     if (!initGraphics("Tamagotchi Game", 800, 600)) {
         printf("Ошибка инициализации графики\n");
