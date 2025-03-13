@@ -1,6 +1,9 @@
 1. # Настройки для компиляции в Vscode
 
+**Компилятор для работы игровой программы: gcc/gdb + SDL2**
+
 ## Windows: 
+**Для работы требуется MinGv-w64 совместно с MSYS2**
 
 <details>
   <summary>tasks.json</summary>
