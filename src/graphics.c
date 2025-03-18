@@ -20,7 +20,7 @@ int initGraphics(const char* title, int width, int height) {
                                SDL_WINDOWPOS_CENTERED,
                                SDL_WINDOWPOS_CENTERED,
                                width, height,
-                               SDL_WINDOW_SHOWN);
+                               SDL_WINDOW_RESIZABLE);
     if (!gWindow) {
         printf("Не удалось создать окно: %s\n", SDL_GetError());
         return 0;
