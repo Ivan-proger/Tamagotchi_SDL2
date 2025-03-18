@@ -2,7 +2,21 @@
 #include "graphics.h"
 #include "ui.h"
 
-
+/**
+ * @brief Инициализация кнопки
+ * 
+ * @param button -- Структура кнопки.
+ * @param x      -- X координата для наличия кнопки.
+ * @param y      -- Y координата для наличия кнопки.
+ * @param w      -- Ширина кнопки.
+ * @param h      -- Высота кнопки.
+ * @param defaultImagePath -- Изначальное изображение кнопки .png.
+ * @param hoverImagePath   -- Изображение при наведение на кнопку .png.
+ * @param clickImagePath   -- Изображение при клике на кнопку .png.
+ * @param onClick -- Функция срабатывающая после нажатия (аргументы в нее отсуствуют).
+ * @return true .
+ * @return false  -- В случае ошибки.
+ */
 bool initButton(Button *button,
                 int x, int y, int w, int h,
                 const char *defaultImagePath,
@@ -39,6 +53,11 @@ bool initButton(Button *button,
     return true;
 }
 
+/**
+ * @brief Отображение кнопки
+ * 
+ * @param button -- Структура кнопки.
+ */
 void renderButton(Button *button)
 {
     //extern SDL_Renderer* gRenderer;
@@ -52,6 +71,12 @@ void renderButton(Button *button)
     renderTexture(currentTexture, &button->rect);
 }
 
+/**
+ * @brief Обработчик реакции при нажатие 
+ * 
+ * @param button -- Структура кнопки
+ * @param event  -- Эвент SDL2
+ */
 void handleButtonEvent(Button *button, SDL_Event *event)
 {
     extern SDL_Renderer* gRenderer;
@@ -81,6 +106,11 @@ void handleButtonEvent(Button *button, SDL_Event *event)
     }
 }
 
+/**
+ * @brief Удаление кнопки
+ * 
+ * @param button -- Структура кнопки. 
+ */
 void destroyButton(Button *button)
 {
     if (button->defaultTexture)

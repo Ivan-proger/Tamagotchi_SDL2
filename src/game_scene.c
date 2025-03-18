@@ -9,6 +9,11 @@ static SDL_Texture *petTexture = NULL;
 static SDL_Rect petRect; // Координаты для отрисовки
 
 // ============ Локальные функции ============
+
+/**
+ * @brief Инициализация игровой сцены
+ * 
+ */
 static void game_init() {
     // Загружаем картинку питомца (здесь нужно иметь renderer, см. общий контекст)
     // Загрузка ресурсов
@@ -24,6 +29,11 @@ static void game_init() {
     renderTexture(petTexture, &petRect);
 }
 
+/**
+ * @brief Обработка эвентов 
+ * 
+ * @param e -- Эвент sdl.
+ */
 static void game_handle_events(SDL_Event* e) {
     // Обработка событий в игре (клики, клавиатура и т.п.)
     if (e->type == SDL_KEYDOWN) {
@@ -35,16 +45,23 @@ static void game_handle_events(SDL_Event* e) {
     }
 }
 
+/**
+ * @brief Логика в реальном времени(физика)
+ * 
+ * @param delta -- тик времени
+ */
 static void game_update(float delta) {
     // Логика "Тамагочи": голод, настроение и т.д.
     (void)delta; // Заглушка
 }
 
+// Отображение статики
 static void game_render() {
     // Отрисовываем картинку
     renderTexture(petTexture, &petRect);
 }
 
+// Удаление сцены
 static void game_destroy(void) {
     if (petTexture) {
         SDL_DestroyTexture(petTexture);
