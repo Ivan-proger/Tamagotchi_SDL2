@@ -8,39 +8,46 @@
 <details>
   <summary>tasks.json</summary>
 
-    {
-        "version": "2.0.0",
-        "tasks": [
-        {
-            "label": "Build Tamagotchi Game",
-            "type": "shell",
-            "command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
-            "args": [
-            "-fdiagnostics-color=always",
-            "-g",
-            "src/main.c",
-            "src/graphics.c",
-            "-o",
-            "${workspaceFolder}\\game.exe",
-            "-I", "${workspaceFolder}\\include",
-            "-I", "C:\\msys64\\mingw64\\include\\SDL2",
-            "-L", "C:\\msys64\\mingw64\\lib",
-            "-lmingw32",
-            "-lSDL2main",
-            "-lSDL2",
-            "-lSDL2_image",          
-            ],
-            "options": {
-            "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": ["$gcc"],
-            "group": {
-            "kind": "build",
-            "isDefault": true
-            }
-        }
-        ]
-    }       
+  {
+      "version": "2.0.0",
+      "tasks": [
+      {
+          "label": "Build Tamagotchi Game",
+          "type": "shell",
+          "command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
+          "args": [
+          "-fdiagnostics-color=always",
+          "-g",
+          "src/main.c",
+          "src/graphics.c",
+          "src/scene_manager.c",
+          "src/menu_scene.c",
+          "src/game_scene.c",
+          "src/ui.c",
+          "-o",
+          "${workspaceFolder}\\game.exe",
+          "-I", "${workspaceFolder}\\include",
+          "-I", "C:\\msys64\\mingw64\\include\\SDL2",
+          "-L", "C:\\msys64\\mingw64\\lib",
+          "-lmingw32",
+          "-lSDL2main",
+          "-lSDL2",
+          "-lSDL2_image",     
+          "-lpng16", 
+          "-lz", 
+          "-ljpeg"     
+          ],
+          "options": {
+          "cwd": "${workspaceFolder}"
+          },
+          "problemMatcher": ["$gcc"],
+          "group": {
+          "kind": "build",
+          "isDefault": true
+          }
+      }
+      ]
+  }          
 </details>
 
 <details>
@@ -88,6 +95,10 @@
             "-g",
             "src/main.c",
             "src/graphics.c",
+            "src/scene_manager.c",
+            "src/menu_scene.c",
+            "src/game_scene.c",
+            "src/ui.c",
             "-o",
             "${workspaceFolder}/game",
             "-I", "${workspaceFolder}/include",
