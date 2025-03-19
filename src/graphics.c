@@ -50,7 +50,16 @@ SDL_Texture* loadTexture(const char* filePath) {
     return texture;
 }
 
-// Функция для отрисовки текстуры с масштабированием
+
+/**
+ * @brief Функция для отрисовки текстуры с масштабированием
+ * 
+ * @param texture - Текстура
+ * @param x 
+ * @param y 
+ * @param scaleX  - скейлинг по х
+ * @param scaleY  - скейлинг по y
+ */
 void renderTextureScaled(SDL_Texture* texture, int x, int y, float scaleX, float scaleY) {
     if (gRenderer == NULL || texture == NULL)
         return;
