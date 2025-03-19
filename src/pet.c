@@ -27,14 +27,7 @@ void load_texture_pet(void)
 // Отоброжение питомца
 void show_pet(void)
 {
-    SDL_Rect petRect;
-
-    petRect.x = pet.x;
-    petRect.y = pet.y;
-    petRect.w = pet.w;
-    petRect.h = pet.h;
-
-    renderTexture(pet.texture, &petRect);
+    renderTextureScaled(pet.texture, 300, 200, 0.2, 0.2);
 }
 
 // Удаление сцены

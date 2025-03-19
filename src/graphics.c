@@ -50,6 +50,32 @@ SDL_Texture* loadTexture(const char* filePath) {
     return texture;
 }
 
+// Функция для отрисовки текстуры с масштабированием
+void renderTextureScaled(SDL_Texture* texture, int x, int y, float scaleX, float scaleY) {
+    if (gRenderer == NULL || texture == NULL)
+        return;
+
+    int originalWidth, originalHeight;
+    // Получаем исходные размеры текстуры
+    if (SDL_QueryTexture(texture, NULL, NULL, &originalWidth, &originalHeight) != 0) {
+        SDL_Log("Ошибка получения размеров текстуры: %s", SDL_GetError());
+        return;
+    }
+
+    // Определяем область источника (весь спрайт)
+    SDL_Rect srcRect = { 0, 0, originalWidth, originalHeight };
+
+    // Вычисляем область назначения с учётом масштаба
+    SDL_Rect dstRect;
+    dstRect.x = x;
+    dstRect.y = y;
+    dstRect.w = (int)(originalWidth * scaleX);
+    dstRect.h = (int)(originalHeight * scaleY);
+
+    // Отрисовываем текстуру в указанной области
+    SDL_RenderCopy(gRenderer, texture, &srcRect, &dstRect);
+}
+
 /**
  * @brief Глобальная функция для рендеринга 
  * 
