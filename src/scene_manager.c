@@ -21,7 +21,7 @@ void scene_handle_events(SDL_Event* e) {
         current_scene->handle_events(e);
 }
 // Обработка эвентов когда сцена инициализировано 
-// @param e - эвенты из SDL_Event
+// @param delta - время с последнего тика
 void scene_update(float delta) {
     if (current_scene && current_scene->update)
         current_scene->update(delta);

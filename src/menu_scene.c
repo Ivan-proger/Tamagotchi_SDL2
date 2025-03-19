@@ -10,7 +10,6 @@
 static Button startButton;
 
 
-// ============ Локальные функции-обработчики ============
 // Метод для удаления меню
 static void menu_destroy(void) {
     // Удаляем ресурсы кнопки (если есть текстуры)
@@ -20,8 +19,7 @@ static void menu_destroy(void) {
 // Реакция на нажатаю кнопку
 void onStartButtonClick() {
     extern SDL_Renderer* gRenderer;
-    // Логика при нажатии кнопки "Начать игру"
-    // Например, переключение сцены
+    // Логика при нажатии кнопки
     menu_destroy();
     set_scene(&GAME_SCENE);
 }
@@ -51,7 +49,6 @@ static void menu_handle_events(SDL_Event* e) {
 // Логика во время меня(обновляется в бесконечном цикле)
 // @param delta - тик времени
 static void menu_update(float delta) {
-    // Здесь можно обновлять анимации меню, если есть
     (void)delta;  // Заглушка, чтобы не ругался компилятор
 }
 
@@ -62,8 +59,6 @@ static void menu_render() {
     startButton.rect.y = WINDOW_HEIGHT/2-150;
 
     renderButton(&startButton);
-
-    // SDL_RenderPresent(renderer); // Обычно в главном цикле
 }
 
 

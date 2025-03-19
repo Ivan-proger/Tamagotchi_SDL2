@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     // Инициализайия питомца
     init_pet();
 
-    // Простой игровой цикл
+    //  игровой цикл
     int running = 1;
     SDL_Event event;
     // Ставим сцену меню
@@ -51,13 +51,17 @@ int main(int argc, char* argv[]) {
         Uint32 currentTick = SDL_GetTicks();
         float delta = (currentTick - lastTick) / 1000.0f;
         lastTick = currentTick;
-
+        
+        // Вызов апдейтера сцены
         scene_update(delta);
 
         // Рендер
         SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
         SDL_RenderClear(gRenderer);
+        
+        // Рендер сцены
         scene_render(gRenderer);
+
         SDL_RenderPresent(gRenderer);
     }
 
