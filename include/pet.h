@@ -9,7 +9,9 @@ typedef struct
     int x;               // Позиция
     int y;
     int w;                // Ширина
-    int h;                // Высота        
+    int h;                // Высота   
+    float scaleW;           // Коэфицент сужения/расширения по ширине
+    float scaleH;           // Коэфицент сужения/расширения по высоте
     char health;           // Здоровья чудика
     char hungry;           // Голод
     char cheer;            // Настроение

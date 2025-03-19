@@ -49,7 +49,20 @@ SDL_Texture* loadTexture(const char* filePath) {
     }
     return texture;
 }
-
+/**
+ * @brief Получаем изначальные размеры текстуры
+ * 
+ * @param texture         -- Текстура чьи данные мы хотим получить
+ * @param originalWidth   -- Переменная в которую запишем ширину
+ * @param originalHeight  -- Переменная в которую запишем высоту
+ */
+void sizeTexture(SDL_Texture* texture, int* originalWidth, int* originalHeight) {
+    // Получаем исходные размеры текстуры
+    if (SDL_QueryTexture(texture, NULL, NULL, originalWidth, originalHeight) != 0) {
+        SDL_Log("Ошибка получения размеров текстуры: %s", SDL_GetError());
+        return;
+    }
+}
 
 /**
  * @brief Функция для отрисовки текстуры с масштабированием
@@ -61,15 +74,9 @@ SDL_Texture* loadTexture(const char* filePath) {
  * @param scaleY  - скейлинг по y
  */
 void renderTextureScaled(SDL_Texture* texture, int x, int y, float scaleX, float scaleY) {
-    if (gRenderer == NULL || texture == NULL)
-        return;
-
     int originalWidth, originalHeight;
     // Получаем исходные размеры текстуры
-    if (SDL_QueryTexture(texture, NULL, NULL, &originalWidth, &originalHeight) != 0) {
-        SDL_Log("Ошибка получения размеров текстуры: %s", SDL_GetError());
-        return;
-    }
+    sizeTexture(texture, &originalWidth, &originalHeight);
 
     // Определяем область источника (весь спрайт)
     SDL_Rect srcRect = { 0, 0, originalWidth, originalHeight };

@@ -19,6 +19,9 @@ SDL_Texture* loadTexture(const char* filePath);
 // texture — указатель на текстуру, dstRect — область, куда выводить.
 void renderTexture(SDL_Texture* texture, SDL_Rect* dstRect);
 
+//Получаем изначальные размеры текстуры
+void sizeTexture(SDL_Texture* texture, int* originalWidth, int* originalHeight);
+
 // Функция для отрисовки текстуры с масштабированием
 void renderTextureScaled(SDL_Texture* texture, int x, int y, float scaleX, float scaleY);
 
