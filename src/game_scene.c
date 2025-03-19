@@ -3,30 +3,13 @@
 #include "graphics.h"
 #include "game_scene.h"
 #include "scene_manager.h"
+#include "pet.h"
 
-// Локальная переменная: текстура питомца
-static SDL_Texture *petTexture = NULL;
-static SDL_Rect petRect; // Координаты для отрисовки
 
-// ============ Локальные функции ============
-
-/**
- * @brief Инициализация игровой сцены
- * 
- */
+// Инициализация игровой сцены
 static void game_init() {
-    // Загружаем картинку питомца (здесь нужно иметь renderer, см. общий контекст)
-    // Загрузка ресурсов
-    petTexture = loadTexture("assets/pet.png");
-    printf("DOWNLOAD TEXTURE! \n");
-
-    // Отрисовка питомца (пример)
-    petRect.x = 300;
-    petRect.y = 200;
-    petRect.w = 200;
-    petRect.h = 200;
-    
-    renderTexture(petTexture, &petRect);
+    load_texture_pet();
+    show_pet();
 }
 
 /**
@@ -58,15 +41,12 @@ static void game_update(float delta) {
 // Отображение статики
 static void game_render() {
     // Отрисовываем картинку
-    renderTexture(petTexture, &petRect);
+    show_pet();
 }
 
 // Удаление сцены
 static void game_destroy(void) {
-    if (petTexture) {
-        SDL_DestroyTexture(petTexture);
-        petTexture = NULL;
-    }
+    invisible_pet();
 }
 
 // Объект сцены

@@ -1,4 +1,3 @@
-// globals.h
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
@@ -9,4 +8,4 @@ extern int WINDOW_WIDTH;
 // Высота окна
 extern int WINDOW_HEIGHT;
 
-#endif // GLOBALS_H
+#endif

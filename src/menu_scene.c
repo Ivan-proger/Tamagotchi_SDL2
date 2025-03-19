@@ -3,7 +3,8 @@
 #include "menu_scene.h"
 #include "game_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
 #include "scene_manager.h"
-#include "ui.h"                
+#include "ui.h"             
+#include "globals.h"   
 
 // Простейшая кнопка
 static Button startButton;
@@ -30,7 +31,7 @@ static void menu_init() {
     extern SDL_Renderer* gRenderer;
     // Инициализация кнопки (координаты, размеры)
     if (!initButton(&startButton,
-        200, 250, 500, 300,
+        WINDOW_WIDTH/2-250, WINDOW_HEIGHT/2-150, 500, 300,
         "assets/button_start.png",
         "assets/button_start_watch.png", // используем default для hover
         "assets/button_start_click.png", // используем default для click
@@ -60,6 +61,9 @@ static void menu_render() {
     // SDL_SetRenderDrawColor(renderer, ...);
     // SDL_RenderClear(renderer);
     // Рисуем кнопку
+    startButton.rect.x = WINDOW_WIDTH/2-250;
+    startButton.rect.y = WINDOW_HEIGHT/2-150;
+
     renderButton(&startButton);
 
     // SDL_RenderPresent(renderer); // Обычно в главном цикле

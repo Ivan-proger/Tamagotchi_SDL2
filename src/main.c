@@ -4,6 +4,7 @@
 #include "scene_manager.h"
 #include "menu_scene.h"
 #include "globals.h"
+#include "pet.h"
 
 int WINDOW_WIDTH = 800;
 int WINDOW_HEIGHT = 600;
@@ -15,6 +16,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
+    // Инициализайия питомца
+    init_pet();
+
     // Простой игровой цикл
     int running = 1;
     SDL_Event event;
@@ -31,13 +35,16 @@ int main(int argc, char* argv[]) {
                 running = 0;
                 break;
             }
-            // Изменение окна
-            if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                WINDOW_WIDTH = event.window.data1;
-                WINDOW_HEIGHT = event.window.data2;
-                // Дополнительно можно обновлять матрицы или другие параметры рендеринга
+            // Обработка оконных событий
+            if (e.type == SDL_WINDOWEVENT) {
+                if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                    WINDOW_WIDTH = e.window.data1;
+                    WINDOW_HEIGHT = e.window.data2;
+                    printf("SHIRINA: %d\nVISOTA: %d\n", WINDOW_WIDTH, WINDOW_HEIGHT);
+                    // Дополнительно можно обновлять матрицы или другие параметры рендеринга
+                }
             }
-
+            // Отдаем эвент сцене
             scene_handle_events(&e);
         }
 
