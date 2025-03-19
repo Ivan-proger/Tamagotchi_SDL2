@@ -4,12 +4,18 @@
 #include "game_scene.h"
 #include "scene_manager.h"
 #include "pet.h"
+#include "globals.h"
 
-
+SDL_Texture* background;
+SDL_Rect rectdict;
 // Инициализация игровой сцены
 static void game_init() {
     load_texture_pet();
     show_pet();
+
+    background = loadTexture("assets/Background.png");
+    rectdict.x = 0;
+    rectdict.y = 0;
 }
 
 /**
@@ -40,8 +46,14 @@ static void game_update(float delta) {
 
 // Отображение статики
 static void game_render() {
+    rectdict.w = WINDOW_WIDTH;
+    rectdict.h = WINDOW_HEIGHT;
+    renderTexture(background, &rectdict);
+
     // Отрисовываем картинку
     show_pet();
+
+
 }
 
 // Удаление сцены

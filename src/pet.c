@@ -27,7 +27,6 @@ void load_texture_pet(void)
 // Отоброжение питомца
 void show_pet(void)
 {
-    extern SDL_Renderer* gRenderer;
     SDL_Rect petRect;
 
     petRect.x = pet.x;

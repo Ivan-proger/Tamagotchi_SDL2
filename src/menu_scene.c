@@ -57,9 +57,6 @@ static void menu_update(float delta) {
 
 // Отображение меню(его статической состоявляющей)
 static void menu_render() {
-    // Очищаем экран (обычно это делается в главном цикле, но можно и тут)
-    // SDL_SetRenderDrawColor(renderer, ...);
-    // SDL_RenderClear(renderer);
     // Рисуем кнопку
     startButton.rect.x = WINDOW_WIDTH/2-250;
     startButton.rect.y = WINDOW_HEIGHT/2-150;

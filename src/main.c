@@ -40,7 +40,6 @@ int main(int argc, char* argv[]) {
                 if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                     WINDOW_WIDTH = e.window.data1;
                     WINDOW_HEIGHT = e.window.data2;
-                    printf("SHIRINA: %d\nVISOTA: %d\n", WINDOW_WIDTH, WINDOW_HEIGHT);
                     // Дополнительно можно обновлять матрицы или другие параметры рендеринга
                 }
             }
