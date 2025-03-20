@@ -90,6 +90,8 @@ void renderProgressBarRounded(int x, int y,
     }
 
 
+
+    
 }
 
 // Кнопка гладить
