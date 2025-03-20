@@ -31,4 +31,7 @@ void presentGraphics();
 // Очистка ресурсов графической подсистемы.
 void cleanupGraphics();
 
+//gfx
+void filledRoundedRectangleRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Sint16 radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
 #endif // GRAPHICS_H

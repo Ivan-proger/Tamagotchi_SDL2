@@ -11,9 +11,23 @@ void init_pet(void)
 {
     pet.scaleW = 0.2;
     pet.scaleH = 0.2;
-    pet.health = 100;
-    pet.hungry = 0;
+    pet.health = 200;
+    pet.satiety = 100;
     pet.cheer = 50;
+}
+
+/**
+ * @brief Добавить настроение(поиграть с питомцем)
+ * 
+ * @param value -- насколько увеличть
+ */
+void add_cheer(unsigned char value)
+{
+    if((int)pet.cheer + (int)value <= 255){
+        pet.cheer += value;
+    } else {
+        pet.cheer = 255;
+    }
 }
 
 // Загрузка текстур питомца

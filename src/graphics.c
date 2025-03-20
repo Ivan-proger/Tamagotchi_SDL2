@@ -1,6 +1,7 @@
 #include "../include/graphics.h"
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 
 // Глобальные переменные для работы с графикой из вне
 SDL_Window* gWindow = NULL;
@@ -121,4 +122,49 @@ void cleanupGraphics() {
     }
     IMG_Quit();
     SDL_Quit();
+}
+
+//gfx
+
+
+void filledRoundedRectangleRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Sint16 radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    // Ограничиваем радиус, чтобы он не превышал половину ширины или высоты
+    // Вычисляем размеры
+    Sint16 width = x2 - x1;
+    Sint16 height = y2 - y1;
+    // Ограничиваем радиус, чтобы он не превышал половину ширины или высоты
+    if (radius * 2 > width)  radius = width / 2;
+    if (radius * 2 > height) radius = height / 2;
+
+    // Устанавливаем цвет для заливки
+    SDL_SetRenderDrawColor(gRenderer, r, g, b, a);
+
+    // 1. Заливка центрального прямоугольника (без учета закругленных углов)
+    SDL_Rect centralRect = { x1 + radius, y1, width - 2 * radius, height };
+    SDL_RenderFillRect(gRenderer, &centralRect);
+
+    // 2. Заливка боковых частей (без углов)
+    SDL_Rect leftRect  = { x1, y1 + radius, radius, height - 2 * radius };
+    SDL_Rect rightRect = { x2 - radius, y1 + radius, radius, height - 2 * radius };
+    SDL_RenderFillRect(gRenderer, &leftRect);
+    SDL_RenderFillRect(gRenderer, &rightRect);
+
+    // 3. Заливка углов с помощью заполненных кругов
+    filledCircleRGBA(gRenderer, x1 + radius, y1 + radius, radius, r, g, b, a);
+    filledCircleRGBA(gRenderer, x2 - radius, y1 + radius, radius, r, g, b, a);
+    filledCircleRGBA(gRenderer, x1 + radius, y2 - radius, radius, r, g, b, a);
+    filledCircleRGBA(gRenderer, x2 - radius, y2 - radius, radius, r, g, b, a);
+
+    // 4. Отрисовка антиалиасингового контура для сглаживания краёв
+    // Рисуем прямые линии для верхней, нижней, левой и правой сторон
+    aalineRGBA(gRenderer, x1 + radius, y1, x2 - radius, y1, r, g, b, a);
+    aalineRGBA(gRenderer, x1 + radius, y2, x2 - radius, y2, r, g, b, a);
+    aalineRGBA(gRenderer, x1, y1 + radius, x1, y2 - radius, r, g, b, a);
+    aalineRGBA(gRenderer, x2, y1 + radius, x2, y2 - radius, r, g, b, a);
+
+    // Рисуем сглаженные дуги для каждого угла
+    aacircleRGBA(gRenderer, x1 + radius, y1 + radius, radius, r, g, b, a);
+    aacircleRGBA(gRenderer, x2 - radius, y1 + radius, radius, r, g, b, a);
+    aacircleRGBA(gRenderer, x1 + radius, y2 - radius, radius, r, g, b, a);
+    aacircleRGBA(gRenderer, x2 - radius, y2 - radius, radius, r, g, b, a);
 }

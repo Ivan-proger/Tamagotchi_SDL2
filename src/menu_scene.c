@@ -6,7 +6,7 @@
 #include "ui.h"             
 #include "globals.h"   
 
-// Простейшая кнопка
+// Кнопка старт
 static Button startButton;
 
 
@@ -26,7 +26,6 @@ void onStartButtonClick() {
 
 // Инициализация меню(его создание и отображение)
 static void menu_init() {
-    extern SDL_Renderer* gRenderer;
     // Инициализация кнопки (координаты, размеры)
     if (!initButton(&startButton,
         WINDOW_WIDTH/2-250, WINDOW_HEIGHT/2-150, 500, 300,
