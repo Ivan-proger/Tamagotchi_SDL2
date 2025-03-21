@@ -60,14 +60,25 @@ bool initButton(Button *button,
  */
 void renderButton(Button *button)
 {
-    //extern SDL_Renderer* gRenderer;
+    // Выбираем текущее состояние кнопки
     SDL_Texture *currentTexture = button->defaultTexture;
-    if (button->isClicked && button->clickTexture)
-        currentTexture = button->clickTexture;
-    else if (button->isHovered && button->hoverTexture)
-        currentTexture = button->hoverTexture;
 
-    //SDL_RenderCopy(gRenderer, currentTexture, NULL, &button->rect);
+    if (button->isClicked) {
+        if (button->clickAnim != NULL) {
+            // Если задана анимация для клика, проигрываем её
+            // Предполагается, что renderAnimation принимает такие параметры:
+            // (renderer, animation, x, y, scaleX, scaleY)
+            renderAnimation(button->clickAnim, button->rect.x, button->rect.y, 
+                            button->rect.w, button->rect.h);
+            return; // После отрисовки анимации больше не выводим статическую текстуру
+        } else if (button->clickTexture != NULL) {
+            currentTexture = button->clickTexture;
+        }
+    } else if (button->isHovered && button->hoverTexture) {
+        currentTexture = button->hoverTexture;
+    }
+    
+    // Отрисовка выбранной текстуры
     renderTexture(currentTexture, &button->rect);
 }
 

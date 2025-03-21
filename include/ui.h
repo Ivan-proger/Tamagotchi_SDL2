@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include "animation.h"
 
 // Структура кнопки
 typedef struct {
@@ -10,6 +11,7 @@ typedef struct {
     SDL_Texture *defaultTexture;  // Текстура в обычном состоянии
     SDL_Texture *hoverTexture;    // Текстура при наведении курсора
     SDL_Texture *clickTexture;    // Текстура при нажатии
+    Animation *clickAnim;         // Поле для анимации при клике
     void (*onClick)(void);        // Функция-обработчик нажатия
     bool isHovered;               // Флаг: курсор внутри кнопки
     bool isClicked;               // Флаг: кнопка нажата

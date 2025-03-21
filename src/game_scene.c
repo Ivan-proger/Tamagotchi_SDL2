@@ -5,10 +5,16 @@
 #include "game_scene.h"
 #include "scene_manager.h"
 #include "pet.h"
+#include "animation.h"
 #include "ui.h"
 #include "globals.h"
 
 static Button caressButton;
+
+// Анимации 
+SDL_Rect caressButtonFrames[4];
+Animation* caressButtonAnim;
+SDL_Texture* caressButtonSheet;
 
 SDL_Texture* background;
 SDL_Rect rectdict;
@@ -58,7 +64,6 @@ void renderProgressBarRounded(int x, int y,
 
     // Для вертикальной шкалы вычисляем высоту заполнения
     fillHeight = (int)(height * ratio);
-    //y += (height - fillHeight); // Смещаем начало заполненной области вниз
 
     // Отрисовываем обводку шкалы с округлёнными углами
     filledRoundedRectangleRGBA(
@@ -88,10 +93,6 @@ void renderProgressBarRounded(int x, int y,
             fgColor.r-value, fgColor.g+value, fgColor.b, fgColor.a
         );
     }
-
-
-
-    
 }
 
 // Кнопка гладить
@@ -102,7 +103,6 @@ void onCaressButton(void){
 // Инициализация игровой сцены
 static void game_init() {
     load_texture_pet();
-    show_pet();
 
     background = loadTexture("assets/Background.png");
     rectdict.x = 0;
@@ -117,6 +117,27 @@ static void game_init() {
     {
     SDL_Log("Ошибка инициализации кнопки!");
     }
+
+    // Анимация кнопки
+    caressButtonSheet = loadTexture("assets/animations/button_caress_anim.png");
+    if (!caressButtonSheet) {
+        SDL_Log("Ошибка загрузки спрайт-листа питомца: %s", SDL_GetError());
+    }
+
+    for (int i = 0; i < 4; i++) {
+        caressButtonFrames[i].x = i * 300;
+        caressButtonFrames[i].y = 0;
+        caressButtonFrames[i].w = 300;
+        caressButtonFrames[i].h = 300;
+    }
+    
+    // Создаем анимацию, где каждый кадр показывается 0.5 секунды
+    caressButtonAnim = createAnimation(caressButtonSheet, caressButtonFrames, 4, 0.5f);
+
+    caressButton.clickAnim = caressButtonAnim;
+
+
+    if(caressButtonAnim) printf("YEEES!!! \n");
 }
 
 /**
@@ -143,8 +164,8 @@ static void game_handle_events(SDL_Event* e) {
  * @param delta -- тик времени
  */
 static void game_update(float delta) {
-    // Логика "Тамагочи": голод, настроение и т.д.
-    (void)delta; // Заглушка
+    // delta – время, прошедшее с прошлого кадра
+    updateAnimation(caressButtonAnim, delta);
 }
 
 // Отображение статики
@@ -180,12 +201,16 @@ static void game_render() {
     caressButton.rect.x = WINDOW_WIDTH/2-50;
     caressButton.rect.y = WINDOW_HEIGHT-150;    
     renderButton(&caressButton);
+
+    // Отрисовка анимации питомца по координатам (100, 150) с масштабом 1.0 (без изменения)
+    //renderAnimation(caressButtonAnim, WINDOW_WIDTH/2-50, WINDOW_HEIGHT-150, 0.35f, 0.35f);
 }
 
 // Удаление сцены
 static void game_destroy(void) {
     invisible_pet();
     destroyButton(&caressButton);
+    destroyAnimation(caressButtonAnim);
 }
 
 // Объект сцены
