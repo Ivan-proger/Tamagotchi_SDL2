@@ -12,7 +12,7 @@ typedef struct
     int h;                // Высота   
     float scaleW;           // Коэфицент сужения/расширения по ширине
     float scaleH;           // Коэфицент сужения/расширения по высоте
-    unsigned char health;           // Здоровья чудика
+    unsigned char health;           // Здоровье чудика
     unsigned char satiety;           // Голод
     unsigned char cheer;            // Настроение
 } Pet;
@@ -24,5 +24,7 @@ void show_pet(void);
 void invisible_pet(void);
 void load_texture_pet(void);
 void add_cheer(unsigned char value);
+void save_game(void);
+void load_game(void);
 
 #endif

@@ -114,6 +114,7 @@ static void game_init() {
         NULL, // используем default для hover
         NULL, // используем default для click
         onCaressButton))
+        save_game;
     {
     SDL_Log("Ошибка инициализации кнопки!");
     }

@@ -16,9 +16,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    // Инициализайия питомца
+
+    // Инициализация питомца
     init_pet();
 
+    load_game();
     //  игровой цикл
     int running = 1;
     SDL_Event event;
@@ -66,6 +68,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Уничтожаем сцену
+    save_game();
     scene_destroy();
     cleanupGraphics();
     return 0;

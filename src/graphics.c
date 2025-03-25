@@ -96,7 +96,7 @@ void renderTextureScaled(SDL_Texture* texture, int x, int y, float scaleX, float
 /**
  * @brief Глобальная функция для рендеринга 
  * 
- * @param texture -- Тексутра которую отображаем.
+ * @param texture -- Текстура которую отображаем.
  * @param dstRect -- Структура позиции текстуры.
  */
 void renderTexture(SDL_Texture* texture, SDL_Rect* dstRect) {
