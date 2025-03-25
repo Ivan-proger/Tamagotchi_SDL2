@@ -1,26 +1,51 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <time.h>
 #include "pet.h"
 #include "graphics.h"
 #include "globals.h"
-#include <time.h>
+
 
 Pet pet;
-
-float scaleW, scaleH;
-int health, satiety, cheer;
 
 time_t lastSavedTime;
 
 //! Инициализация питомца (и загрузка из файла в будущем)
 void init_pet(void)
 {
-    pet.scaleW = 0.2;
-    pet.scaleH = 0.2;
-    pet.health = 200;
-    pet.satiety = 100;
-    pet.cheer = 50;
-    lastSavedTime = time(NULL);
+    FILE *file = fopen("tamagotchi_save.dat", "rb");
+    if(file) {
+        fread(&pet, sizeof(pet), 1, file);
+        fread(&lastSavedTime, sizeof(lastSavedTime), 1, file);
+        fclose(file);
+        printf("The game was loaded.\n");
+
+        time_t currentTime = time(NULL);
+        // timeDiff - Секнуды с момента последнего сохранения 
+        int timeDiff = difftime(currentTime, lastSavedTime);
+
+        // Сытость 
+        if((int)pet.satiety - timeDiff*1000 <= 0){
+            pet.satiety = 0;  //! Тест *1000
+        } else {pet.satiety -= timeDiff*1000;}
+        // Настроение
+        if((int)pet.cheer - timeDiff*1000 <= 0){
+            pet.cheer = 0;  //! Тест *1000
+        } else {pet.cheer -= timeDiff*1000;}
+        // Здоровье
+        if((int)pet.health - timeDiff*1000 <= 0){
+            pet.health = 0;  //! Тест *1000
+        } else {pet.health -= timeDiff*1000;}
+
+
+    } else {
+        pet.scaleW = 0.2;
+        pet.scaleH = 0.2;
+        pet.health = 200;
+        pet.satiety = 100;
+        pet.cheer = 50;
+        lastSavedTime = time(NULL);
+    }
 }
 
 /**
@@ -80,31 +105,5 @@ void save_game(void) {
         printf("Saved!\n");
     } else {
         printf("Cant save!\n");
-    }
-}
-
-void load_game(void){
-    FILE *file = fopen("tamagotchi_save.dat", "rb");
-    if(file) {
-        fread(&pet, sizeof(pet), 1, file);
-        fread(&lastSavedTime, sizeof(lastSavedTime), 1, file);
-        fclose(file);
-        printf("The game was loaded.\n");
-
-        time_t currentTime = time(NULL);
-        double timeDiff = difftime(currentTime, lastSavedTime);
-
-        // pet.satiety -= (int)(timeDiff / 60);
-        // pet.cheer -= (int)(timeDiff / 60);
-        // pet.health -= (int)(timeDiff / 120);
-
-        // if (pet.satiety < 0) pet.satiety = 0;
-        // if (pet.cheer < 0) pet.cheer = 0;
-        // if (pet.health < 0) pet.health = 0;
-
-        printf("\ncheer is %d\n", pet.cheer);
-        printf("Прошло %.0f секунд.\n");
-    } else {
-        printf("No available saves.\n");
     }
 }

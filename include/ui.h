@@ -15,6 +15,9 @@ typedef struct {
     void (*onClick)(void);        // Функция-обработчик нажатия
     bool isHovered;               // Флаг: курсор внутри кнопки
     bool isClicked;               // Флаг: кнопка нажата
+    bool isAnimatingClick;   // Флаг, указывающий, что проигрывается анимация клика
+    float clickAnimTimer;    // Таймер анимации
+    float clickAnimDuration; // Длительность анимации клика (например, 0.3 секунды)
 } Button;
 
 /**
@@ -35,6 +38,15 @@ bool initButton(Button *button,
                 const char *hoverImagePath,
                 const char *clickImagePath,
                 void (*onClick)(void));
+/**
+ * Инициализация анимации для кнопки(опцианально)
+ */
+void initButtonAnimation(Button *button, char* animPath,const int quantity, float frametime, int slice_w, int slice_h);
+
+/**
+ * Занимаеться анимацией
+ */
+void updateButton(Button *button, float delta);
 
 /**
  * Отрисовывает кнопку.

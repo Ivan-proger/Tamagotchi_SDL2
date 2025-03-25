@@ -9,12 +9,10 @@
 #include "ui.h"
 #include "globals.h"
 
-static Button caressButton;
 
-// Анимации 
-SDL_Rect caressButtonFrames[4];
-Animation* caressButtonAnim;
-SDL_Texture* caressButtonSheet;
+// Кнопки
+Button caressButton;
+Button feedButton;
 
 SDL_Texture* background;
 SDL_Rect rectdict;
@@ -97,7 +95,11 @@ void renderProgressBarRounded(int x, int y,
 
 // Кнопка гладить
 void onCaressButton(void){
-    add_cheer(5);
+    add_cheer(15);
+}
+// Кнопка покормить
+void onFeedButton(void){
+    add_satiety(15);
 }
 
 // Инициализация игровой сцены
@@ -108,37 +110,32 @@ static void game_init() {
     rectdict.x = 0;
     rectdict.y = 0;
 
+    //* Кнопка погладить
     if (!initButton(&caressButton,
-        WINDOW_WIDTH/2-50, WINDOW_HEIGHT-150, 100, 100,
+        0, 0, 100, 100,
         "assets/button_caress1.png",
         NULL, // используем default для hover
         NULL, // используем default для click
         onCaressButton))
-        save_game;
     {
-    SDL_Log("Ошибка инициализации кнопки!");
+        SDL_Log("Ошибка инициализации кнопки: %s", SDL_GetError());
     }
 
     // Анимация кнопки
-    caressButtonSheet = loadTexture("assets/animations/button_caress_anim.png");
-    if (!caressButtonSheet) {
-        SDL_Log("Ошибка загрузки спрайт-листа питомца: %s", SDL_GetError());
+    initButtonAnimation(&caressButton, "assets/animations/button_caress_anim.png", 4, 0.2, 300, 300);
+
+    // Кнопка покормить
+    if (!initButton(&feedButton,
+        0, 0, 100, 100,
+        "assets/button_feed1.png",
+        "assets/button_feed2.png", // используем default для hover
+        "assets/button_feed1.png", // используем default для click
+        onFeedButton))
+    {
+        SDL_Log("Ошибка инициализации кнопки: %s", SDL_GetError());
     }
-
-    for (int i = 0; i < 4; i++) {
-        caressButtonFrames[i].x = i * 300;
-        caressButtonFrames[i].y = 0;
-        caressButtonFrames[i].w = 300;
-        caressButtonFrames[i].h = 300;
-    }
-    
-    // Создаем анимацию, где каждый кадр показывается 0.5 секунды
-    caressButtonAnim = createAnimation(caressButtonSheet, caressButtonFrames, 4, 0.5f);
-
-    caressButton.clickAnim = caressButtonAnim;
-
-
-    if(caressButtonAnim) printf("YEEES!!! \n");
+    // Анимация кнопки
+    initButtonAnimation(&feedButton, "assets/animations/button_feed_anim.png", 12, 0.1, 1080, 1080);
 }
 
 /**
@@ -149,6 +146,7 @@ static void game_init() {
 static void game_handle_events(SDL_Event* e) {
     // Обработка событий в игре (клики, клавиатура и т.п.)
     handleButtonEvent(&caressButton, e);
+    handleButtonEvent(&feedButton, e);
 
     if (e->type == SDL_KEYDOWN) {
         // Пример: ESC -> вернуть в меню
@@ -166,7 +164,8 @@ static void game_handle_events(SDL_Event* e) {
  */
 static void game_update(float delta) {
     // delta – время, прошедшее с прошлого кадра
-    updateAnimation(caressButtonAnim, delta);
+    updateButton(&caressButton, delta);
+    updateButton(&feedButton, delta);
 }
 
 // Отображение статики
@@ -203,15 +202,17 @@ static void game_render() {
     caressButton.rect.y = WINDOW_HEIGHT-150;    
     renderButton(&caressButton);
 
-    // Отрисовка анимации питомца по координатам (100, 150) с масштабом 1.0 (без изменения)
-    //renderAnimation(caressButtonAnim, WINDOW_WIDTH/2-50, WINDOW_HEIGHT-150, 0.35f, 0.35f);
+    feedButton.rect.x = caressButton.rect.x+140; 
+    feedButton.rect.y = caressButton.rect.y-70;
+    renderButton(&feedButton);
+
 }
 
 // Удаление сцены
 static void game_destroy(void) {
-    invisible_pet();
+    invisible_pet();   
     destroyButton(&caressButton);
-    destroyAnimation(caressButtonAnim);
+    destroyButton(&feedButton);
 }
 
 // Объект сцены

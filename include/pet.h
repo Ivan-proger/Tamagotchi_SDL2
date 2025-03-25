@@ -24,6 +24,7 @@ void show_pet(void);
 void invisible_pet(void);
 void load_texture_pet(void);
 void add_cheer(unsigned char value);
+void add_satiety(unsigned char value);
 void save_game(void);
 void load_game(void);
 

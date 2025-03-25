@@ -6,8 +6,8 @@
 #include "globals.h"
 #include "pet.h"
 
-int WINDOW_WIDTH = 800;
-int WINDOW_HEIGHT = 600;
+int WINDOW_WIDTH = 460;
+int WINDOW_HEIGHT = 800;
 
 int main(int argc, char* argv[]) {
     // Инициализация графики
@@ -20,7 +20,6 @@ int main(int argc, char* argv[]) {
     // Инициализация питомца
     init_pet();
 
-    load_game();
     //  игровой цикл
     int running = 1;
     SDL_Event event;
@@ -68,7 +67,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Уничтожаем сцену
-    save_game();
+    save_game(); //! Сохранение
     scene_destroy();
     cleanupGraphics();
     return 0;
