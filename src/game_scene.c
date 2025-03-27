@@ -145,11 +145,11 @@ static void game_init() {
 
     //* Кнопка кастомизация
     if (!initButton(&customButton,
-        0, 0, 100, 100,
+        0, 0, 80, 80,
         "assets/customize_button.png",
         NULL, // используем default для hover
         NULL, // используем default для click
-        onFeedButton))
+        onCustomize))
     {
         SDL_Log("Ошибка инициализации кнопки: %s", SDL_GetError());
     }
@@ -224,8 +224,8 @@ static void game_render() {
     feedButton.rect.y = caressButton.rect.y-70;
     renderButton(&feedButton);
     // Кнопка кастомизвция
-    customButton.rect.x = WINDOW_WIDTH-150;
-    customButton.rect.y = 150;    
+    customButton.rect.x = WINDOW_WIDTH-100;
+    customButton.rect.y = 100;    
     renderButton(&customButton); 
 }
 

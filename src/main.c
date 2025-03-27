@@ -7,7 +7,7 @@
 #include "pet.h"
 
 int WINDOW_WIDTH = 460;
-int WINDOW_HEIGHT = 800;
+int WINDOW_HEIGHT = 700;
 
 int main(int argc, char* argv[]) {
     // Инициализация графики
