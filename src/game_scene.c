@@ -141,7 +141,7 @@ static void game_init() {
         SDL_Log("Ошибка инициализации кнопки: %s", SDL_GetError());
     }
     // Анимация кнопки
-    initButtonAnimation(&feedButton, "assets/animations/button_feed_anim.png", 12, 0.1, 1080, 1080);
+    initButtonAnimation(&feedButton, "assets/animations/button_feed_anim.png", 12, 0.1, 135, 135);
 
     //* Кнопка кастомизация
     if (!initButton(&customButton,
