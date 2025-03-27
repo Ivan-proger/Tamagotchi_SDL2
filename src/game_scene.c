@@ -8,11 +8,13 @@
 #include "animation.h"
 #include "ui.h"
 #include "globals.h"
+#include "menu_pet.h"
 
 
 // Кнопки
 Button caressButton;
 Button feedButton;
+Button customButton;
 
 SDL_Texture* background;
 SDL_Rect rectdict;
@@ -101,6 +103,10 @@ void onCaressButton(void){
 void onFeedButton(void){
     add_satiety(15);
 }
+// Кнопка кастомизация
+void onCustomize(void){
+    set_scene(&MENU_PET);
+}
 
 // Инициализация игровой сцены
 static void game_init() {
@@ -124,7 +130,7 @@ static void game_init() {
     // Анимация кнопки
     initButtonAnimation(&caressButton, "assets/animations/button_caress_anim.png", 4, 0.2, 300, 300);
 
-    // Кнопка покормить
+    //* Кнопка покормить
     if (!initButton(&feedButton,
         0, 0, 100, 100,
         "assets/button_feed1.png",
@@ -136,6 +142,17 @@ static void game_init() {
     }
     // Анимация кнопки
     initButtonAnimation(&feedButton, "assets/animations/button_feed_anim.png", 12, 0.1, 1080, 1080);
+
+    //* Кнопка кастомизация
+    if (!initButton(&customButton,
+        0, 0, 100, 100,
+        "assets/customize_button.png",
+        NULL, // используем default для hover
+        NULL, // используем default для click
+        onFeedButton))
+    {
+        SDL_Log("Ошибка инициализации кнопки: %s", SDL_GetError());
+    }
 }
 
 /**
@@ -147,6 +164,7 @@ static void game_handle_events(SDL_Event* e) {
     // Обработка событий в игре (клики, клавиатура и т.п.)
     handleButtonEvent(&caressButton, e);
     handleButtonEvent(&feedButton, e);
+    handleButtonEvent(&customButton, e);
 
     if (e->type == SDL_KEYDOWN) {
         // Пример: ESC -> вернуть в меню
@@ -201,11 +219,14 @@ static void game_render() {
     caressButton.rect.x = WINDOW_WIDTH/2-50;
     caressButton.rect.y = WINDOW_HEIGHT-150;    
     renderButton(&caressButton);
-
+    // Кнопка кормить
     feedButton.rect.x = caressButton.rect.x+140; 
     feedButton.rect.y = caressButton.rect.y-70;
     renderButton(&feedButton);
-
+    // Кнопка кастомизвция
+    customButton.rect.x = WINDOW_WIDTH-150;
+    customButton.rect.y = 150;    
+    renderButton(&customButton); 
 }
 
 // Удаление сцены
@@ -213,6 +234,7 @@ static void game_destroy(void) {
     invisible_pet();   
     destroyButton(&caressButton);
     destroyButton(&feedButton);
+    destroyButton(&customButton);
 }
 
 // Объект сцены
