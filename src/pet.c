@@ -39,6 +39,7 @@ void init_pet(void)
 
 
     } else {
+        pet.pathImage = "assets/pet.png";
         pet.scaleW = 0.2;
         pet.scaleH = 0.2;
         pet.health = 200;
@@ -74,7 +75,7 @@ void add_satiety(unsigned char value)
 // Загрузка текстур питомца
 void load_texture_pet(void)
 {
-    pet.texture = loadTexture("assets/pet.png");
+    pet.texture = loadTexture(pet.pathImage);
     sizeTexture(pet.texture, &pet.w, &pet.h); // Записываем ширину и высоту
 }
 

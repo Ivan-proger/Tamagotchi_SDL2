@@ -5,7 +5,8 @@
 
 typedef struct
 {
-    SDL_Texture* texture; // Текстура
+    SDL_Texture* texture; // Текстура 
+    char* pathImage;      // Текущие изображение питомца
     int x;               // Позиция
     int y;
     int w;                // Ширина

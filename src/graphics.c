@@ -105,6 +105,28 @@ void renderTexture(SDL_Texture* texture, SDL_Rect* dstRect) {
 }
 
 
+
+/**
+ * @brief Применяет к текстуре эффект полупрозрачности и серого цвета.
+ *
+ * @param texture Указатель на текстуру, к которой применяется эффект.
+ * @param alpha Значение прозрачности (от 0 до 255, где 128 — полупрозрачность).
+ */
+void applyGrayTransparency(SDL_Texture* texture, Uint8 alpha) {
+    if (!texture) return;
+    
+    // Устанавливаем режим смешивания, чтобы альфа-канал учитывался при отрисовке.
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    
+    // Устанавливаем альфа-модификатор для достижения полупрозрачного эффекта.
+    SDL_SetTextureAlphaMod(texture, alpha);
+    
+    // Устанавливаем цветовую модификацию для наложения серого оттенка.
+    // Здесь (128, 128, 128) означает средний серый цвет, что делает текстуру серой.
+    SDL_SetTextureColorMod(texture, 128, 128, 128);
+}
+
+
 // @brief Обновления экрана 
 void presentGraphics() {
     SDL_RenderPresent(gRenderer);
@@ -124,8 +146,8 @@ void cleanupGraphics() {
     SDL_Quit();
 }
 
-//gfx
 
+//gfx
 
 void filledRoundedRectangleRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Sint16 radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
     // Ограничиваем радиус, чтобы он не превышал половину ширины или высоты

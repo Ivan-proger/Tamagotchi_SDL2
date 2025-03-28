@@ -28,6 +28,9 @@ void renderTextureScaled(SDL_Texture* texture, int x, int y, float scaleX, float
 // Функция для обновления экрана.
 void presentGraphics();
 
+// Делает текстуру серой и полупрозрачной
+void applyGrayTransparency(SDL_Texture* texture, Uint8 alpha);
+
 // Очистка ресурсов графической подсистемы.
 void cleanupGraphics();
 
