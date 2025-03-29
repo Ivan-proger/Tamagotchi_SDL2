@@ -97,13 +97,15 @@ void initButtonAnimation(Button *button, char* animPath,const int quantity, floa
 
 // Функция обновления кнопки (вызывается каждый кадр с delta временем)
 void updateButton(Button *button, float delta) {
-    if (button->isAnimatingClick && button->clickAnim != NULL) {
+    if (button->isAnimatingClick && button->clickAnim) {
         button->clickAnimTimer += delta;
         // Обновляем анимацию клика
         updateAnimation(button->clickAnim, delta);
         if (button->clickAnimTimer >= button->clickAnimDuration) {
             button->isAnimatingClick = false;
             button->clickAnimTimer = 0.0f;
+            // Возращаем в начальное положение начала анимации
+            button->clickAnim->currentFrame = 0;
         }
     }
 }

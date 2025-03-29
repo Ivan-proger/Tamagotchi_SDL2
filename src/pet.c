@@ -15,7 +15,18 @@ void init_pet(void)
 {
     FILE *file = fopen("tamagotchi_save.dat", "rb");
     if(file) {
-        fread(&pet, sizeof(pet), 1, file);
+        // Загружаем длину строки pathImage
+        size_t len;
+        fread(&len, sizeof(len), 1, file);
+        // Выделяем память для pathImage
+        pet.pathImage = (char*)malloc(len);
+        // Загружаем строку pathImage
+        fread(pet.pathImage, sizeof(char), len, file);
+
+        fread(&pet.health, sizeof(unsigned char), 1, file);
+        fread(&pet.satiety, sizeof(unsigned char), 1, file);
+        fread(&pet.cheer, sizeof(unsigned char), 1, file);
+
         fread(&lastSavedTime, sizeof(lastSavedTime), 1, file);
         fclose(file);
         printf("The game was loaded.\n");
@@ -38,15 +49,15 @@ void init_pet(void)
         } else {pet.health -= timeDiff*1000;}
 
 
-    } else {
+    } else {    
         pet.pathImage = "assets/pet.png";
-        pet.scaleW = 0.2;
-        pet.scaleH = 0.2;
         pet.health = 200;
         pet.satiety = 100;
         pet.cheer = 50;
         lastSavedTime = time(NULL);
     }
+    pet.scaleW = 0.2;
+    pet.scaleH = 0.2;    
 }
 
 /**
@@ -56,7 +67,6 @@ void init_pet(void)
  */
 void add_cheer(unsigned char value)
 {
-    printf("%d\n", pet.cheer);
     if((int)pet.cheer + (int)value <= 255){
         pet.cheer += value;
     } else {
@@ -99,11 +109,21 @@ void save_game(void) {
     lastSavedTime = time(NULL);
 
     FILE *file = fopen("tamagotchi_save.dat", "wb");
-    if (file) {
-        fwrite(&pet, sizeof(pet), 1, file);
-        fwrite(&lastSavedTime, sizeof(lastSavedTime), 1, file);
-        fclose(file);
-        printf("Saved!\n");
+        if (file) {
+            // Сохраняем длину строки pathImage
+            size_t len = strlen(pet.pathImage) + 1;  // включая терминальный ноль
+            fwrite(&len, sizeof(len), 1, file);
+
+            // Сохраняем саму строку pathImage
+            fwrite(pet.pathImage, sizeof(char), len, file);
+
+            fwrite(&pet.health, sizeof(unsigned char), 1, file);
+            fwrite(&pet.satiety, sizeof(unsigned char), 1, file);
+            fwrite(&pet.cheer, sizeof(unsigned char), 1, file);
+
+            fwrite(&lastSavedTime, sizeof(lastSavedTime), 1, file);
+            fclose(file);
+            printf("Saved!\n");
     } else {
         printf("Cant save!\n");
     }
