@@ -35,7 +35,7 @@ int initGraphics(const char* title, int width, int height) {
         printf("Не удалось создать окно: %s\n", SDL_GetError());
         return 0;
     }
-    gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+    gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!gRenderer) {
         printf("Не удалось создать рендерер: %s\n", SDL_GetError());
         return 0;
