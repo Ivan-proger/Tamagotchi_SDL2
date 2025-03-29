@@ -40,6 +40,11 @@ int initGraphics(const char* title, int width, int height) {
         printf("Не удалось создать рендерер: %s\n", SDL_GetError());
         return 0;
     }
+
+    SDL_RendererInfo info;
+    SDL_GetRendererInfo(gRenderer, &info);
+    
+    printf("Driver: %s\n", info.name);
     return 1;
 }
 

@@ -28,6 +28,11 @@ int main(int argc, char* argv[]) {
 
     Uint32 lastTick = SDL_GetTicks();
 
+    // Глобальные переменные для подсчёта FPS
+    int frameCount = 0;
+    float fpsTimer = 0.0f;
+    float currentFPS = 0.0f;
+
     while (running) {
         // Обработка событий
         SDL_Event e;
@@ -52,6 +57,18 @@ int main(int argc, char* argv[]) {
         Uint32 currentTick = SDL_GetTicks();
         float delta = (currentTick - lastTick) / 1000.0f;
         lastTick = currentTick;
+
+        // Увеличиваем счётчик кадров и добавляем время, прошедшее с прошлого кадра
+        frameCount++;
+        fpsTimer += delta;
+
+        // Если прошло 1 или более секунд, вычисляем FPS и сбрасываем счётчики
+        if (fpsTimer >= 1.0f) {
+            currentFPS = frameCount / fpsTimer;
+            printf("FPS: %.2f\n", currentFPS);
+            frameCount = 0;
+            fpsTimer = 0.0f;
+        }
         
         // Вызов апдейтера сцены
         scene_update(delta);

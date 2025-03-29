@@ -21,6 +21,10 @@ static char* SKIN_PATHS[MAX_SKINS] = {
 static int selectedSkinIndex = 0;
 SDL_Texture *previewTexture;
 
+// два других
+SDL_Texture *prevSkin; 
+SDL_Texture *postSkin; 
+
 // Кнопки
 static Button exittButton;
 static Button prevButton;
@@ -36,12 +40,22 @@ static void menuPet_destroy(void) {
     destroyButton(&prevButton);
 }
 
+// Перезагрузка изображений(скинов)
 void reloadPreviewTexture(void) {
-    if (previewTexture) {
-        SDL_DestroyTexture(previewTexture);
-        previewTexture = NULL;
-    }
+    SDL_DestroyTexture(previewTexture);
+    SDL_DestroyTexture(prevSkin);
+    SDL_DestroyTexture(postSkin);
+
     previewTexture = loadTexture(SKIN_PATHS[selectedSkinIndex]);
+
+    if(selectedSkinIndex - 1 >= 0){
+        prevSkin = loadTexture(SKIN_PATHS[selectedSkinIndex-1]);
+        applyGrayTransparency(prevSkin, 128);
+    }
+    if(selectedSkinIndex+1 < MAX_SKINS){
+        postSkin = loadTexture(SKIN_PATHS[selectedSkinIndex+1]);
+        applyGrayTransparency(postSkin, 128);
+    }
 }
 
 // Реакция на нажатаю кнопку
@@ -64,7 +78,9 @@ void onNextClick() {
 void onApplyClick() {
     // Применяем скин к питомцу
     extern Pet pet; // или получите доступ через getPet()
-    if (pet.texture) SDL_DestroyTexture(pet.texture);
+    if (pet.texture) {
+        SDL_DestroyTexture(pet.texture);
+    }
     pet.texture = loadTexture(SKIN_PATHS[selectedSkinIndex]);
     pet.pathImage = SKIN_PATHS[selectedSkinIndex];
 
@@ -90,7 +106,7 @@ static void menuPet_init() {
 
     // Загрузите текущий скин в "previewTexture"
     selectedSkinIndex = 0;
-    previewTexture = loadTexture(SKIN_PATHS[selectedSkinIndex]);
+    reloadPreviewTexture();
 }
 
 
@@ -127,16 +143,12 @@ static void menuPet_render() {
 
         if(selectedSkinIndex+1 < MAX_SKINS){
             dstRect.x += 170;
-            SDL_Texture *temp = loadTexture(SKIN_PATHS[selectedSkinIndex+1]);
-            applyGrayTransparency(temp, 128);
-            renderTexture(temp, &dstRect);
+            renderTexture(postSkin, &dstRect);
         }
 
         if(selectedSkinIndex - 1 >= 0){
             dstRect.x = 10;
-            SDL_Texture *temp = loadTexture(SKIN_PATHS[selectedSkinIndex-1]);
-            applyGrayTransparency(temp, 128);
-            renderTexture(temp, &dstRect);
+            renderTexture(prevSkin, &dstRect);
         }
     }
 }
