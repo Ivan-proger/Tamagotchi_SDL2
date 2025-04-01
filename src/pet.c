@@ -36,18 +36,22 @@ void init_pet(void)
         int timeDiff = difftime(currentTime, lastSavedTime);
 
         // Сытость 
-        if((int)pet.satiety - timeDiff*1000 <= 0){
+        if((int)pet.satiety - timeDiff <= 0){
             pet.satiety = 0;  //! Тест *1000
-        } else {pet.satiety -= timeDiff*1000;}
+        } else {pet.satiety -= timeDiff*10;}
         // Настроение
-        if((int)pet.cheer - timeDiff*1000 <= 0){
+        if((int)pet.cheer - timeDiff <= 0){
             pet.cheer = 0;  //! Тест *1000
-        } else {pet.cheer -= timeDiff*1000;}
+        } else {pet.cheer -= timeDiff;}
         // Здоровье
-        if((int)pet.health - timeDiff*1000 <= 0){
+        if((int)pet.health - timeDiff <= 0){
             pet.health = 0;  //! Тест *1000
-        } else {pet.health -= timeDiff*1000;}
+        } else {pet.health -= timeDiff/6;}
+        if(pet.health > 255){
+            pet.health = 255;
+        }
 
+        pet.health = fmin(255, fmax(0, pet.health));
 
     } else {    
         pet.pathImage = "assets/pet.png";
@@ -56,6 +60,7 @@ void init_pet(void)
         pet.cheer = 50;
         lastSavedTime = time(NULL);
     }
+
     pet.scaleW = 0.2;
     pet.scaleH = 0.2;    
 }
@@ -69,6 +74,7 @@ void add_cheer(unsigned char value)
 {
     if((int)pet.cheer + (int)value <= 255){
         pet.cheer += value;
+        pet.health = (pet.health + value / 2 > 255) ? 255 : pet.health + value / 2;
     } else {
         pet.cheer = 255;
     }
@@ -78,10 +84,12 @@ void add_satiety(unsigned char value)
 {
     if((int)pet.satiety + (int)value <= 255){
         pet.satiety += value;
+        pet.health = (pet.health + value > 255) ? 255 : pet.health + value;
     } else {
         pet.satiety = 255;
     }
 }
+
 // Загрузка текстур питомца
 void load_texture_pet(void)
 {
