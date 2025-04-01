@@ -47,11 +47,6 @@ void init_pet(void)
         if((int)pet.health - timeDiff <= 0){
             pet.health = 0;  //! Тест *1000
         } else {pet.health -= timeDiff/6;}
-        if(pet.health > 255){
-            pet.health = 255;
-        }
-
-        pet.health = fmin(255, fmax(0, pet.health));
 
     } else {    
         pet.pathImage = "assets/pet.png";
@@ -74,7 +69,7 @@ void add_cheer(unsigned char value)
 {
     if((int)pet.cheer + (int)value <= 255){
         pet.cheer += value;
-        pet.health = (pet.health + value / 2 > 255) ? 255 : pet.health + value / 2;
+        pet.health = ((int)pet.health + value/10 > 255) ? 255 : pet.health + (char)value/10;
     } else {
         pet.cheer = 255;
     }
@@ -84,7 +79,7 @@ void add_satiety(unsigned char value)
 {
     if((int)pet.satiety + (int)value <= 255){
         pet.satiety += value;
-        pet.health = (pet.health + value > 255) ? 255 : pet.health + value;
+        pet.health = ((int)pet.health + value/10 > 255) ? 255 : pet.health + (char)value/10;
     } else {
         pet.satiety = 255;
     }
@@ -95,6 +90,40 @@ void load_texture_pet(void)
 {
     pet.texture = loadTexture(pet.pathImage);
     sizeTexture(pet.texture, &pet.w, &pet.h); // Записываем ширину и высоту
+}
+
+
+double gtimer; // Глобальная переменная для счета времени чтобы изменить характеристики питомца
+/**
+ * @brief Обновление параметров питомца во время работы программы
+ * 
+ * @param delta   -- мс с предыдущего кадра
+ * @param gtimer  -- перемена для глобального времени(там складываются милисекунды и накапливаются для таймера)
+ * @param scaling -- насколько изменить парметры со временем
+ */
+void update_pet(double delta, float scaling)
+{
+    // Складываем и ждем секунды
+    gtimer += delta;
+    if (gtimer >= 10.0){
+        if((int)pet.satiety - 2*scaling > 0){
+            pet.satiety -= (unsigned char)2*scaling;
+        }
+        if((int)pet.cheer - 1*scaling > 0){
+            pet.cheer -= (unsigned char)1*scaling;
+        }
+        if(pet.cheer > 150 && pet.satiety > 80){
+            pet.health = ((int)pet.health + 10*scaling > 255) ? 255 : pet.health + 10*scaling;
+        } else{
+            pet.health = ((int)pet.health - 3*scaling < 0) ? 0 : pet.health - 1*scaling;
+        }
+
+        if(pet.health == 0)
+            printf("\nDEAD\n");
+        gtimer = 0.0;
+        
+    }
+    
 }
 
 // Отображение питомца

@@ -16,7 +16,7 @@ SDL_Renderer* gRenderer = NULL;
  * @return int    -- Отдает 0 если ошибка
  */
 int initGraphics(const char* title, int width, int height) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_VIDEO) < 0) {
         printf("Ошибка инициализации SDL: %s\n", SDL_GetError());
         return 0;
     }

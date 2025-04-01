@@ -23,10 +23,24 @@ int main(int argc, char* argv[]) {
     //  игровой цикл
     int running = 1;
     SDL_Event event;
+
     // Ставим сцену меню
     set_scene(&MENU_SCENE);
 
-    Uint32 lastTick = SDL_GetTicks();
+    // Получаем частоту счетчика (тиков в секунду). Делаем это один раз.
+    Uint64 perf_frequency = SDL_GetPerformanceFrequency();
+    if (perf_frequency == 0) {
+         fprintf(stderr, "Error: Performance counter not supported or frequency is zero.\n");
+         // Можно перейти на SDL_GetTicks64() как на запасной вариант, если нужно
+         SDL_Quit();
+         return 1;
+    }
+
+    // Получаем начальное значение счетчика
+    Uint64 last_counter = SDL_GetPerformanceCounter();
+
+    double delta = 0.0; // Дельта время в секундах
+
 
     // Глобальные переменные для подсчёта FPS
     int frameCount = 0;
@@ -52,11 +66,18 @@ int main(int argc, char* argv[]) {
             // Отдаем эвент сцене
             scene_handle_events(&e);
         }
+        // --- Начало кадра ---
+        Uint64 current_counter = SDL_GetPerformanceCounter();
 
-        // Подсчёт delta
-        Uint32 currentTick = SDL_GetTicks();
-        float delta = (currentTick - lastTick) / 1000.0f;
-        lastTick = currentTick;
+        // Вычисляем количество тиков, прошедших с прошлого кадра
+        // Используем безопасное вычитание для предотвращения проблем с переполнением (хотя для 64 бит маловероятно)
+        Uint64 elapsed_ticks = current_counter - last_counter;
+
+        // Конвертируем тики в секунды (с плавающей точкой двойной точности)
+        delta = (double)elapsed_ticks / (double)perf_frequency;
+
+        // Обновляем счетчик для следующего кадра
+        last_counter = current_counter;
 
         // Увеличиваем счётчик кадров и добавляем время, прошедшее с прошлого кадра
         frameCount++;
@@ -70,6 +91,8 @@ int main(int argc, char* argv[]) {
             fpsTimer = 0.0f;
         }
         
+       
+        update_pet(delta, 2.0);
         // Вызов апдейтера сцены
         scene_update(delta);
 
@@ -78,7 +101,7 @@ int main(int argc, char* argv[]) {
         SDL_RenderClear(gRenderer);
         
         // Рендер сцены
-        scene_render(gRenderer);
+        scene_render();
 
         SDL_RenderPresent(gRenderer);
     }

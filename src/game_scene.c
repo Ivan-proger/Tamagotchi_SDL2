@@ -101,7 +101,7 @@ void onCaressButton(void){
 }
 // Кнопка покормить
 void onFeedButton(void){
-    add_satiety(15);
+    add_satiety(25);
 }
 // Кнопка кастомизация
 void onCustomize(void){
