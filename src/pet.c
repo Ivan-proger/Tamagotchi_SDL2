@@ -57,7 +57,7 @@ void init_pet(void)
         pet.cheer = 50;
         lastSavedTime = time(NULL);
     }
-
+    //pet.health = 10;
     pet.scaleW = 0.2;
     pet.scaleH = 0.2;    
 }
@@ -118,18 +118,16 @@ void update_pet(double delta, float scaling)
         if(pet.cheer > 150 && pet.satiety > 80){
             pet.health = ((int)pet.health + 10*scaling > 255) ? 255 : pet.health + 10*scaling;
         } else{
-            pet.health = ((int)pet.health - 3*scaling < 0) ? 0 : pet.health - 1*scaling;
+            pet.
+            health = ((int)pet.health - 3*scaling < 0) ? 0 : pet.health - 1*scaling;
         }
-
-        if(pet.health == 0){
-            //! СМЕРТЬ
-            set_scene(&DEAD_SCENE);
-        }
-
         gtimer = 0.0;
         
     }
-    
+    if(pet.health == 0){
+        //! СМЕРТЬ
+        set_scene(&DEAD_SCENE);
+    }
 }
 
 // Отображение питомца

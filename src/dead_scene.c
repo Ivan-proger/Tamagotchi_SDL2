@@ -1,24 +1,25 @@
 #include <SDL2/SDL.h>
 #include "graphics.h"
+#include "pet.h"
 #include "menu_scene.h"
 #include "dead_scene.h"
-#include "game_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
 #include "scene_manager.h"
 #include "ui.h"             
 #include "globals.h"   
-#include "pet.h"
+
 
 
 
 // Кусочки тамагочи
-SDL_Texture** petTextures;
+static SDL_Texture** petTextures;
+static int i;
 
 // Кнопка старт
 static Button exitButton;
 
 // Фон
-SDL_Texture* background;
-SDL_Rect rectdict;
+static SDL_Texture* background;
+static SDL_Rect rectdict;
 
 // Предполагается, что petTextures — массив из 4 указателей на SDL_Texture*, полученный из splitTextureFour,
 void deadAnimation(SDL_Texture **petTextures, int startX, int startY, int gap) {
@@ -89,6 +90,8 @@ static void dead_init() {
     SDL_Log("Ошибка инициализации кнопки!");
     }
 
+    i = 1;
+
     // Разделяем на эллементы
     petTextures = splitTextureFour(pet.pathImage);
     deadAnimation(petTextures, pet.x, pet.y, 1);
@@ -107,7 +110,7 @@ static void dead_update(float delta) {
     (void)delta;  // Заглушка, чтобы не ругался компилятор
 }
 
-int i = 1;
+
 // Отображение меню(его статической состоявляющей)
 static void dead_render() {
     // Фон
