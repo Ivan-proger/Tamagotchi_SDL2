@@ -16,6 +16,7 @@ Button caressButton;
 Button feedButton;
 Button customButton;
 
+// Фон
 SDL_Texture* background;
 SDL_Rect rectdict;
 

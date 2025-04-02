@@ -132,12 +132,12 @@ void applyGrayTransparency(SDL_Texture* texture, Uint8 alpha) {
 }
 
 
-// @brief Обновления экрана 
+// Обновления экрана 
 void presentGraphics() {
     SDL_RenderPresent(gRenderer);
 }
 
-// @brief Очистка графики
+// Очистка графики
 void cleanupGraphics() {
     if (gRenderer) {
         SDL_DestroyRenderer(gRenderer);
@@ -153,7 +153,6 @@ void cleanupGraphics() {
 
 
 //gfx
-
 void filledRoundedRectangleRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Sint16 radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
     // Ограничиваем радиус, чтобы он не превышал половину ширины или высоты
     // Вычисляем размеры
@@ -194,4 +193,88 @@ void filledRoundedRectangleRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Sint
     aacircleRGBA(gRenderer, x2 - radius, y1 + radius, radius, r, g, b, a);
     aacircleRGBA(gRenderer, x1 + radius, y2 - radius, radius, r, g, b, a);
     aacircleRGBA(gRenderer, x2 - radius, y2 - radius, radius, r, g, b, a);
+}
+
+// Функция разбивает изображение, загруженное из imagePath, на 4 равные части и возвращает массив текстур.
+// Если происходит ошибка, функция возвращает NULL.
+SDL_Texture** splitTextureFour(const char* imagePath) {
+    if (!gRenderer || !imagePath) return NULL;
+    
+    // Загружаем исходное изображение в поверхность
+    SDL_Surface* sourceSurface = IMG_Load(imagePath);
+    if (!sourceSurface) {
+        SDL_Log("Ошибка загрузки изображения: %s", IMG_GetError());
+        return NULL;
+    }
+    
+    // Определяем размеры исходного изображения
+    int fullWidth = sourceSurface->w;
+    int fullHeight = sourceSurface->h;
+    
+    // Вычисляем размеры каждой части (4 равные части: 2 столбца, 2 строки)
+    int partWidth = fullWidth / 2;
+    int partHeight = fullHeight / 2;
+    
+    // Выделяем массив для 4 текстур
+    SDL_Texture** textures = (SDL_Texture**) malloc(sizeof(SDL_Texture*) * 4);
+    if (!textures) {
+        SDL_Log("Ошибка выделения памяти для текстур");
+        SDL_FreeSurface(sourceSurface);
+        return NULL;
+    }
+    
+    // Перебираем строки и столбцы (2x2) и создаём субтекстуры
+    int index = 0;
+    for (int row = 0; row < 2; row++) {
+        for (int col = 0; col < 2; col++) {
+            // Определяем прямоугольник для текущей части
+            SDL_Rect srcRect = { col * partWidth, row * partHeight, partWidth, partHeight };
+            
+            // Создаем новую поверхность для данной части того же формата, что и исходная поверхность
+            SDL_Surface* subSurface = SDL_CreateRGBSurfaceWithFormat(0, partWidth, partHeight, 
+                                                                     sourceSurface->format->BitsPerPixel, 
+                                                                     sourceSurface->format->format);
+            if (!subSurface) {
+                SDL_Log("Ошибка создания субповерхности: %s", SDL_GetError());
+                // Освобождаем ранее созданные текстуры и массив
+                for (int i = 0; i < index; i++) {
+                    SDL_DestroyTexture(textures[i]);
+                }
+                free(textures);
+                SDL_FreeSurface(sourceSurface);
+                return NULL;
+            }
+            
+            // Копируем нужную область из исходной поверхности в субповерхность
+            if (SDL_BlitSurface(sourceSurface, &srcRect, subSurface, NULL) != 0) {
+                SDL_Log("Ошибка копирования субповерхности: %s", SDL_GetError());
+                SDL_FreeSurface(subSurface);
+                for (int i = 0; i < index; i++) {
+                    SDL_DestroyTexture(textures[i]);
+                }
+                free(textures);
+                SDL_FreeSurface(sourceSurface);
+                return NULL;
+            }
+            
+            // Создаем текстуру из субповерхности
+            textures[index] = SDL_CreateTextureFromSurface(gRenderer, subSurface);
+            if (!textures[index]) {
+                SDL_Log("Ошибка создания текстуры: %s", SDL_GetError());
+                SDL_FreeSurface(subSurface);
+
+                for (int i = 0; i < index; i++) {
+                    SDL_DestroyTexture(textures[i]);
+                    free(textures);
+                    SDL_FreeSurface(sourceSurface);
+                    return NULL;           
+                }
+            }
+
+            SDL_FreeSurface(subSurface);
+            index++; 
+        }
+    }
+    SDL_FreeSurface(sourceSurface);
+    return textures;
 }

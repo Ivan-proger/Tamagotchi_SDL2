@@ -37,4 +37,8 @@ void cleanupGraphics();
 //gfx
 void filledRoundedRectangleRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Sint16 radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
+// Функция разбивает изображение, загруженное из imagePath, на 4 равные части и возвращает массив текстур.
+// Если происходит ошибка, функция возвращает NULL.
+SDL_Texture** splitTextureFour(const char* imagePath);
+
 #endif // GRAPHICS_H

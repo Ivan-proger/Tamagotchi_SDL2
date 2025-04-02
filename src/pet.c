@@ -3,6 +3,8 @@
 #include <time.h>
 #include "pet.h"
 #include "graphics.h"
+#include "scene_manager.h"
+#include "dead_scene.h"
 #include "globals.h"
 
 
@@ -112,14 +114,18 @@ void update_pet(double delta, float scaling)
         if((int)pet.cheer - 1*scaling > 0){
             pet.cheer -= (unsigned char)1*scaling;
         }
+        // Изменение здоровья от характеристик 
         if(pet.cheer > 150 && pet.satiety > 80){
             pet.health = ((int)pet.health + 10*scaling > 255) ? 255 : pet.health + 10*scaling;
         } else{
             pet.health = ((int)pet.health - 3*scaling < 0) ? 0 : pet.health - 1*scaling;
         }
 
-        if(pet.health == 0)
-            printf("\nDEAD\n");
+        if(pet.health == 0){
+            //! СМЕРТЬ
+            set_scene(&DEAD_SCENE);
+        }
+
         gtimer = 0.0;
         
     }
@@ -165,3 +171,4 @@ void save_game(void) {
         printf("Cant save!\n");
     }
 }
+
