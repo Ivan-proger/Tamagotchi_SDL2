@@ -278,3 +278,30 @@ SDL_Texture** splitTextureFour(const char* imagePath) {
     SDL_FreeSurface(sourceSurface);
     return textures;
 }
+
+// Полупрозрачный квадрат черного цвета
+void drawTransparentBlackSquare(int x, int y, int w, int h) {
+    // Сохраняем текущие настройки блендинга
+    //SDL_BlendMode previousBlendMode;
+    //SDL_GetRenderDrawBlendMode(gRenderer, &previousBlendMode);
+    
+    // Устанавливаем режим блендинга для поддержки прозрачности
+    //SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
+    
+    // Устанавливаем цвет черный с альфа-каналом 128 (50% прозрачности)
+    SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 128);
+    
+    // Создаем прямоугольник
+    SDL_Rect rect = {
+        .x = x,
+        .y = y,
+        .w = w,
+        .h = h
+    };
+    
+    // Рисуем заполненный прямоугольник
+    SDL_RenderFillRect(gRenderer, &rect);
+    
+    // Восстанавливаем предыдущие настройки блендинга
+    //SDL_SetRenderDrawBlendMode(gRenderer, previousBlendMode);
+}

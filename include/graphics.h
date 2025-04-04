@@ -41,4 +41,7 @@ void filledRoundedRectangleRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Sint
 // Если происходит ошибка, функция возвращает NULL.
 SDL_Texture** splitTextureFour(const char* imagePath);
 
+// Полупрозрачный прямоугольник черного цвета
+void drawTransparentBlackSquare(int x, int y, int w, int h);
+
 #endif // GRAPHICS_H

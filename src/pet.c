@@ -124,18 +124,19 @@ void update_pet(double delta, float scaling)
         gtimer = 0.0;
         
     }
-    if(pet.health == 0){
-        //! СМЕРТЬ
-        set_scene(&DEAD_SCENE);
-    }
 }
 
 // Отображение питомца
 void show_pet(void)
 {
-    pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
-    pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;
-    renderTextureScaled(pet.texture, pet.x, pet.y, pet.scaleW, pet.scaleH);
+    if(pet.health == 0){
+        //! СМЕРТЬ
+        set_scene(&DEAD_SCENE);
+    } else{
+        pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
+        pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;
+        renderTextureScaled(pet.texture, pet.x, pet.y, pet.scaleW, pet.scaleH);
+    }
 }
 
 // Удаление сцены

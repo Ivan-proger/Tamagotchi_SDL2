@@ -12,6 +12,7 @@
 
 // Кусочки тамагочи
 static SDL_Texture** petTextures;
+static SDL_Rect dstRects[4];
 static int i;
 
 // Кнопка старт
@@ -22,29 +23,30 @@ static SDL_Texture* background;
 static SDL_Rect rectdict;
 
 // Предполагается, что petTextures — массив из 4 указателей на SDL_Texture*, полученный из splitTextureFour,
-void deadAnimation(SDL_Texture **petTextures, int startX, int startY, int gap) {
-    int texW=300;
-    int texH=300;
+static void deadAnimation(SDL_Rect dstRects[4], SDL_Texture **petTextures, int startX, int startY, float scaleW, float scaleH, int gap) {
+    int texW, texH;
+
     // Получаем размеры одной текстуры (предполагается, что все имеют одинаковый размер)
-    //sizeTexture(petTextures[0], &texW, &texH);
-    
+    sizeTexture(petTextures[0], &texW, &texH);
+    texW *= scaleW;
+    texH *= scaleH;
     // Определяем прямоугольники для каждой текстуры с промежутком (gap)
-    SDL_Rect dstRects[4];
+    
     
     // Верхний левый элемент
-    dstRects[0].x = startX;
-    dstRects[0].y = startY;
+    dstRects[0].x = startX - gap;
+    dstRects[0].y = startY-gap;
     dstRects[0].w = texW;
     dstRects[0].h = texH;
     
     // Верхний правый элемент
     dstRects[1].x = startX + texW + gap;
-    dstRects[1].y = startY;
+    dstRects[1].y = startY-gap;
     dstRects[1].w = texW;
     dstRects[1].h = texH;
     
     // Нижний левый элемент
-    dstRects[2].x = startX;
+    dstRects[2].x = startX - gap;
     dstRects[2].y = startY + texH + gap;
     dstRects[2].w = texW;
     dstRects[2].h = texH;
@@ -65,12 +67,36 @@ void deadAnimation(SDL_Texture **petTextures, int startX, int startY, int gap) {
 static void dead_destroy(void) {
     // Удаляем ресурсы кнопки (если есть текстуры)
     destroyButton(&exitButton);
+
+    // Очищаем фон
+    if (background) {
+        SDL_DestroyTexture(background);
+        background = NULL;
+    }
+
+    // удаляем питомца
+    invisible_pet();
+
+    // Очистка текстур
+    if (petTextures != NULL) {
+        // Предполагаем что массив заканчивается NULL-указателем
+        for(int i = 0; i < 4; i++) {
+            if (petTextures[i] != NULL) {
+                SDL_DestroyTexture(petTextures[i]);
+                petTextures[i] = NULL;
+            }
+        }
+        
+        // Освобождаем сам массив указателей
+        free(petTextures);
+        petTextures = NULL;
+    }
 }
 
 // Реакция на нажатаю кнопку
-void onexitButtonClick() {
+static void onexitButtonClick() {
     // Логика при нажатии кнопки
-    dead_destroy();
+    //dead_destroy();
     set_scene(&MENU_SCENE);
 }
 
@@ -81,7 +107,7 @@ static void dead_init() {
 
     // Инициализация кнопки (координаты, размеры)
     if (!initButton(&exitButton,
-        WINDOW_WIDTH/2-250, WINDOW_HEIGHT-100, 500, 300,
+        WINDOW_WIDTH/2-250, WINDOW_HEIGHT-100, 250, 150,
         "assets/button_start.png",
         "assets/button_start_watch.png", // используем default для hover
         "assets/button_start_click.png", // используем default для click
@@ -94,7 +120,11 @@ static void dead_init() {
 
     // Разделяем на эллементы
     petTextures = splitTextureFour(pet.pathImage);
-    deadAnimation(petTextures, pet.x, pet.y, 1);
+    if(!(pet.x) && !(pet.y)){
+        pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
+        pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;        
+    }
+    deadAnimation(dstRects, petTextures, pet.x, pet.y, pet.scaleW, pet.scaleH, 1);
 }
 
 // Обработка эвентов когда меню инициализировано 
@@ -107,7 +137,7 @@ static void dead_handle_events(SDL_Event* e) {
 // Логика во время меня(обновляется в бесконечном цикле)
 // @param delta - тик времени
 static void dead_update(float delta) {
-    (void)delta;  // Заглушка, чтобы не ругался компилятор
+    updateButton(&exitButton, delta);
 }
 
 
@@ -118,13 +148,16 @@ static void dead_render() {
     rectdict.h = WINDOW_HEIGHT;
     renderTexture(background, &rectdict);
 
+    // Затемнить фон
+    drawTransparentBlackSquare(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
     // Рисуем анимацию и т.д.
-    deadAnimation(petTextures, pet.x, pet.y, i);
+    deadAnimation(dstRects, petTextures, pet.x, pet.y,pet. scaleW, pet.scaleH, i/2);
     i++;
 
     // Рисуем кнопку
-    exitButton.rect.x = WINDOW_WIDTH/2-250;
-    exitButton.rect.y = WINDOW_HEIGHT/2-150;
+    exitButton.rect.x = WINDOW_WIDTH/2-(250/2);
+    exitButton.rect.y = WINDOW_HEIGHT-150;
 
     renderButton(&exitButton);
 }
