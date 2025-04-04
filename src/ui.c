@@ -93,6 +93,9 @@ void initButtonAnimation(Button *button, char* animPath,const int quantity, floa
     button->isAnimatingClick = false;
     button->clickAnimTimer = 0.0f;
     button->clickAnimDuration = frametime*quantity; // Задаём, например, 0.3 секунды
+
+    // Освобождаем память, выделенную для массива кадров, так как она больше не нужна
+    free(ButtonFrames);
 }
 
 // Функция обновления кнопки (вызывается каждый кадр с delta временем)
