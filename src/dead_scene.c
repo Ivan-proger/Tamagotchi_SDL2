@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL2_gfxPrimitives.h> // Для aaLineRGBA (антиалиасинговой линии)
+#include <stdlib.h>
 #include "graphics.h"
 #include "pet.h"
 #include "menu_scene.h"
@@ -8,12 +10,14 @@
 #include "globals.h"   
 
 
-
+// Константы
+#define NUM_DROPLETS 50
+#define MAX_SPLASHES 100
 
 // Кусочки тамагочи
 static SDL_Texture** petTextures;
 static SDL_Rect dstRects[4];
-static int i;
+static int dif_pieces;
 
 // Кнопка старт
 static Button exitButton;
@@ -21,6 +25,34 @@ static Button exitButton;
 // Фон
 static SDL_Texture* background;
 static SDL_Rect rectdict;
+
+// Спрайты
+static SDL_Texture* text_dead;
+static SDL_Rect text_dead_rect;
+
+
+typedef struct {
+    float x, y;       // Позиция капли
+    float speed;      // Скорость падения (пикселей/сек)
+    float length;     // Длина капли (в пикселях)
+    Uint8 alpha;      // Прозрачность капли
+} Droplet;
+
+static Droplet droplets[NUM_DROPLETS];
+
+typedef struct {
+    float x, y;          // Позиция брызги
+    float radius;        // Текущий радиус брызги
+    float maxRadius;     // Максимальный радиус, до которого должна расшириться брызга
+    float lifetime;      // Общее время жизни (в секундах)
+    float elapsed;       // Прошедшее время с момента появления (в секундах)
+    SDL_Color color;     // Цвет брызги (с альфа-каналом)
+    bool active;         // Флаг, указывающий, активна ли данная брызга
+} RedSplash;
+
+// Массив частиц
+static RedSplash splashes[MAX_SPLASHES];
+
 
 // Предполагается, что petTextures — массив из 4 указателей на SDL_Texture*, полученный из splitTextureFour,
 static void deadAnimation(SDL_Rect dstRects[4], SDL_Texture **petTextures, int startX, int startY, float scaleW, float scaleH, int gap) {
@@ -69,10 +101,11 @@ static void dead_destroy(void) {
     destroyButton(&exitButton);
 
     // Очищаем фон
-    if (background) {
-        SDL_DestroyTexture(background);
-        background = NULL;
-    }
+    SDL_DestroyTexture(background);
+    background = NULL;
+    // Спрайты
+    SDL_DestroyTexture(text_dead);
+    text_dead = NULL;
 
     // удаляем питомца
     invisible_pet();
@@ -100,23 +133,39 @@ static void onexitButtonClick() {
     set_scene(&MENU_SCENE);
 }
 
+
 // Инициализация меню(его создание и отображение)
 static void dead_init() {
     // Загрузка фона
     background = loadTexture("assets/Background.png");
 
+    // Инициализация капель
+    for (int i = 0; i < NUM_DROPLETS; i++) {
+        droplets[i].x = rand() % WINDOW_WIDTH;
+        droplets[i].y = -(rand() % 200); // Начинаем выше экрана для плавного появления
+        droplets[i].speed = 100 + rand() % 200; // Случайная скорость от 100 до 300 пикселей/сек
+        droplets[i].length = 10 + rand() % 20;    // Длина от 10 до 30 пикселей
+        droplets[i].alpha = 200;                  // Полупрозрачные капли
+    }
+
+    // Инициализация системы брызг.
+    for (int i = 0; i < MAX_SPLASHES; i++) {
+        splashes[i].active = false;
+    }
+
     // Инициализация кнопки (координаты, размеры)
     if (!initButton(&exitButton,
-        WINDOW_WIDTH/2-250, WINDOW_HEIGHT-100, 250, 150,
-        "assets/button_start.png",
-        "assets/button_start_watch.png", // используем default для hover
-        "assets/button_start_click.png", // используем default для click
+        WINDOW_WIDTH/2-101, WINDOW_HEIGHT-100, 203, 108,
+        "assets/button_restart.png",
+        "assets/button_restart_hover.png", // используем default для hover
+        "assets/button_restart_hover.png", // используем default для click
         onexitButtonClick))
     {
     SDL_Log("Ошибка инициализации кнопки!");
     }
 
-    i = 1;
+    // Разница кусочков
+    dif_pieces = 1;
 
     // Разделяем на эллементы
     petTextures = splitTextureFour(pet.pathImage);
@@ -124,7 +173,14 @@ static void dead_init() {
         pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
         pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;        
     }
-    deadAnimation(dstRects, petTextures, pet.x, pet.y, pet.scaleW, pet.scaleH, 1);
+    
+    // Спрайты 
+    text_dead = loadTexture("assets/potracheno.png");
+    int textW, textH;
+    sizeTexture(text_dead, &textW, &textH);
+    text_dead_rect.w = textW/2;
+    text_dead_rect.h = textH/2;   
+    text_dead_rect.y = 0;  
 }
 
 // Обработка эвентов когда меню инициализировано 
@@ -134,10 +190,90 @@ static void dead_handle_events(SDL_Event* e) {
     handleButtonEvent(&exitButton, e);
 }
 
+/**
+ * @brief Создает новую брызгу (частицу) с заданными параметрами.
+ *
+ * @param x            Позиция X появления брызги.
+ * @param y            Позиция Y появления брызги.
+ * @param initialRadius Начальный радиус брызги.
+ * @param maxRadius     Максимальный радиус, до которого расширится брызга.
+ * @param lifetime      Время жизни брызги в секундах.
+ */
+void spawnSplash(float x, float y, float initialRadius, float maxRadius, float lifetime) {
+    for (int i = 0; i < MAX_SPLASHES; i++) {
+        if (!splashes[i].active) {
+            splashes[i].x = x + rand() % 100;
+            splashes[i].y = y + rand() % 100;
+            splashes[i].radius = initialRadius + rand() % 10;
+            splashes[i].maxRadius = maxRadius + rand() % 15;
+            splashes[i].lifetime = (lifetime+ rand() % 3)/2;
+            splashes[i].elapsed = 0.0f;
+            // Начальный цвет — ярко-красный, полностью непрозрачный
+            splashes[i].color = (SDL_Color){255, 0, 0, 255};
+            splashes[i].active = true;
+            break;
+        }
+    }
+}
+
+static bool is_extension = true;
+static float splash_time = 0.0;
 // Логика во время меня(обновляется в бесконечном цикле)
-// @param delta - тик времени
-static void dead_update(float delta) {
+// delta - тик времени
+static void dead_update(float delta) {    
     updateButton(&exitButton, delta);
+
+    // Анимация расчленения питомца
+    if(is_extension){
+        dif_pieces += 100 * delta;
+        if(dif_pieces > 100)
+            is_extension = false;
+    } else{
+        dif_pieces -= 60 * delta;
+        if(dif_pieces < 30)
+            is_extension = true;
+    }
+
+
+    // Надпись на экране об окончание игры
+    if(text_dead_rect.w+1 < WINDOW_WIDTH){
+        text_dead_rect.w += 100 * delta ;
+        text_dead_rect.h += 60 * delta;
+    }
+
+    // Обновление капель
+    for (int i = 0; i < NUM_DROPLETS; i++) {
+        droplets[i].y += droplets[i].speed * delta;
+        // Если капля ушла за нижнюю границу, сбрасываем её в верхнюю часть с новым случайным X.
+        if (droplets[i].y > WINDOW_HEIGHT) {
+            droplets[i].y = -droplets[i].length;
+            droplets[i].x = rand() % WINDOW_WIDTH;
+        }
+    }
+
+    // Спавн крови
+    splash_time += delta;
+    if(splash_time >= 0.2){
+        splash_time = 0.0;
+        spawnSplash(WINDOW_WIDTH/2-50, WINDOW_HEIGHT/2-50, 1.0f, 20.0f, 0.4f);
+    }
+
+    // Обновление анимации крови
+    for (int i = 0; i < MAX_SPLASHES; i++) {
+        if (splashes[i].active) {
+            splashes[i].elapsed += delta;
+            float t = splashes[i].elapsed / splashes[i].lifetime;
+            if (t > 1.0f) t = 1.0f;
+            // Линейная интерполяция радиуса от начального до максимального
+            // (Можно изменить алгоритм для нелинейного эффекта)
+            splashes[i].radius = (1.0f - t) * splashes[i].radius + t * splashes[i].maxRadius;
+            // Постепенное уменьшение прозрачности
+            splashes[i].color.a = (Uint8)(255 * (1.0f - t));
+            if (splashes[i].elapsed >= splashes[i].lifetime) {
+                splashes[i].active = false;
+            }
+        }
+    }
 }
 
 
@@ -152,13 +288,39 @@ static void dead_render() {
     drawTransparentBlackSquare(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Рисуем анимацию и т.д.
-    deadAnimation(dstRects, petTextures, pet.x, pet.y,pet. scaleW, pet.scaleH, i/2);
-    i++;
+    pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
+    pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;  
+    deadAnimation(dstRects, petTextures, pet.x, pet.y,pet. scaleW, pet.scaleH, dif_pieces/3);
+
+    // Отрисовка брызгов крови
+    for (int i = 0; i < MAX_SPLASHES; i++) {
+        if (splashes[i].active) {
+            filledCircleRGBA(gRenderer,
+                (Sint16)splashes[i].x,(Sint16)splashes[i].y,
+                (Sint16)splashes[i].radius,
+                splashes[i].color.r,
+                splashes[i].color.g,
+                splashes[i].color.b,
+                splashes[i].color.a
+            );
+        }
+    }
+
+    // Отрисовка капель. Используется aaLineRGBA для антиалиасинга.
+    for (int i = 0; i < NUM_DROPLETS; i++) {
+        aalineRGBA(gRenderer, 
+                   (Sint16)droplets[i].x, (Sint16)droplets[i].y, 
+                   (Sint16)droplets[i].x, (Sint16)(droplets[i].y + droplets[i].length), 
+                   1, 5, 249, droplets[i].alpha);
+    }
+
+    // Спрайты
+    text_dead_rect.x = WINDOW_WIDTH/2 - text_dead_rect.w/2;
+    renderTexture(text_dead, &text_dead_rect);
 
     // Рисуем кнопку
-    exitButton.rect.x = WINDOW_WIDTH/2-(250/2);
+    exitButton.rect.x = WINDOW_WIDTH/2-101;
     exitButton.rect.y = WINDOW_HEIGHT-150;
-
     renderButton(&exitButton);
 }
 

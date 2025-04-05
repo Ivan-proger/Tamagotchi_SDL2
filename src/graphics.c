@@ -195,6 +195,7 @@ void filledRoundedRectangleRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Sint
     aacircleRGBA(gRenderer, x2 - radius, y2 - radius, radius, r, g, b, a);
 }
 
+
 // Функция разбивает изображение, загруженное из imagePath, на 4 равные части и возвращает массив текстур.
 // Если происходит ошибка, функция возвращает NULL.
 SDL_Texture** splitTextureFour(const char* imagePath) {
