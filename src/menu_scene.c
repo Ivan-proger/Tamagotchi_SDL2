@@ -17,7 +17,7 @@ static void menu_destroy(void) {
 }
 
 // Реакция на нажатаю кнопку
-void onStartButtonClick() {
+static void onStartButtonClick() {
     extern SDL_Renderer* gRenderer;
     // Логика при нажатии кнопки
     menu_destroy();
@@ -27,15 +27,13 @@ void onStartButtonClick() {
 // Инициализация меню(его создание и отображение)
 static void menu_init() {
     // Инициализация кнопки (координаты, размеры)
-    if (!initButton(&startButton,
+    initButton(&startButton,
         WINDOW_WIDTH/2-250, WINDOW_HEIGHT/2-150, 500, 300,
         "assets/button_start.png",
-        "assets/button_start_watch.png", // используем default для hover
-        "assets/button_start_click.png", // используем default для click
-        onStartButtonClick))
-    {
-    SDL_Log("Ошибка инициализации кнопки!");
-    }
+        "assets/button_start_watch.png", // используем для hover
+        "assets/button_start_click.png", // используем для click
+        onStartButtonClick
+    );
 }
 
 // Обработка эвентов когда меню инициализировано 

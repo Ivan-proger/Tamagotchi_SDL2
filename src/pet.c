@@ -31,7 +31,6 @@ void init_pet(void)
 
         fread(&lastSavedTime, sizeof(lastSavedTime), 1, file);
         fclose(file);
-        printf("The game was loaded.\n");
 
         time_t currentTime = time(NULL);
         // timeDiff - Секнуды с момента последнего сохранения 
@@ -39,15 +38,15 @@ void init_pet(void)
 
         // Сытость 
         if((int)pet.satiety - timeDiff <= 0){
-            pet.satiety = 0;  //! Тест *1000
+            pet.satiety = 0;
         } else {pet.satiety -= timeDiff*10;}
         // Настроение
         if((int)pet.cheer - timeDiff <= 0){
-            pet.cheer = 0;  //! Тест *1000
+            pet.cheer = 0;
         } else {pet.cheer -= timeDiff;}
         // Здоровье
         if((int)pet.health - timeDiff <= 0){
-            pet.health = 0;  //! Тест *1000
+            pet.health = 0;
         } else {pet.health -= timeDiff/6;}
 
     } else {    
@@ -165,9 +164,8 @@ void save_game(void) {
 
             fwrite(&lastSavedTime, sizeof(lastSavedTime), 1, file);
             fclose(file);
-            printf("Saved!\n");
     } else {
-        printf("Cant save!\n");
+        SDL_Log("ERROR SAVE DATA! ");
     }
 }
 

@@ -7,9 +7,9 @@
 #include "pet.h"        
 #include "globals.h"   
 
-
-
+// Количество скинов
 #define MAX_SKINS 4
+// Массив путей до скинов
 static char* SKIN_PATHS[MAX_SKINS] = {
     "assets/pet.png",
     "assets/pet_skin2.png",
@@ -19,17 +19,18 @@ static char* SKIN_PATHS[MAX_SKINS] = {
 
 // Выбранный скин
 static int selectedSkinIndex = 0;
-SDL_Texture *previewTexture;
+static SDL_Texture *previewTexture;
 
-// два других
-SDL_Texture *prevSkin; 
-SDL_Texture *postSkin; 
+// Кнопка назад
+static SDL_Texture *prevSkin; 
+// Кнопка вперед
+static SDL_Texture *postSkin; 
 
 // Кнопки
-static Button exittButton;
-static Button prevButton;
-static Button nextButton;
-static Button applyButton;
+static Button exittButton; // Кнопка выход
+static Button prevButton; // Кнопка назад проматать ленту скинов
+static Button nextButton; // Кнопка вперед проматать ленту скинов
+static Button applyButton; // Кнопка выбрать скин
 
 // Метод для удаления меню
 static void menuPet_destroy(void) {
@@ -41,7 +42,7 @@ static void menuPet_destroy(void) {
 }
 
 // Перезагрузка изображений(скинов)
-void reloadPreviewTexture(void) {
+static void reloadPreviewTexture(void) {
     SDL_DestroyTexture(previewTexture);
     SDL_DestroyTexture(prevSkin);
     SDL_DestroyTexture(postSkin);
@@ -58,29 +59,29 @@ void reloadPreviewTexture(void) {
     }
 }
 
-// Реакция на нажатаю кнопку
-void onexittButtonClick() {
+// Реакция на нажатаю кнопку выхода
+static void onexittButtonClick() {
     extern SDL_Renderer* gRenderer;
     // Логика при нажатии кнопки
     menuPet_destroy();
     set_scene(&GAME_SCENE);
 }
-void onPrevClick() {
+// Кнопка назад
+static void onPrevClick() {
     selectedSkinIndex--;
     if (selectedSkinIndex < 0) selectedSkinIndex = MAX_SKINS - 1; // цикл по кругу
     reloadPreviewTexture();
 }
-void onNextClick() {
+// Кнопка вперед
+static void onNextClick() {
     selectedSkinIndex++;
     if (selectedSkinIndex >= MAX_SKINS) selectedSkinIndex = 0;
     reloadPreviewTexture();
 }
-void onApplyClick() {
+// Кнопка применить
+static void onApplyClick() {
     // Применяем скин к питомцу
-    extern Pet pet; // или получите доступ через getPet()
-    if (pet.texture) {
-        SDL_DestroyTexture(pet.texture);
-    }
+    invisible_pet();
     pet.texture = loadTexture(SKIN_PATHS[selectedSkinIndex]);
     pet.pathImage = SKIN_PATHS[selectedSkinIndex];
 
@@ -91,15 +92,7 @@ void onApplyClick() {
 // Инициализация меню(его создание и отображение)
 static void menuPet_init() {
     // Инициализация кнопки (координаты, размеры)
-    if (!initButton(&exittButton,
-        25, 25, 50, 50,
-        "assets/button-return.png",
-        NULL, // используем default для hover
-        NULL, // используем default для click
-        onexittButtonClick))
-    {
-        SDL_Log("Ошибка инициализации кнопки!");
-    }
+    initButton(&exittButton, 25, 25, 50, 50, "assets/button-return.png", NULL, NULL, onexittButtonClick);
     initButton(&prevButton, 50, 400, 50, 50, "assets/button_left.png", NULL, NULL , onPrevClick);
     initButton(&nextButton, 100, 400, 50, 50, "assets/button_right.png", NULL, NULL , onNextClick);
     initButton(&applyButton, 200, 400, 100, 50, "assets/button_accept.png", NULL, NULL , onApplyClick);

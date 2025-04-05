@@ -26,7 +26,7 @@ SDL_Color fg = {0, 255, 0, 255};        // Зеленый для заполне�
 SDL_Color border = {0, 0, 0, 255};      // Черная обводка
 
 // Координаты и размеры шкал
-struct {
+static struct {
     int x;
     int y;
     int w;
@@ -47,7 +47,7 @@ struct {
  * @param borderColor   -- цвет обводки
  * @param borderRadius  -- радиус округления углов
  */
-void renderProgressBarRounded(int x, int y, 
+static void renderProgressBarRounded(int x, int y, 
                             int width, int height,
                             unsigned char value,
                             SDL_Color bgColor,
@@ -97,15 +97,15 @@ void renderProgressBarRounded(int x, int y,
 }
 
 // Кнопка гладить
-void onCaressButton(void){
+static void onCaressButton(void){
     add_cheer(15);
 }
 // Кнопка покормить
-void onFeedButton(void){
+static void onFeedButton(void){
     add_satiety(25);
 }
 // Кнопка кастомизация
-void onCustomize(void){
+static void onCustomize(void){
     set_scene(&MENU_PET);
 }
 
@@ -118,42 +118,35 @@ static void game_init() {
     rectdict.y = 0;
 
     //* Кнопка погладить
-    if (!initButton(&caressButton,
+    initButton(&caressButton,
         0, 0, 100, 100,
         "assets/button_caress1.png",
         NULL, // используем default для hover
         NULL, // используем default для click
-        onCaressButton))
-    {
-        SDL_Log("Ошибка инициализации кнопки: %s", SDL_GetError());
-    }
-
+        onCaressButton
+    );
     // Анимация кнопки
     initButtonAnimation(&caressButton, "assets/animations/button_caress_anim.png", 4, 0.2, 300, 300);
 
     //* Кнопка покормить
-    if (!initButton(&feedButton,
+    initButton(&feedButton,
         0, 0, 100, 100,
         "assets/button_feed1.png",
         "assets/button_feed2.png", // используем default для hover
         "assets/button_feed1.png", // используем default для click
-        onFeedButton))
-    {
-        SDL_Log("Ошибка инициализации кнопки: %s", SDL_GetError());
-    }
+        onFeedButton
+    );
     // Анимация кнопки
     initButtonAnimation(&feedButton, "assets/animations/button_feed_anim.png", 12, 0.1, 135, 135);
 
     //* Кнопка кастомизация
-    if (!initButton(&customButton,
+    initButton(&customButton,
         0, 0, 80, 80,
         "assets/customize_button.png",
         NULL, // используем default для hover
         NULL, // используем default для click
-        onCustomize))
-    {
-        SDL_Log("Ошибка инициализации кнопки: %s", SDL_GetError());
-    }
+        onCustomize
+    );
 }
 
 /**
@@ -238,7 +231,7 @@ static void game_destroy(void) {
     destroyButton(&customButton);
 }
 
-// Объект сцены
+
 Scene GAME_SCENE = {
     .init = game_init,
     .handle_events = game_handle_events,

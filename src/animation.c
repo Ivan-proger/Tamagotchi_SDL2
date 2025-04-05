@@ -1,5 +1,7 @@
-#include "animation.h"
+
 #include <stdlib.h>
+#include "animation.h"
+#include "graphics.h"
 
 // Создание анимации: копирование массива кадров и установка начальных значений
 Animation* createAnimation(SDL_Texture *spriteSheet, SDL_Rect *frames, int frameCount, float frameTime) {
@@ -53,7 +55,6 @@ void updateAnimation(Animation *anim, float delta) {
 
 // Отрисовка текущего кадра анимации с заданным масштабом
 void renderAnimation(Animation *anim, int x, int y, int w, int h) {
-    extern SDL_Renderer* gRenderer;
     if (!anim){ 
         SDL_Log("Ошибка получения анимации текстуры: %s", SDL_GetError());
         return;

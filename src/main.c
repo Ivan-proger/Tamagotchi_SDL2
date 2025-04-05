@@ -12,7 +12,12 @@ int WINDOW_HEIGHT = 700;
 int main(int argc, char* argv[]) {
     // Инициализация графики
     if (!initGraphics("Tamagotchi Game", WINDOW_WIDTH, WINDOW_HEIGHT)) {
-        printf("Ошибка инициализации графики\n");
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Не удалось создать окно.",
+            NULL
+        );
         return 1;
     }
     
@@ -30,9 +35,8 @@ int main(int argc, char* argv[]) {
     // Получаем частоту счетчика (тиков в секунду). Делаем это один раз.
     Uint64 perf_frequency = SDL_GetPerformanceFrequency();
     if (perf_frequency == 0) {
-         fprintf(stderr, "Error: Performance counter not supported or frequency is zero.\n");
+         SDL_Log("Error: Performance counter not supported or frequency is zero.\n");
          // Можно перейти на SDL_GetTicks64() как на запасной вариант, если нужно
-         SDL_Quit();
          return 1;
     }
 

@@ -3,6 +3,7 @@
 
 #include "scene_manager.h"
 
+// Сцена смерти питомца
 extern Scene DEAD_SCENE;
 
 #endif

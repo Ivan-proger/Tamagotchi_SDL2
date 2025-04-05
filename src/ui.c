@@ -17,7 +17,7 @@
  * @return true .
  * @return false  -- В случае ошибки.
  */
-bool initButton(Button *button,
+void initButton(Button *button,
                 int x, int y, int w, int h,
                 const char *defaultImagePath,
                 const char *hoverImagePath,
@@ -29,28 +29,23 @@ bool initButton(Button *button,
     button->rect.w = w;
     button->rect.h = h;
 
-    extern SDL_Renderer* gRenderer;
     // Загружаем основную текстуру
-    button->defaultTexture = IMG_LoadTexture(gRenderer, defaultImagePath);
-    if (!button->defaultTexture)
-        return false;
+    button->defaultTexture = loadTexture(defaultImagePath);
     
     // Если пути hover или click не указаны, используем основную текстуру
     if (hoverImagePath)
-        button->hoverTexture = IMG_LoadTexture(gRenderer, hoverImagePath);
+        button->hoverTexture = loadTexture(hoverImagePath);
     else
         button->hoverTexture = button->defaultTexture;
     
     if (clickImagePath)
-        button->clickTexture = IMG_LoadTexture(gRenderer, clickImagePath);
+        button->clickTexture = loadTexture(clickImagePath);
     else
         button->clickTexture = button->defaultTexture;
 
     button->onClick = onClick;
     button->isHovered = false;
     button->isClicked = false;
-
-    return true;
 }
 
 /**

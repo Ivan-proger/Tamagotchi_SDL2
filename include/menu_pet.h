@@ -3,6 +3,7 @@
 
 #include "scene_manager.h"
 
+// Сцена для смены текстурыки питомца
 extern Scene MENU_PET;
 
 #endif

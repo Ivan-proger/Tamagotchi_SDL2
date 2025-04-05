@@ -4,6 +4,16 @@
 #include <SDL2/SDL.h>
 
 // Структура анимации
+/**
+ * @brief Объект анимации
+ * 
+ * @param  SDL_Texture* spriteSheet: Спрайт-лист, содержащий все кадры анимации.
+ * @param  SDL_Rect* frames: Массив областей (кадров) в спрайт-листе.
+ * @param int frameCount: Общее количество кадров.
+ * @param int currentFrame: Индекс текущего кадра.
+ * @param float frameTime: Время (в секундах) показа одного кадра.
+ * @param float elapsedTime: Накопленное время для переключения кадров.
+ */
 typedef struct {
     SDL_Texture *spriteSheet;  // Спрайт-лист, содержащий все кадры анимации.
     SDL_Rect *frames;          // Массив областей (кадров) в спрайт-листе.

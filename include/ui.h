@@ -30,16 +30,26 @@ typedef struct {
  * @param hoverImagePath    Путь к изображению для состояния "наведено" (может быть NULL, тогда используется default).
  * @param clickImagePath    Путь к изображению для состояния "нажато" (может быть NULL, тогда используется default).
  * @param onClick      Функция, вызываемая при нажатии на кнопку.
- * @return true, если инициализация успешна, иначе false.
  */
-bool initButton(Button *button,
+void initButton(Button *button,
                 int x, int y, int w, int h,
                 const char *defaultImagePath,
                 const char *hoverImagePath,
                 const char *clickImagePath,
                 void (*onClick)(void));
+
+
 /**
- * Инициализация анимации для кнопки(опцианально)
+ * @brief Нарезает png картинку на анимации в длину, 
+ * чтобы создать анимацию из 4 кадров длиной и широй 300пх надо иметь картинку 1200пх (300*4 в длинну)
+ * нарезка происходит слева направа в заданых в slice_w(ширина) и slice_h(высота) пикселей
+ * 
+ * @param button     -- Указатель на кнопку в чью структуру добавят анимацию
+ * @param animPath   -- Путь до файла с анимацией (фото .png)
+ * @param quantity   -- Количество кадров в анимации
+ * @param frametime  -- Время одного кадра
+ * @param slice_w    -- Ширина для нарзеки(не ширина проигрываемой анимации)
+ * @param slice_h    -- Высота нарезки
  */
 void initButtonAnimation(Button *button, char* animPath,const int quantity, float frametime, int slice_w, int slice_h);
 

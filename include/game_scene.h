@@ -3,8 +3,7 @@
 
 #include "scene_manager.h"
 
+// Главная сцена игрового процесса
 extern Scene GAME_SCENE;
 
 #endif
-
-// test comment1234

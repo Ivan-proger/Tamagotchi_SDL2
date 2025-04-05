@@ -1,7 +1,8 @@
-#include "../include/graphics.h"
+#include "graphics.h"
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+
 
 // Глобальные переменные для работы с графикой из вне
 SDL_Window* gWindow = NULL;
@@ -15,15 +16,28 @@ SDL_Renderer* gRenderer = NULL;
  * @param height  -- Высота Окна
  * @return int    -- Отдает 0 если ошибка
  */
-int initGraphics(const char* title, int width, int height) {
+bool initGraphics(const char* title, int width, int height) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_VIDEO) < 0) {
-        printf("Ошибка инициализации SDL: %s\n", SDL_GetError());
-        return 0;
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ошибка инициализации SDL: %s", SDL_GetError());        
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Ошибка инициализации SDL", 
+            NULL
+        );
+        return false;
     }
     // Если требуется работа с изображениями, инициализируем SDL_image:
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        printf("Ошибка инициализации SDL_image: %s\n", IMG_GetError());
-        return 0;
+
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ошибка инициализации SDL_image: %s", IMG_GetError());
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Ошибка инициализации SDL_image", 
+            NULL
+        );        
+        return false;
     }
     
     gWindow = SDL_CreateWindow(title,
@@ -32,26 +46,53 @@ int initGraphics(const char* title, int width, int height) {
                                width, height,
                                SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
     if (!gWindow) {
-        printf("Не удалось создать окно: %s\n", SDL_GetError());
-        return 0;
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Не удалось создать окно: %s", SDL_GetError());
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Не удалось создать окно", 
+            NULL
+        );
+        return false;
     }
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!gRenderer) {
-        printf("Не удалось создать рендерер: %s\n", SDL_GetError());
-        return 0;
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Не удалось создать рендерер: %s", SDL_GetError());
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Не удалось создать рендерер", 
+            NULL
+        );
+        return false;
     }
 
     SDL_RendererInfo info;
     SDL_GetRendererInfo(gRenderer, &info);
     
-    printf("Driver: %s\n", info.name);
-    return 1;
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Driver - %s\n", info.name);
+    return true;
 }
 
 SDL_Texture* loadTexture(const char* filePath) {
     SDL_Texture* texture = IMG_LoadTexture(gRenderer, filePath);
     if (!texture) {
-        printf("Ошибка загрузки текстуры (%s): %s\n", filePath, IMG_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ошибка загрузки текстуры (%s): %s", filePath, IMG_GetError());
+        // Форматируем сообщение в буфер
+        char errorMsg[512];
+        snprintf(errorMsg, sizeof(errorMsg), 
+            "Не удалось загрузить текстуру:\nПуть: %s\nОшибка: %s", 
+            filePath, 
+            IMG_GetError()
+        );
+
+        // Выводим сообщение
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            errorMsg,
+            NULL // или указатель на ваше окно
+        );
     }
     return texture;
 }
@@ -65,7 +106,13 @@ SDL_Texture* loadTexture(const char* filePath) {
 void sizeTexture(SDL_Texture* texture, int* originalWidth, int* originalHeight) {
     // Получаем исходные размеры текстуры
     if (SDL_QueryTexture(texture, NULL, NULL, originalWidth, originalHeight) != 0) {
-        SDL_Log("Ошибка получения размеров текстуры: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ошибка получения размеров текстуры: %s", SDL_GetError());
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Ошибка получения размеров текстуры",
+            NULL
+        );
         return;
     }
 }
@@ -108,8 +155,6 @@ void renderTexture(SDL_Texture* texture, SDL_Rect* dstRect) {
     // Если нужно использовать источник (часть текстуры), можно добавить дополнительный параметр.
     SDL_RenderCopy(gRenderer, texture, NULL, dstRect);
 }
-
-
 
 /**
  * @brief Применяет к текстуре эффект полупрозрачности и серого цвета.

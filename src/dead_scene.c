@@ -129,7 +129,6 @@ static void dead_destroy(void) {
 // Реакция на нажатаю кнопку
 static void onexitButtonClick() {
     // Логика при нажатии кнопки
-    //dead_destroy();
     set_scene(&MENU_SCENE);
 }
 
@@ -154,15 +153,12 @@ static void dead_init() {
     }
 
     // Инициализация кнопки (координаты, размеры)
-    if (!initButton(&exitButton,
+    initButton(&exitButton,
         WINDOW_WIDTH/2-101, WINDOW_HEIGHT-100, 203, 108,
         "assets/button_restart.png",
         "assets/button_restart_hover.png", // используем default для hover
         "assets/button_restart_hover.png", // используем default для click
-        onexitButtonClick))
-    {
-    SDL_Log("Ошибка инициализации кнопки!");
-    }
+        onexitButtonClick);
 
     // Разница кусочков
     dif_pieces = 1;
@@ -216,8 +212,10 @@ void spawnSplash(float x, float y, float initialRadius, float maxRadius, float l
     }
 }
 
+// Переменные для анимаций
 static bool is_extension = true;
 static float splash_time = 0.0;
+
 // Логика во время меня(обновляется в бесконечном цикле)
 // delta - тик времени
 static void dead_update(float delta) {    
