@@ -12,18 +12,28 @@
 
 
 // Кнопки
-Button caressButton;
-Button feedButton;
-Button customButton;
+static Button caressButton;
+static Button feedButton;
+static Button customButton;
 
 // Фон
-SDL_Texture* background;
-SDL_Rect rectdict;
+static SDL_Texture* background;
+static SDL_Rect rectdict;
 
 // Цвета шкал
-SDL_Color bg = {100, 100, 100, 255};    // Темно-серый фон
-SDL_Color fg = {0, 255, 0, 255};        // Зеленый для заполненной области
-SDL_Color border = {0, 0, 0, 255};      // Черная обводка
+static SDL_Color bg = {100, 100, 100, 255};    // Темно-серый фон
+static SDL_Color fg = {0, 255, 0, 255};        // Зеленый для заполненной области
+static SDL_Color border = {0, 0, 0, 255};      // Черная обводка
+
+// Сердце
+static SDL_Texture* heart;
+static SDL_Rect heartrect;
+// Насыщенность
+static SDL_Texture* satiety;
+static SDL_Rect satietyrect;
+// Настроение
+static SDL_Texture* texturecheer;
+static SDL_Rect cheerrect;
 
 // Координаты и размеры шкал
 static struct {
@@ -146,7 +156,23 @@ static void game_init() {
         NULL, // используем default для hover
         NULL, // используем default для click
         onCustomize
-    );
+    ); 
+
+    int tempW, tempH;
+    heart = loadTexture("assets/heart.png");
+    sizeTexture(heart, &tempW, &tempH);
+    heartrect.w = tempW*0.1;
+    heartrect.h = tempH*0.1;
+
+    satiety = loadTexture("assets/satiety.png");
+    sizeTexture(heart, &tempW, &tempH);
+    satietyrect.w = tempW*0.1;
+    satietyrect.h = tempH*0.1;
+
+    texturecheer = loadTexture("assets/cheer.png");
+    sizeTexture(texturecheer, &tempW, &tempH);
+    cheerrect.w = tempW*0.1;
+    cheerrect.h = tempH*0.1;
 }
 
 /**
@@ -167,6 +193,8 @@ static void game_handle_events(SDL_Event* e) {
             set_scene(&MENU_SCENE);
         }
     }
+
+
 }
 
 /**
@@ -195,12 +223,18 @@ static void game_render() {
                             pet.health, 
                             bg, fg, border, 
                             sparm.borderRadius);
+    heartrect.x = sparm.x-5;
+    heartrect.y = sparm.y*5+5;
+    renderTexture(heart, &heartrect); // Картинка сердечка под шкалой
 
     // Рисуем голод(сытность)
     renderProgressBarRounded(sparm.x*4, sparm.y, 
                             sparm.w, sparm.h, 
                             pet.satiety, bg, fg, border, 
                             sparm.borderRadius);
+    satietyrect.x = sparm.x*4-5;
+    satietyrect.y = sparm.y*5+5;
+    renderTexture(satiety, &satietyrect); // Картинка мясо под шкалой
 
     // Рисуем настроение
     renderProgressBarRounded(sparm.x*7, sparm.y, 
@@ -208,6 +242,9 @@ static void game_render() {
                             pet.cheer, 
                             bg, fg, border, 
                             sparm.borderRadius);
+    cheerrect.x = sparm.x*7-5;
+    cheerrect.y = sparm.y*5+5;
+    renderTexture(texturecheer, &cheerrect); // Картинка мясо под шкалой
 
     // Кнопка гладить
     caressButton.rect.x = WINDOW_WIDTH/2-50;
@@ -229,6 +266,8 @@ static void game_destroy(void) {
     destroyButton(&caressButton);
     destroyButton(&feedButton);
     destroyButton(&customButton);
+    SDL_DestroyTexture(heart);
+    SDL_DestroyTexture(background);
 }
 
 
