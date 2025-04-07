@@ -214,9 +214,6 @@ static void game_render() {
     rectdict.h = WINDOW_HEIGHT;
     renderTexture(background, &rectdict);
 
-    // Отрисовываем картинку
-    show_pet();
-
     // Рисуем здоровье
     renderProgressBarRounded(sparm.x, sparm.y, 
                             sparm.w, sparm.h, 
@@ -258,6 +255,9 @@ static void game_render() {
     customButton.rect.x = WINDOW_WIDTH-100;
     customButton.rect.y = 100;    
     renderButton(&customButton); 
+
+    // Отрисовываем картинку
+    show_pet();
 }
 
 // Удаление сцены

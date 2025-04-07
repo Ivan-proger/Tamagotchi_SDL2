@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "graphics.h"
 #include "pet.h"
-#include "menu_scene.h"
+#include "game_scene.h"
 #include "dead_scene.h"
 #include "scene_manager.h"
 #include "ui.h"             
@@ -129,7 +129,9 @@ static void dead_destroy(void) {
 // Реакция на нажатаю кнопку
 static void onexitButtonClick() {
     // Логика при нажатии кнопки
-    set_scene(&MENU_SCENE);
+    remove("tamagotchi_save.dat");
+    init_pet();
+    set_scene(&GAME_SCENE);
 }
 
 

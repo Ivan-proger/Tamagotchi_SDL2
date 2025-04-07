@@ -2,7 +2,9 @@
 #define MENU_SCENE_H
 
 #include "scene_manager.h"
+#include <stdbool.h>
 
+extern bool POWEROFF;
 // Стартовая сцена перед самой игрой
 extern Scene MENU_SCENE;
 

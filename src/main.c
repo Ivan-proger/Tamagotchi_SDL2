@@ -1,7 +1,9 @@
-#include "../include/graphics.h"
+#include "graphics.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include "scene_manager.h"
+#include "title_scene.h"
 #include "menu_scene.h"
 #include "globals.h"
 #include "pet.h"
@@ -20,7 +22,11 @@ int main(int argc, char* argv[]) {
         );
         return 1;
     }
-    
+
+    if (TTF_Init() == -1) {
+        SDL_Log("Ошибка инициализации TTF: %s", TTF_GetError());
+        // Обработка ошибки
+    }
 
     // Инициализация питомца
     init_pet();
@@ -30,7 +36,7 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     // Ставим сцену меню
-    set_scene(&MENU_SCENE);
+    set_scene(&TITLE_SCENE);
 
     // Получаем частоту счетчика (тиков в секунду). Делаем это один раз.
     Uint64 perf_frequency = SDL_GetPerformanceFrequency();
@@ -52,6 +58,10 @@ int main(int argc, char* argv[]) {
     float currentFPS = 0.0f;
 
     while (running) {
+        // Выход по кнопке
+        if(POWEROFF){
+            running = 0;
+        }
         // Обработка событий
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
