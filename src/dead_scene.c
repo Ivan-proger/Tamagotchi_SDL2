@@ -255,7 +255,13 @@ static void dead_update(float delta) {
     splash_time += delta;
     if(splash_time >= 0.2){
         splash_time = 0.0;
-        spawnSplash(WINDOW_WIDTH/2-50, WINDOW_HEIGHT/2-50, 1.0f, 20.0f, 0.4f);
+        spawnSplash(
+            (float)WINDOW_WIDTH/2-50, 
+            (float)WINDOW_HEIGHT/2-50, 
+            1.0f, 
+            20.0f, 
+            0.4f
+        );
     }
 
     // Обновление анимации крови

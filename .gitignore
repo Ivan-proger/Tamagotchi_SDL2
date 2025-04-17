@@ -1,5 +1,8 @@
 .vscode
+.cache
+.clangd
 
 game.exe
 game
 tamagotchi_save.dat
+compile_commands.json

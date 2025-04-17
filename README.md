@@ -21,11 +21,15 @@
             "src/main.c",
             "src/graphics.c",
             "src/scene_manager.c",
+            "src/title_scene.c",
+            "src/menu_pet.c",
             "src/menu_scene.c",
             "src/game_scene.c",
             "src/ui.c",
             "src/pet.c",
             "src/animation.c",
+            "src/dead_scene.c",
+            "src/notify.c",
             "-o",
             "${workspaceFolder}\\game.exe",
             "-I", "${workspaceFolder}\\include",
@@ -87,42 +91,32 @@
   <summary>tasks.json</summary>
   
     {
-      "version": "2.0.0",
-      "tasks": [
-        {
-          "label": "Build Tamagotchi Game",
-          "type": "shell",
-          "command": "gcc",
-          "args": [
-            "-fdiagnostics-color=always",
-            "-g",
-            "src/main.c",
-            "src/graphics.c",
-            "src/scene_manager.c",
-            "src/menu_scene.c",
-            "src/game_scene.c",
-            "src/ui.c",
-            "src/pet.c",
-            "src/animation.c",
-            "-o",
-            "${workspaceFolder}/game",
-            "-I", "${workspaceFolder}/include",
-            "-lSDL2main",
-            "-lSDL2",
-            "-lSDL2_image",  
-            "-lSDL2_gfx",
-          ],
-          "options": {
-            "cwd": "${workspaceFolder}"
-          },
-          "problemMatcher": [
-            "$gcc"
-          ],
-          "group": {
-            "kind": "build",
-            "isDefault": true
+        "version": "2.0.0",
+        "tasks": [
+          {
+            "label": "Build with Bear + clangd",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+              "-lc",
+              "bear -- clang -fdiagnostics-color=always -g \
+              $(pkg-config --cflags libnotify glib-2.0) \
+              src/main.c src/graphics.c src/scene_manager.c src/menu_scene.c \
+              src/game_scene.c src/menu_pet.c src/dead_scene.c src/title_scene.c \
+              src/ui.c src/pet.c src/animation.c src/notify.c\
+              -o ${workspaceFolder}/game \
+              -I${workspaceFolder}/include \
+              -lSDL2main -lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_ttf \
+              $(pkg-config --libs libnotify glib-2.0)"
+            ],
+            "options": {
+              "cwd": "${workspaceFolder}"
+            },
+            "group": {
+              "kind": "build",
+              "isDefault": true
+            }
           }
-        }
-      ]
+        ]
     }
 </details>

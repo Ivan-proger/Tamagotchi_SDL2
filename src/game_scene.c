@@ -5,7 +5,6 @@
 #include "game_scene.h"
 #include "scene_manager.h"
 #include "pet.h"
-#include "animation.h"
 #include "ui.h"
 #include "globals.h"
 #include "menu_pet.h"

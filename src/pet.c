@@ -6,6 +6,7 @@
 #include "scene_manager.h"
 #include "dead_scene.h"
 #include "globals.h"
+#include "notify.h"
 
 
 Pet pet;
@@ -93,8 +94,10 @@ void load_texture_pet(void)
     sizeTexture(pet.texture, &pet.w, &pet.h); // Записываем ширину и высоту
 }
 
-
-double gtimer; // Глобальная переменная для счета времени чтобы изменить характеристики питомца
+// Кулдавн между уведомлениями
+static float notify_timer = 0.0;
+// Глобальная переменная для счета времени чтобы изменить характеристики питомца
+double gtimer; 
 /**
  * @brief Обновление параметров питомца во время работы программы
  * 
@@ -123,6 +126,15 @@ void update_pet(double delta, float scaling)
         gtimer = 0.0;
         
     }
+    
+    if (pet.health < 40){
+        if(notify_timer >= 40.0){
+            notify_user("Тамагочи", "У меня мало здоровья!");
+            notify_timer=0.0;
+        }
+
+        notify_timer+=delta;
+    }
 }
 
 // Отображение питомца
@@ -130,6 +142,7 @@ void show_pet(void)
 {
     if(pet.health == 0){
         //! СМЕРТЬ
+        notify_user("Тамагочи", "Хозяин я умер!");
         set_scene(&DEAD_SCENE);
     } else{
         pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
