@@ -32,7 +32,8 @@ typedef struct {
  * @param frameTime Время показа одного кадра (в секундах).
  * @return Указатель на созданную анимацию или NULL при ошибке.
  */
-Animation* createAnimation(SDL_Texture *spriteSheet, SDL_Rect *frames, int frameCount, float frameTime);
+Animation* createAnimation(SDL_Texture *spriteSheet, SDL_Rect *frames, 
+                            int frameCount, float frameTime);
 
 /**
  * Освобождает память, занятую анимацией.

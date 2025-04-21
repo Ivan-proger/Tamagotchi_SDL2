@@ -1,6 +1,7 @@
 #ifndef SCENE_MANAGER_H
 #define SCENE_MANAGER_H
 
+#include <SDL2/SDL.h>
 
 /**
  * @brief Структура сцены
@@ -20,7 +21,7 @@ typedef struct Scene {
 } Scene;
 
 // Установить сцену главной, также уничтожает предыдущую сцену
-// @param new_scene экземпляр структуры сцены
+// new_scene экземпляр структуры сцены
 void set_scene(Scene* new_scene);
 
 // Считывать эвенты sdl на сцене 
@@ -30,7 +31,7 @@ void scene_handle_events(SDL_Event* e);
 void scene_update(float delta);
 
 // Отрисовка сцены
-void scene_render();
+void scene_render(void);
 
 // Удаление сцены (очещение памяти)
 void scene_destroy(void);
