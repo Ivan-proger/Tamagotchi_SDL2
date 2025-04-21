@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "graphics.h"
 #include "game_scene.h"
@@ -42,6 +43,9 @@ static struct {
     int h;
     int borderRadius;
 } sparm = {30, 30, 40, 110, 10};
+
+// Музыка на фоне
+static Mix_Music *backgroundMusic = NULL;
 
 /**
  * @brief Функция для отрисовки шкалы с округлёнными углами
@@ -132,7 +136,8 @@ static void game_init() {
         "assets/button_caress1.png",
         NULL, // используем default для hover
         NULL, // используем default для click
-        onCaressButton
+        onCaressButton,
+        Mix_LoadWAV("assets/sounds/petting_dog.wav")
     );
     // Анимация кнопки
     initButtonAnimation(&caressButton, "assets/animations/button_caress_anim.png", 4, 0.2, 300, 300);
@@ -143,7 +148,8 @@ static void game_init() {
         "assets/button_feed1.png",
         "assets/button_feed2.png", // используем default для hover
         "assets/button_feed1.png", // используем default для click
-        onFeedButton
+        onFeedButton,
+        Mix_LoadWAV("assets/sounds/eat.wav")
     );
     // Анимация кнопки
     initButtonAnimation(&feedButton, "assets/animations/button_feed_anim.png", 12, 0.1, 135, 135);
@@ -154,7 +160,8 @@ static void game_init() {
         "assets/customize_button.png",
         NULL, // используем default для hover
         NULL, // используем default для click
-        onCustomize
+        onCustomize,
+        NULL
     ); 
 
     int tempW, tempH;
@@ -172,6 +179,16 @@ static void game_init() {
     sizeTexture(texturecheer, &tempW, &tempH);
     cheerrect.w = tempW*0.1;
     cheerrect.h = tempH*0.1;
+
+    if(IS_SOUND){
+        // Музыка
+        backgroundMusic = Mix_LoadMUS("assets/sounds/main_music.mp3");
+        if (!backgroundMusic) {
+            SDL_Log("Failed to load music: %s\n", Mix_GetError());
+        }
+        // Проиграть музыку бесконечно (-1)
+        Mix_PlayMusic(backgroundMusic, -1);
+    }
 }
 
 /**
@@ -261,12 +278,19 @@ static void game_render() {
 
 // Удаление сцены
 static void game_destroy(void) {
-    invisible_pet();   
-    destroyButton(&caressButton);
+    invisible_pet();   // Убрать отображения питомцйа
+
+    destroyButton(&caressButton); // Убрать кнопки
     destroyButton(&feedButton);
     destroyButton(&customButton);
-    SDL_DestroyTexture(heart);
-    SDL_DestroyTexture(background);
+
+    SDL_DestroyTexture(heart); // Убрать текстуры под шкалами (изображения)
+    SDL_DestroyTexture(satiety); 
+    SDL_DestroyTexture(texturecheer); 
+    SDL_DestroyTexture(background);// Убрать текстуру фона
+
+    if(IS_SOUND)
+        Mix_FreeMusic(backgroundMusic); // Перестать воспроизводить музыку
 }
 
 

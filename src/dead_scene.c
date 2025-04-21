@@ -26,10 +26,12 @@ static Button exitButton;
 static SDL_Texture* background;
 static SDL_Rect rectdict;
 
+// Музыка на фоне
+static Mix_Music *backgroundMusic = NULL;
+
 // Спрайты
 static SDL_Texture* text_dead;
 static SDL_Rect text_dead_rect;
-
 
 typedef struct {
     float x, y;       // Позиция капли
@@ -124,6 +126,9 @@ static void dead_destroy(void) {
         free(petTextures);
         petTextures = NULL;
     }
+
+    if(IS_SOUND)
+    Mix_FreeMusic(backgroundMusic); // Перестать воспроизводить музыку
 }
 
 // Реакция на нажатаю кнопку
@@ -160,7 +165,9 @@ static void dead_init() {
         "assets/button_restart.png",
         "assets/button_restart_hover.png", // используем default для hover
         "assets/button_restart_hover.png", // используем default для click
-        onexitButtonClick);
+        onexitButtonClick,
+        NULL
+    );
 
     // Разница кусочков
     dif_pieces = 1;
@@ -179,6 +186,16 @@ static void dead_init() {
     text_dead_rect.w = textW/2;
     text_dead_rect.h = textH/2;   
     text_dead_rect.y = 0;  
+
+    if(IS_SOUND){
+        // Музыка
+        backgroundMusic = Mix_LoadMUS("assets/sounds/music_dead.mp3");
+        if (!backgroundMusic) {
+            SDL_Log("Failed to load music: %s\n", Mix_GetError());
+        }
+        // Проиграть музыку бесконечно (-1)
+        Mix_PlayMusic(backgroundMusic, -1);
+    }
 }
 
 // Обработка эвентов когда меню инициализировано 

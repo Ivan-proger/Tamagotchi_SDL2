@@ -3,7 +3,6 @@
 #include "graphics.h"
 #include "menu_scene.h"
 #include "title_scene.h"
-#include "game_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
 #include "scene_manager.h"
 #include "ui.h"             
 #include "globals.h"   
@@ -87,7 +86,8 @@ static void menu_init() {
         "assets/button_start.png",
         "assets/button_start_watch.png", // используем для hover
         "assets/button_start_click.png", // используем для click
-        onStartButtonClick
+        onStartButtonClick,
+        NULL
     );
 
     TTF_Font* font = TTF_OpenFont("assets/fonts/BenbowSemibold.ttf", 24);

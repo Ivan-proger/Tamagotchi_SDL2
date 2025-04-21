@@ -5,7 +5,6 @@
 #include "menu_pet.h"
 #include "ui.h"     
 #include "pet.h"        
-#include "globals.h"   
 
 // Количество скинов
 #define MAX_SKINS 4
@@ -92,10 +91,10 @@ static void onApplyClick() {
 // Инициализация меню(его создание и отображение)
 static void menuPet_init() {
     // Инициализация кнопки (координаты, размеры)
-    initButton(&exittButton, 25, 25, 50, 50, "assets/button-return.png", NULL, NULL, onexittButtonClick);
-    initButton(&prevButton, 50, 400, 50, 50, "assets/button_left.png", NULL, NULL , onPrevClick);
-    initButton(&nextButton, 100, 400, 50, 50, "assets/button_right.png", NULL, NULL , onNextClick);
-    initButton(&applyButton, 200, 400, 100, 50, "assets/button_accept.png", NULL, NULL , onApplyClick);
+    initButton(&exittButton, 25, 25, 50, 50, "assets/button-return.png", NULL, NULL, onexittButtonClick, NULL);
+    initButton(&prevButton, 50, 400, 50, 50, "assets/button_left.png", NULL, NULL , onPrevClick, NULL);
+    initButton(&nextButton, 100, 400, 50, 50, "assets/button_right.png", NULL, NULL , onNextClick, NULL);
+    initButton(&applyButton, 200, 400, 100, 50, "assets/button_accept.png", NULL, NULL , onApplyClick, NULL);
 
     // Загрузите текущий скин в "previewTexture"
     selectedSkinIndex = 0;

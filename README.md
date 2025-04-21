@@ -100,14 +100,13 @@
             "args": [
               "-lc",
               "bear -- clang -fdiagnostics-color=always -g \
-              $(pkg-config --cflags libnotify glib-2.0) \
+              $(pkg-config --cflags libnotify glib-2.0 sdl2 SDL2_image SDL2_gfx SDL2_ttf) \
               src/main.c src/graphics.c src/scene_manager.c src/menu_scene.c \
               src/game_scene.c src/menu_pet.c src/dead_scene.c src/title_scene.c \
               src/ui.c src/pet.c src/animation.c src/notify.c\
               -o ${workspaceFolder}/game \
               -I${workspaceFolder}/include \
-              -lSDL2main -lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_ttf \
-              $(pkg-config --libs libnotify glib-2.0)"
+              $(pkg-config --libs libnotify glib-2.0 sdl2 SDL2_image SDL2_gfx SDL2_ttf)"
             ],
             "options": {
               "cwd": "${workspaceFolder}"

@@ -1,4 +1,5 @@
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include "graphics.h"
 #include "ui.h"
 
@@ -22,7 +23,8 @@ void initButton(Button *button,
                 const char *defaultImagePath,
                 const char *hoverImagePath,
                 const char *clickImagePath,
-                void (*onClick)(void))
+                void (*onClick)(void),
+                Mix_Chunk *clickSound)
 {
     button->rect.x = x;
     button->rect.y = y;
@@ -46,6 +48,9 @@ void initButton(Button *button,
     button->onClick = onClick;
     button->isHovered = false;
     button->isClicked = false;
+
+    if(clickSound)
+        button->clickSound = clickSound;
 }
 
 /**
@@ -160,9 +165,16 @@ void handleButtonEvent(Button *button, SDL_Event *event)
             if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT) {
                 button->isClicked = true;
             } else if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
+          
                 if (button->isClicked && button->isAnimatingClick == false) {
                     // Если нажата кнопка, запускаем анимацию клика, если она есть,
                     // и вызываем обработчик нажатия
+                    if(button->clickSound){
+                        // Проиграть звук (канал -1 выбирает первый свободный)
+                        Mix_PlayChannel(-1, button->clickSound, 0);
+                    } else {
+                        Mix_PlayChannel(-1, clickSound, 0);
+                    }                          
                     if (button->clickAnim != NULL) {
                         button->isAnimatingClick = true;
                         button->clickAnimTimer = 0.0f;
@@ -186,13 +198,18 @@ void destroyButton(Button *button)
 {
     if (button->defaultTexture)
         SDL_DestroyTexture(button->defaultTexture);
+
     // Если hover и click текстуры отличаются от default, удаляем их отдельно
     if (button->hoverTexture && button->hoverTexture != button->defaultTexture)
         SDL_DestroyTexture(button->hoverTexture);
     if (button->clickTexture && button->clickTexture != button->defaultTexture)
         SDL_DestroyTexture(button->clickTexture);
+    
     // Анимация
-    if (button->clickAnim){
+    if (button->clickAnim)
         destroyAnimation(button->clickAnim);
-    }
+    
+    // Звук
+    if (button->clickSound)
+        Mix_FreeChunk(button->clickSound);
 }

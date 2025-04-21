@@ -3,7 +3,11 @@
 
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include <SDL2/SDL_mixer.h>
 #include "animation.h"
+
+// Вытаскиваем базовый звук для нажатия на кнопку
+extern Mix_Chunk *clickSound;
 
 // Структура кнопки
 typedef struct {
@@ -18,6 +22,7 @@ typedef struct {
     bool isAnimatingClick;   // Флаг, указывающий, что проигрывается анимация клика
     float clickAnimTimer;    // Таймер анимации
     float clickAnimDuration; // Длительность анимации клика (например, 0.3 секунды)
+    Mix_Chunk *clickSound;   // Звук при нажатие на кнопку
 } Button;
 
 /**
@@ -36,7 +41,8 @@ void initButton(Button *button,
                 const char *defaultImagePath,
                 const char *hoverImagePath,
                 const char *clickImagePath,
-                void (*onClick)(void));
+                void (*onClick)(void),
+                Mix_Chunk *clickSound);
 
 
 /**

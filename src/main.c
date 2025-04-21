@@ -1,15 +1,20 @@
 #include "graphics.h"
+#include "globals.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdio.h>
 #include "scene_manager.h"
 #include "title_scene.h"
 #include "menu_scene.h"
-#include "globals.h"
 #include "pet.h"
 
 int WINDOW_WIDTH = 460;
 int WINDOW_HEIGHT = 700;
+// звук on
+bool IS_SOUND = true;
+// Базовый звук нажатия кнопки (если не указан иной в ее инициализации)
+Mix_Chunk *clickSound;
 
 int main(int argc, char* argv[]) {
     // Инициализация графики
@@ -23,13 +28,42 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Инициализайия шрифтов
     if (TTF_Init() == -1) {
         SDL_Log("Ошибка инициализации TTF: %s", TTF_GetError());
         // Обработка ошибки
     }
 
+    // Инициализация звуков и музыки
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        printf("SDL init error: %s\n", SDL_GetError());
+        return -1;
+    }
+    
+    // Инициализация формата MP3
+    int flags = MIX_INIT_MP3;
+    if ((Mix_Init(flags) & flags) != flags) {
+        SDL_Log("Mix_Init error: %s\n", Mix_GetError());
+        SDL_Quit();
+        return -1;
+    }
+    
+    // Открытие аудиоустройства
+    if (Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 2048) < 0) {
+        SDL_Log("Mix_OpenAudio error: %s\n", Mix_GetError());
+        Mix_Quit();
+        SDL_Quit();
+        return -1;
+    }
+
     // Инициализация питомца
     init_pet();
+
+    // Базовый звук нажатия кнопки (если не указан иной в ее инициализации)
+    clickSound = Mix_LoadWAV("assets/sounds/click.wav");
+    if (!clickSound) {
+        SDL_Log("Failed to load sound: %s\n", Mix_GetError());
+    }
 
     //  игровой цикл
     int running = 1;
@@ -123,6 +157,9 @@ int main(int argc, char* argv[]) {
     // Уничтожаем сцену
     save_game(); //! Сохранение
     scene_destroy();
+    Mix_CloseAudio(); // Закрываем музыку
+    Mix_FreeChunk(clickSound); // Закрываем базовый звук для нажатия на кнопку
+    Mix_Quit();
     cleanupGraphics();
     return 0;
 }
