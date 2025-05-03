@@ -58,4 +58,7 @@ SDL_Texture** splitTextureFour(const char* imagePath);
 // Полупрозрачный прямоугольник черного цвета
 void drawTransparentBlackSquare(int x, int y, int w, int h);
 
+// Рисует объекты в диапазоне
+void fade_anim_with_timer(SDL_Texture *tex, SDL_Rect area, float duration, float timer, int count, int list[count][2]);
+
 #endif // GRAPHICS_H

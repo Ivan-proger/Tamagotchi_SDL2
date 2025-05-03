@@ -351,3 +351,43 @@ void drawTransparentBlackSquare(int x, int y, int w, int h) {
     // Восстанавливаем предыдущие настройки блендинга
     //SDL_SetRenderDrawBlendMode(gRenderer, previousBlendMode);
 }
+
+
+/**
+ * @brief Плавный fade-in/fade-out аниматор текстуры.
+ *
+ * @param tex       Текстура для отрисовки.
+ * @param area      Область вывода (SDL_Rect).
+ * @param duration  Полная длительность анимации в мс.
+ * @param timer     Текущий «глобальный» таймер анимации от 0 до duration.
+ * @param count     Количество объектов которые следует рисовать.
+ *                  Если timer > duration — анимация не рисуется.
+ * @param renderer  SDL_Renderer для отрисовки.
+ */
+void fade_anim_with_timer(SDL_Texture *tex, SDL_Rect area, 
+                        float duration, float timer, int count, int list[count][2])
+{
+    if (timer > duration) {
+        // анимация закончилась или ещё не стартовала
+        return;
+    }    
+    for(int i = 0;i < count; i++){
+        // Делаем случайные позиции  объектов в диапазоне
+        area.x = list[i][0] - timer*10;
+        area.y = list[i][1] - timer*4;
+
+        float alpha;
+
+        // убывающая прозрачность от 255 до 0
+        alpha = (duration/2 - timer*2) * 255.0;
+
+        // границы на всякий случай
+        if (alpha < 0)   alpha = 0;
+        if (alpha > 255) alpha = 255;
+
+        // настраиваем blend-режим и alpha, рисуем
+        SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(tex, (Uint8)alpha);
+        SDL_RenderCopy(gRenderer, tex, NULL, &area);
+    }
+}

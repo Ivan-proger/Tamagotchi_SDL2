@@ -10,6 +10,10 @@
 #include "globals.h"
 #include "menu_pet.h"
 
+// Количество эффектов в анимации (спрайтов)
+#define counteffects 7
+// Длительность удовольствия того как гладят питомца
+#define durationcheer 3.0
 
 // Кнопки
 static Button caressButton;
@@ -28,11 +32,21 @@ static SDL_Color border = {0, 0, 0, 255};      // Черная обводка
 // Сердце
 static SDL_Texture* heart;
 static SDL_Rect heartrect;
+
+// Эффект удовольствия
+static SDL_Texture* hearteffect;
+// Диапазон для эффекта
+static SDL_Rect areaheart = {.w=40, .h=40 }; 
+// Массив количества объектов
+static int listeffects[counteffects][2];
+// Накопительное время для проигрывание эффекта
+static float duration = 255.0;
+
 // Насыщенность
 static SDL_Texture* satiety;
 static SDL_Rect satietyrect;
 // Настроение
-static SDL_Texture* texturecheer;
+static SDL_Texture* tcheer;
 static SDL_Rect cheerrect;
 
 // Координаты и размеры шкал
@@ -68,9 +82,8 @@ static void renderProgressBarRounded(int x, int y,
                             SDL_Color borderColor,
                             int borderRadius) {
                           
-    // Вычисляем процент заполнения (0.0 - 1.0)
+    // Вычисляем процент заполнения
     float ratio = value / 255.0f;
-    //int fillWidth = (int)(width * ratio);
 
     // Переменные для размеров заполненной области
     int fillWidth = width;
@@ -79,20 +92,20 @@ static void renderProgressBarRounded(int x, int y,
     // Для вертикальной шкалы вычисляем высоту заполнения
     fillHeight = (int)(height * ratio);
 
-    // Отрисовываем обводку шкалы с округлёнными углами
+    // Рисуем обводку шкалы с округлёнными углами
     filledRoundedRectangleRGBA(
         x-5, y-5, x + width + 5, y + height + 5,
         borderRadius,
         borderColor.r, borderColor.g, borderColor.b, borderColor.a
         );
 
-    // Отрисовываем фон шкалы с округлёнными углами
+    // Рисуем фон шкалы с округлёнными углами
     filledRoundedRectangleRGBA(
         x, y, x + width, y + height,
         borderRadius,
         bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
-    // Отрисовываем заполненную область, если значение > 0
+    // Рисуем заполненную область, если значение > 0
     if (fillHeight > 0) {
         // Подбираем подходящий радиус для заполненной области,
         // чтобы избежать слишком сильного округления, если fillWidth маленький
@@ -111,6 +124,13 @@ static void renderProgressBarRounded(int x, int y,
 
 // Кнопка гладить
 static void onCaressButton(void){
+    duration = 0.0;
+    // Заполняем спрайтами со случайными позициями
+    for(int k=0; k < counteffects; k++){
+        listeffects[k][0] = (int)(rand() % pet.w * pet.scaleW) + pet.x;
+        listeffects[k][1] = (int)(rand() % pet.y * pet.scaleH) + pet.y;
+        SDL_Log("k:%d = [x: %d, y: %d]\n",k, listeffects[k][0], listeffects[k][1]);
+    }
     add_cheer(15);
 }
 // Кнопка покормить
@@ -166,6 +186,7 @@ static void game_init() {
 
     int tempW, tempH;
     heart = loadTexture("assets/heart.png");
+    hearteffect = loadTexture("assets/heart.png");
     sizeTexture(heart, &tempW, &tempH);
     heartrect.w = tempW*0.1;
     heartrect.h = tempH*0.1;
@@ -175,8 +196,8 @@ static void game_init() {
     satietyrect.w = tempW*0.1;
     satietyrect.h = tempH*0.1;
 
-    texturecheer = loadTexture("assets/cheer.png");
-    sizeTexture(texturecheer, &tempW, &tempH);
+    tcheer = loadTexture("assets/cheer.png");
+    sizeTexture(tcheer, &tempW, &tempH);
     cheerrect.w = tempW*0.1;
     cheerrect.h = tempH*0.1;
 
@@ -222,9 +243,14 @@ static void game_update(float delta) {
     // delta – время, прошедшее с прошлого кадра
     updateButton(&caressButton, delta);
     updateButton(&feedButton, delta);
+
+    // Эффект гладить (сердечки)
+    if(duration < durationcheer){
+        duration += delta;
+    }
 }
 
-// Отображение статики
+// Отображение картинки
 static void game_render() {
     rectdict.w = WINDOW_WIDTH;
     rectdict.h = WINDOW_HEIGHT;
@@ -257,7 +283,7 @@ static void game_render() {
                             sparm.borderRadius);
     cheerrect.x = sparm.x*7-5;
     cheerrect.y = sparm.y*5+5;
-    renderTexture(texturecheer, &cheerrect); // Картинка мясо под шкалой
+    renderTexture(tcheer, &cheerrect); // Картинка мясо под шкалой
 
     // Кнопка гладить
     caressButton.rect.x = WINDOW_WIDTH/2-50;
@@ -272,8 +298,21 @@ static void game_render() {
     customButton.rect.y = 100;    
     renderButton(&customButton); 
 
-    // Отрисовываем картинку
+    // Рисуем картинку
     show_pet();
+
+    // Эффект гладить (сердечки)
+    if(duration < durationcheer){
+        fade_anim_with_timer(
+            hearteffect, 
+            areaheart, 
+            durationcheer, 
+            duration, 
+            counteffects, 
+            listeffects
+        );
+        //duration += delta;
+    }
 }
 
 // Удаление сцены
@@ -286,8 +325,10 @@ static void game_destroy(void) {
 
     SDL_DestroyTexture(heart); // Убрать текстуры под шкалами (изображения)
     SDL_DestroyTexture(satiety); 
-    SDL_DestroyTexture(texturecheer); 
+    SDL_DestroyTexture(tcheer); 
     SDL_DestroyTexture(background);// Убрать текстуру фона
+
+    SDL_DestroyTexture(hearteffect); // Удалить текстуру эффекта
 
     if(IS_SOUND)
         Mix_FreeMusic(backgroundMusic); // Перестать воспроизводить музыку

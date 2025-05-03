@@ -18,7 +18,7 @@ void scene_handle_events(SDL_Event* e) {
         current_scene->handle_events(e);
 }
 
-// Пересчет сцены (вычесления со временем)
+// Пересчет сцены (вычисления со временем)
 void scene_update(float delta) {
     if (current_scene && current_scene->update)
         current_scene->update(delta);
