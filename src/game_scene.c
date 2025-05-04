@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include "animation.h"
 #include "graphics.h"
 #include "game_scene.h"
 #include "scene_manager.h"
@@ -61,66 +62,6 @@ static struct {
 // Музыка на фоне
 static Mix_Music *backgroundMusic = NULL;
 
-/**
- * @brief Функция для отрисовки шкалы с округлёнными углами
- * 
- * @param x             -- координаты левого угла шкалы
- * @param y             -- у координата
- * @param width         -- ширина шкалы
- * @param height        -- высота шкалы
- * @param value         -- значение заполнения (от 0 до 255)
- * @param bgColor       -- цвет фона (незаполненной части)
- * @param fgColor       -- цвет заполненной части
- * @param borderColor   -- цвет обводки
- * @param borderRadius  -- радиус округления углов
- */
-static void renderProgressBarRounded(int x, int y, 
-                            int width, int height,
-                            unsigned char value,
-                            SDL_Color bgColor,
-                            SDL_Color fgColor,
-                            SDL_Color borderColor,
-                            int borderRadius) {
-                          
-    // Вычисляем процент заполнения
-    float ratio = value / 255.0f;
-
-    // Переменные для размеров заполненной области
-    int fillWidth = width;
-    int fillHeight = height;
-
-    // Для вертикальной шкалы вычисляем высоту заполнения
-    fillHeight = (int)(height * ratio);
-
-    // Рисуем обводку шкалы с округлёнными углами
-    filledRoundedRectangleRGBA(
-        x-5, y-5, x + width + 5, y + height + 5,
-        borderRadius,
-        borderColor.r, borderColor.g, borderColor.b, borderColor.a
-        );
-
-    // Рисуем фон шкалы с округлёнными углами
-    filledRoundedRectangleRGBA(
-        x, y, x + width, y + height,
-        borderRadius,
-        bgColor.r, bgColor.g, bgColor.b, bgColor.a);
-
-    // Рисуем заполненную область, если значение > 0
-    if (fillHeight > 0) {
-        // Подбираем подходящий радиус для заполненной области,
-        // чтобы избежать слишком сильного округления, если fillWidth маленький
-        int fillRadius = borderRadius;
-        if (fillHeight < borderRadius * 2) {
-            fillRadius = fillHeight / 2;
-        }
-
-        filledRoundedRectangleRGBA(
-            x, (height - fillHeight) + y, width + x, height + y,
-            fillRadius,
-            fgColor.r-value, fgColor.g+value, fgColor.b, fgColor.a
-        );
-    }
-}
 
 // Кнопка гладить
 static void onCaressButton(void){
@@ -129,7 +70,6 @@ static void onCaressButton(void){
     for(int k=0; k < counteffects; k++){
         listeffects[k][0] = (int)(rand() % pet.w * pet.scaleW) + pet.x;
         listeffects[k][1] = (int)(rand() % pet.y * pet.scaleH) + pet.y;
-        SDL_Log("k:%d = [x: %d, y: %d]\n",k, listeffects[k][0], listeffects[k][1]);
     }
     add_cheer(15);
 }
@@ -247,6 +187,11 @@ static void game_update(float delta) {
     // Эффект гладить (сердечки)
     if(duration < durationcheer){
         duration += delta;
+    }
+
+    if(pet.stayAnim) {
+        // Обновления анимации питомца
+        updateAnimation(pet.stayAnim, delta);
     }
 }
 

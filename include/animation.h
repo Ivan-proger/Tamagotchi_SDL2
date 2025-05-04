@@ -35,6 +35,9 @@ typedef struct {
 Animation* createAnimation(SDL_Texture *spriteSheet, SDL_Rect *frames, 
                             int frameCount, float frameTime);
 
+// Создание анимации без массива REct для каждого кадра (подразумевается что каждый кдр одинаковый)
+Animation* createAnimationOneType(SDL_Texture *spriteSheet, int wight, int hight, int frameCount, float frameTime);
+
 /**
  * Освобождает память, занятую анимацией.
  * Обратите внимание: сама текстура спрайт-листа не освобождается,

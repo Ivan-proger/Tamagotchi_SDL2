@@ -53,6 +53,7 @@ void onSoundTrueClick();
 void onSoundFalseClick(){
     destroyButton(&soundButton);
     IS_SOUND = true;
+    VALUE_SOUND = MIX_MAX_VOLUME;
     initButton(&soundButton,
         0, 0, 256/2, 256/2,
         "assets/sound_true.png",
@@ -66,6 +67,7 @@ void onSoundFalseClick(){
 void onSoundTrueClick(){
     destroyButton(&soundButton);
     IS_SOUND = false;
+    VALUE_SOUND = 0;
     initButton(&soundButton,
         0, 0, 256/2, 256/2,
         "assets/sound_false.png",

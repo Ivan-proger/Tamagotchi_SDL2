@@ -1,6 +1,7 @@
 #ifndef PET_H
 #define PET_H
 
+#include "animation.h"
 #include <SDL2/SDL.h>
 
 
@@ -22,6 +23,7 @@
 typedef struct
 {
     SDL_Texture* texture; // Текстура 
+    Animation* stayAnim;   // АФК анимация 
     char* pathImage;      // Текущие изображение питомца
     int x;               // Позиция
     int y;

@@ -29,6 +29,8 @@ void init_pet(void)
         fread(&pet.health, sizeof(unsigned char), 1, file);
         fread(&pet.satiety, sizeof(unsigned char), 1, file);
         fread(&pet.cheer, sizeof(unsigned char), 1, file);
+        fread(&pet.scaleW, sizeof(pet.scaleW), 1, file);
+        fread(&pet.scaleH, sizeof(pet.scaleH), 1, file);
 
         fread(&lastSavedTime, sizeof(lastSavedTime), 1, file);
         fclose(file);
@@ -51,15 +53,12 @@ void init_pet(void)
         } else {pet.health -= timeDiff/6;}
 
     } else {    
-        pet.pathImage = "assets/pet.png";
+        pet.pathImage = "assets/pets/pet.png";
         pet.health = 200;
         pet.satiety = 100;
         pet.cheer = 50;
         lastSavedTime = time(NULL);
     }
-    //pet.health = 10;
-    pet.scaleW = 0.2;
-    pet.scaleH = 0.2;    
 }
 
 /**
@@ -147,7 +146,12 @@ void show_pet(void)
     } else{
         pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
         pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;
-        renderTextureScaled(pet.texture, pet.x, pet.y, pet.scaleW, pet.scaleH);
+
+        if(!pet.stayAnim){
+            renderTextureScaled(pet.texture, pet.x, pet.y, pet.scaleW, pet.scaleH);
+        } else {
+            renderAnimation(pet.stayAnim, pet.x, pet.y, pet.w, pet.h);
+        }
     }
 }
 
@@ -174,6 +178,8 @@ void save_game(void) {
             fwrite(&pet.health, sizeof(unsigned char), 1, file);
             fwrite(&pet.satiety, sizeof(unsigned char), 1, file);
             fwrite(&pet.cheer, sizeof(unsigned char), 1, file);
+            fwrite(&pet.scaleW, sizeof(pet.scaleW), 1, file);
+            fwrite(&pet.scaleH, sizeof(pet.scaleH), 1, file);
 
             fwrite(&lastSavedTime, sizeof(lastSavedTime), 1, file);
             fclose(file);

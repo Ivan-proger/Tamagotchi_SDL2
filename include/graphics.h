@@ -61,4 +61,25 @@ void drawTransparentBlackSquare(int x, int y, int w, int h);
 // Рисует объекты в диапазоне
 void fade_anim_with_timer(SDL_Texture *tex, SDL_Rect area, float duration, float timer, int count, int list[count][2]);
 
+/**
+ * @brief Функция для отрисовки шкалы с округлёнными углами
+ * 
+ * @param x             -- координаты левого угла шкалы
+ * @param y             -- у координата
+ * @param width         -- ширина шкалы
+ * @param height        -- высота шкалы
+ * @param value         -- значение заполнения (от 0 до 255)
+ * @param bgColor       -- цвет фона (незаполненной части)
+ * @param fgColor       -- цвет заполненной части
+ * @param borderColor   -- цвет обводки
+ * @param borderRadius  -- радиус округления углов
+ */
+void renderProgressBarRounded(int x, int y, 
+    int width, int height,
+    unsigned char value,
+    SDL_Color bgColor,
+    SDL_Color fgColor,
+    SDL_Color borderColor,
+    int borderRadius);
+
 #endif // GRAPHICS_H

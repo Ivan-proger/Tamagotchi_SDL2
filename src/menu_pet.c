@@ -1,5 +1,7 @@
 #include <SDL2/SDL.h>
+#include "SDL_render.h"
 #include "graphics.h"
+#include "animation.h"
 #include "game_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
 #include "scene_manager.h"
 #include "menu_pet.h"
@@ -7,13 +9,25 @@
 #include "pet.h"        
 
 // Количество скинов
-#define MAX_SKINS 4
+#define MAX_SKINS 5
+
+// Структура скинов дя пэтов
+typedef struct {
+    char path[64];
+    Animation* anim;
+    float scaleW;
+    float scaleH;
+} SkinPet ;
+
+
+
 // Массив путей до скинов
-static char* SKIN_PATHS[MAX_SKINS] = {
-    "assets/pet.png",
-    "assets/pet_skin2.png",
-    "assets/pet_skin3.png",
-    "assets/pet_skin4.png",
+static SkinPet SKIN_PATHS[MAX_SKINS] = {
+    {"assets/pets/pet.png", NULL, 0.2, 0.2},
+    {"assets/pets/pet_white.png", NULL, 1, 1},
+    {"assets/pets/pet_skin2.png", NULL, 0.2, 0.2},
+    {"assets/pets/pet_skin3.png", NULL, 0.2, 0.2},
+    {"assets/pets/pet_skin4.png", NULL, 0.2, 0.2}
 };
 
 // Выбранный скин
@@ -38,6 +52,17 @@ static void menuPet_destroy(void) {
     destroyButton(&applyButton);
     destroyButton(&nextButton);
     destroyButton(&prevButton);
+
+    SDL_DestroyTexture(prevSkin);
+    SDL_DestroyTexture(postSkin);
+    SDL_DestroyTexture(previewTexture);
+
+    // Очищаем анимации
+    for(int i = 0; i < MAX_SKINS; i++){
+        if((SKIN_PATHS[selectedSkinIndex].anim != pet.stayAnim) && SKIN_PATHS[selectedSkinIndex].anim){
+            destroyAnimation(SKIN_PATHS[selectedSkinIndex].anim);
+        }
+    }
 }
 
 // Перезагрузка изображений(скинов)
@@ -46,14 +71,14 @@ static void reloadPreviewTexture(void) {
     SDL_DestroyTexture(prevSkin);
     SDL_DestroyTexture(postSkin);
 
-    previewTexture = loadTexture(SKIN_PATHS[selectedSkinIndex]);
+    previewTexture = loadTexture(SKIN_PATHS[selectedSkinIndex].path);
 
     if(selectedSkinIndex - 1 >= 0){
-        prevSkin = loadTexture(SKIN_PATHS[selectedSkinIndex-1]);
+        prevSkin = loadTexture(SKIN_PATHS[selectedSkinIndex-1].path);
         applyGrayTransparency(prevSkin, 128);
     }
     if(selectedSkinIndex+1 < MAX_SKINS){
-        postSkin = loadTexture(SKIN_PATHS[selectedSkinIndex+1]);
+        postSkin = loadTexture(SKIN_PATHS[selectedSkinIndex+1].path);
         applyGrayTransparency(postSkin, 128);
     }
 }
@@ -81,8 +106,17 @@ static void onNextClick() {
 static void onApplyClick() {
     // Применяем скин к питомцу
     invisible_pet();
-    pet.texture = loadTexture(SKIN_PATHS[selectedSkinIndex]);
-    pet.pathImage = SKIN_PATHS[selectedSkinIndex];
+    pet.texture = loadTexture(SKIN_PATHS[selectedSkinIndex].path);
+    pet.pathImage = SKIN_PATHS[selectedSkinIndex].path;
+
+    pet.scaleW = SKIN_PATHS[selectedSkinIndex].scaleW;
+    pet.scaleH = SKIN_PATHS[selectedSkinIndex].scaleH;
+
+    if(SKIN_PATHS[selectedSkinIndex].anim){ // Если есть анимация для питомца
+        pet.stayAnim = SKIN_PATHS[selectedSkinIndex].anim;
+    } else {
+        pet.stayAnim = NULL;
+    }
 
     onexittButtonClick();
     // Дополнительно: обновить сцену или вывести сообщение «Скин применён»
@@ -95,6 +129,15 @@ static void menuPet_init() {
     initButton(&prevButton, 50, 400, 50, 50, "assets/button_left.png", NULL, NULL , onPrevClick, NULL);
     initButton(&nextButton, 100, 400, 50, 50, "assets/button_right.png", NULL, NULL , onNextClick, NULL);
     initButton(&applyButton, 200, 400, 100, 50, "assets/button_accept.png", NULL, NULL , onApplyClick, NULL);
+
+    // Инициализация анимаций
+    SKIN_PATHS[1].anim = createAnimationOneType(
+        loadTexture("assets/animations/pet_white_anim.png"), 
+        300 * SKIN_PATHS[1].scaleW,
+        300 * SKIN_PATHS[1].scaleH,
+        9, 
+        0.5
+    );
 
     // Загрузите текущий скин в "previewTexture"
     selectedSkinIndex = 0;

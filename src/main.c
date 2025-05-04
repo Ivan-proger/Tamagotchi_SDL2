@@ -11,8 +11,10 @@
 
 int WINDOW_WIDTH = 460;
 int WINDOW_HEIGHT = 700;
+
 // звук on
 bool IS_SOUND = true;
+int VALUE_SOUND = MIX_MAX_VOLUME;
 // Базовый звук нажатия кнопки (если не указан иной в ее инициализации)
 Mix_Chunk *clickSound;
 

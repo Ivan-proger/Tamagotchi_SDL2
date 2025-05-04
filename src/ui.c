@@ -1,5 +1,6 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include "globals.h"
 #include "graphics.h"
 #include "ui.h"
 
@@ -169,12 +170,16 @@ void handleButtonEvent(Button *button, SDL_Event *event)
                 if (button->isClicked && button->isAnimatingClick == false) {
                     // Если нажата кнопка, запускаем анимацию клика, если она есть,
                     // и вызываем обработчик нажатия
-                    if(button->clickSound){
-                        // Проиграть звук (канал -1 выбирает первый свободный)
-                        Mix_PlayChannel(-1, button->clickSound, 0);
-                    } else {
-                        Mix_PlayChannel(-1, clickSound, 0);
-                    }                          
+
+                    if(IS_SOUND) { // Если звук включен
+                        if(button->clickSound){
+                            // Проиграть звук (канал -1 выбирает первый свободный)
+                            Mix_PlayChannel(-1, button->clickSound, 0);
+                        } else {
+                            Mix_PlayChannel(-1, clickSound, 0);
+                        }         
+                    }  
+
                     if (button->clickAnim != NULL) {
                         button->isAnimatingClick = true;
                         button->clickAnimTimer = 0.0f;

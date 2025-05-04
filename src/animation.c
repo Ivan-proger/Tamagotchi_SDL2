@@ -30,6 +30,35 @@ Animation* createAnimation(SDL_Texture *spriteSheet, SDL_Rect *frames, int frame
     return anim;
 }
 
+// Создание анимации без массива REct для каждого кадра (подразумевается что каждый кдр одинаковый)
+Animation* createAnimationOneType(SDL_Texture *spriteSheet, int wight, int hight, int frameCount, float frameTime) {
+    Animation *anim = (Animation*) malloc(sizeof(Animation));
+    if (!anim){
+        SDL_Log("Ошибка получения анимации текстуры: %s", SDL_GetError());
+        return NULL;
+    }
+    anim->spriteSheet = spriteSheet;
+    anim->frameCount = frameCount;
+    anim->frameTime = frameTime;
+    anim->elapsedTime = 0.0f;
+    anim->currentFrame = 0;
+
+    // Выделяем память для копирования массива кадров
+    anim->frames = (SDL_Rect*) malloc(sizeof(SDL_Rect) * frameCount);
+    if (!anim->frames) {
+        SDL_Log("Ошибка выделения памяти анимации: %s", SDL_GetError());
+        free(anim);
+        return NULL;
+    }
+    for (int i = 0; i < frameCount; i++) {
+        // Нарезка
+        SDL_Rect frame = {i*wight, 0, wight, hight};
+        anim->frames[i] = frame;
+    }
+
+    return anim;
+}
+
 // Освобождение памяти, выделенной для анимации
 void destroyAnimation(Animation *anim) {
     if (!anim) return;
