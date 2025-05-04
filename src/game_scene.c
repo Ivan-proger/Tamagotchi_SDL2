@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include "SDL_render.h"
 #include "animation.h"
 #include "graphics.h"
 #include "game_scene.h"
@@ -33,6 +34,17 @@ static SDL_Color border = {0, 0, 0, 255};      // Черная обводка
 // Сердце
 static SDL_Texture* heart;
 static SDL_Rect heartrect;
+
+// Эффект при кормлении
+typedef struct {
+    SDL_Texture *texture;        // Указатель на текстуру изображения
+    float x, y;           // Текущие координаты
+    float startX, startY; // Начальная точка движения
+    float targetX, targetY; // Конечная точка движения
+    float angle, startAngle, targetAngle; // Текущий, начальный и конечный углы (в градусах)
+    float duration;       // Общее время анимации (в секундах)
+    float elapsed;        // Уже прошедшее время (в секундах)
+} MovingSprite; MovingSprite movingBone;
 
 // Эффект удовольствия
 static SDL_Texture* hearteffect;
@@ -75,6 +87,9 @@ static void onCaressButton(void){
 }
 // Кнопка покормить
 static void onFeedButton(void){
+    movingBone.elapsed = 0.0;
+    movingBone.startX = feedButton.rect.x-20; 
+    movingBone.startY = feedButton.rect.y-20;
     add_satiety(25);
 }
 // Кнопка кастомизация
@@ -126,7 +141,7 @@ static void game_init() {
 
     int tempW, tempH;
     heart = loadTexture("assets/heart.png");
-    hearteffect = loadTexture("assets/heart.png");
+    
     sizeTexture(heart, &tempW, &tempH);
     heartrect.w = tempW*0.1;
     heartrect.h = tempH*0.1;
@@ -150,6 +165,20 @@ static void game_init() {
         // Проиграть музыку бесконечно (-1)
         Mix_PlayMusic(backgroundMusic, -1);
     }
+
+    // Текстура для эффекта сердечек
+    hearteffect = loadTexture("assets/heart.png");
+
+    // Инициализация кости
+    movingBone.texture = loadTexture("assets/bone.png");
+    movingBone.startAngle = 0; movingBone.targetAngle = 360;
+    movingBone.duration = 1.0;  // 2 секунды полёт+вращение
+    movingBone.elapsed = 3.0;
+    movingBone.startX = feedButton.rect.x-20; 
+    movingBone.startY = feedButton.rect.y-20;
+    movingBone.targetX = pet.x + (int)(pet.w*pet.scaleW/2); 
+    movingBone.targetY = pet.y + (int)(pet.h*pet.scaleH/2);
+
 }
 
 /**
@@ -192,6 +221,23 @@ static void game_update(float delta) {
     if(pet.stayAnim) {
         // Обновления анимации питомца
         updateAnimation(pet.stayAnim, delta);
+    }
+
+    if(movingBone.elapsed < movingBone.duration){
+        // Просчитываем анимацию кости
+        movingBone.elapsed += delta;
+        if (movingBone.elapsed > movingBone.duration) {
+            movingBone.elapsed = movingBone.duration;
+        }
+        // Нормализованный прогресс от 0.0 до 1.0
+        float t = movingBone.duration > 0.0f ? (movingBone.elapsed / movingBone.duration) : 1.0f;
+        // Линейная интерполяция позиции
+        movingBone.x = movingBone.startX + (movingBone.targetX - movingBone.startX) * t;  // LERP по X 
+        movingBone.y = movingBone.startY + (movingBone.targetY - movingBone.startY) * t;  // LERP по Y
+        // Линейная интерполяция угла
+        movingBone.angle = movingBone.startAngle + (movingBone.targetAngle - movingBone.startAngle) * t;  // LERP по углу
+        // Добавляем постепенно прозрачность
+        SDL_SetTextureAlphaMod(movingBone.texture, (1 - t) * 255.0);
     }
 }
 
@@ -258,6 +304,39 @@ static void game_render() {
         );
         //duration += delta;
     }
+
+    // Эффект летящей кости к собаке при кормлении 
+    if(movingBone.elapsed < movingBone.duration){
+        // Обновляем точки полета
+        movingBone.startX = feedButton.rect.x-20; 
+        movingBone.startY = feedButton.rect.y-20;
+
+        movingBone.targetX = pet.x + (int)(pet.w*pet.scaleW/2); 
+        movingBone.targetY = pet.y + (int)(pet.h*pet.scaleH/2);
+
+        // Определяем целевой прямоугольник (тут без изменения размера)
+        SDL_Rect dst = {
+            .x = (int)(movingBone.x),
+            .y = (int)(movingBone.y),
+            .w = 0,  // оставляем 0, SDL_QueryTexture подставит ширину/высоту
+            .h = 0
+        };
+        // Подготовка размеров dst
+        SDL_QueryTexture(movingBone.texture, NULL, NULL, &dst.w, &dst.h);
+        dst.w *= 0.5;  // Немного уменьшаем
+        dst.h *= 0.5;
+        // Центр вращения — середина текстуры
+        SDL_Point center = { dst.w / 2, dst.h / 2 };  // по умолчанию центр
+        // Отрисовка с поворотом
+        SDL_RenderCopyEx(gRenderer,
+                        movingBone.texture,   // источник
+                        NULL,          // всю текстуру
+                        &dst,          // куда отрисовать
+                        movingBone.angle,     // угол вращения (по часовой) 
+                        &center,       // точка вращения
+                        SDL_FLIP_NONE  // без отражения 
+        );
+    }
 }
 
 // Удаление сцены
@@ -277,6 +356,9 @@ static void game_destroy(void) {
 
     if(IS_SOUND)
         Mix_FreeMusic(backgroundMusic); // Перестать воспроизводить музыку
+
+    // Текстура кости
+    SDL_DestroyTexture(movingBone.texture);
 }
 
 

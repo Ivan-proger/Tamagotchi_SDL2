@@ -373,8 +373,8 @@ void fade_anim_with_timer(SDL_Texture *tex, SDL_Rect area,
     }    
     for(int i = 0;i < count; i++){
         // Делаем случайные позиции  объектов в диапазоне
-        area.x = list[i][0] - timer*10;
-        area.y = list[i][1] - timer*4;
+        area.x = list[i][0] - timer*3;
+        area.y = list[i][1] - timer*30;
 
         float alpha;
 
