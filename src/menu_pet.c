@@ -59,8 +59,11 @@ static void menuPet_destroy(void) {
 
     // Очищаем анимации
     for(int i = 0; i < MAX_SKINS; i++){
-        if(SKIN_PATHS[i].anim != SKIN_PATHS[selectedSkinIndex].anim)
-            destroyAnimation(SKIN_PATHS[i].anim);
+        if(SKIN_PATHS[i].anim){
+            if(SKIN_PATHS[i].anim != SKIN_PATHS[selectedSkinIndex].anim){
+                destroyAnimation(SKIN_PATHS[i].anim);
+            }
+        }
     }
 }
 
