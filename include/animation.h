@@ -16,6 +16,7 @@
  */
 typedef struct {
     SDL_Texture *spriteSheet;  // Спрайт-лист, содержащий все кадры анимации.
+    char* spriteSheetPath;// Места где храниться изображение анимации.
     SDL_Rect *frames;          // Массив областей (кадров) в спрайт-листе.
     int frameCount;            // Общее количество кадров.
     int currentFrame;          // Индекс текущего кадра.
@@ -36,7 +37,7 @@ Animation* createAnimation(SDL_Texture *spriteSheet, SDL_Rect *frames,
                             int frameCount, float frameTime);
 
 // Создание анимации без массива REct для каждого кадра (подразумевается что каждый кдр одинаковый)
-Animation* createAnimationOneType(SDL_Texture *spriteSheet, int wight, int hight, int frameCount, float frameTime);
+Animation* createAnimationOneType(char* spriteSheetPath, int wight, int hight, int frameCount, float frameTime);
 
 /**
  * Освобождает память, занятую анимацией.

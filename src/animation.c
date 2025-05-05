@@ -31,13 +31,14 @@ Animation* createAnimation(SDL_Texture *spriteSheet, SDL_Rect *frames, int frame
 }
 
 // Создание анимации без массива REct для каждого кадра (подразумевается что каждый кдр одинаковый)
-Animation* createAnimationOneType(SDL_Texture *spriteSheet, int wight, int hight, int frameCount, float frameTime) {
+Animation* createAnimationOneType(char* spriteSheetPath, int wight, int hight, int frameCount, float frameTime) {
     Animation *anim = (Animation*) malloc(sizeof(Animation));
     if (!anim){
         SDL_Log("Ошибка получения анимации текстуры: %s", SDL_GetError());
         return NULL;
     }
-    anim->spriteSheet = spriteSheet;
+    anim->spriteSheetPath = spriteSheetPath;
+    anim->spriteSheet = loadTexture(spriteSheetPath);
     anim->frameCount = frameCount;
     anim->frameTime = frameTime;
     anim->elapsedTime = 0.0f;
@@ -88,6 +89,10 @@ void renderAnimation(Animation *anim, int x, int y, int w, int h) {
         SDL_Log("Ошибка получения анимации текстуры: %s", SDL_GetError());
         return;
     }
+    // Если текстурка удалена но есть путь до нее
+    if (!anim->spriteSheet && anim->spriteSheetPath)
+        anim->spriteSheet = loadTexture(anim->spriteSheetPath);
+
     SDL_Rect src = anim->frames[anim->currentFrame];
     SDL_Rect dst;
     dst.x = x;

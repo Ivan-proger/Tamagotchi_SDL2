@@ -1,7 +1,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stdio.h>
 #include <time.h>
 #include "pet.h"
+#include "SDL_error.h"
+#include "SDL_log.h"
+#include "SDL_render.h"
+#include "animation.h"
 #include "graphics.h"
 #include "scene_manager.h"
 #include "dead_scene.h"
@@ -33,6 +38,51 @@ void init_pet(void)
         fread(&pet.scaleH, sizeof(pet.scaleH), 1, file);
 
         fread(&lastSavedTime, sizeof(lastSavedTime), 1, file);
+
+        // Считываем анимацию если есть
+        bool isAnim;
+        fread(&isAnim, sizeof(bool), 1, file);
+        if(isAnim) {
+            // Выделяем память под структуру Animation
+            pet.stayAnim = malloc(sizeof(Animation));
+            if (!pet.stayAnim) {
+                SDL_Log("Ошибка выделения памяти для stayAnim!");
+                return;
+            }
+            // Считываем длину строки
+            fread(&len, sizeof(len), 1, file);
+
+            // Выделяем память под такую длинну строки
+            pet.stayAnim->spriteSheetPath = malloc(len);
+
+            if(!pet.stayAnim->spriteSheetPath){
+                SDL_Log("Ошибка выделения памяти для пути к анимации %s", SDL_GetError());
+            }
+
+            // Считываем путь по которому восстановим анимацию
+            if(!(fread(pet.stayAnim->spriteSheetPath, sizeof(char), len, file))){
+                SDL_Log("Ошибка загрузки пути к анимации %s", SDL_GetError());
+                fclose(file);
+                return;
+            }
+
+            // Общее количество кадров
+            fread(&pet.stayAnim->frameCount, sizeof(int), 1, file);
+
+            // Выделяем память под кадры
+            pet.stayAnim->frames = malloc(pet.stayAnim->frameCount * sizeof(SDL_Rect));
+            if(!(fread(pet.stayAnim->frames, sizeof(SDL_Rect), pet.stayAnim->frameCount, file))){
+                SDL_Log("Ошибка загрузки SDL_Rect для анимации %s", SDL_GetError());
+                fclose(file);
+                return; 
+            }
+
+            // Время кадра
+            fread(&pet.stayAnim->frameTime, sizeof(float), 1, file);
+
+        }
+
+
         fclose(file);
 
         time_t currentTime = time(NULL);
@@ -52,13 +102,17 @@ void init_pet(void)
             pet.health = 0;
         } else {pet.health -= timeDiff/6;}
 
-    } else {    
-        pet.pathImage = "assets/pets/pet.png";
-        pet.health = 200;
-        pet.satiety = 100;
-        pet.cheer = 50;
-        lastSavedTime = time(NULL);
-    }
+        return;
+    }    
+
+    pet.pathImage = "assets/pets/pet.png";
+    pet.stayAnim = NULL;
+    pet.scaleH = 0.2;
+    pet.scaleW = 0.2;
+    pet.health = 200;
+    pet.satiety = 100;
+    pet.cheer = 50;
+    lastSavedTime = time(NULL);
 }
 
 /**
@@ -148,9 +202,12 @@ void show_pet(void)
         pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;
 
         if(!pet.stayAnim){
+            if(!pet.texture)
+                pet.texture = loadTexture(pet.pathImage);
+
             renderTextureScaled(pet.texture, pet.x, pet.y, pet.scaleW, pet.scaleH);
         } else {
-            renderAnimation(pet.stayAnim, pet.x, pet.y, pet.w, pet.h);
+            renderAnimation(pet.stayAnim, pet.x, pet.y, pet.w*pet.scaleW, pet.h*pet.scaleH);
         }
     }
 }
@@ -182,6 +239,35 @@ void save_game(void) {
             fwrite(&pet.scaleH, sizeof(pet.scaleH), 1, file);
 
             fwrite(&lastSavedTime, sizeof(lastSavedTime), 1, file);
+            
+            bool isAnim;
+            // Сохранение анимации если она есть у скина питомца
+            if(pet.stayAnim) {
+                // Указываем что анимация есть
+                isAnim = true;
+                fwrite(&isAnim, sizeof(bool), 1, file);
+
+                // Сохраняем размер строки чтобы потом правильно считать ее
+                len = strlen(pet.stayAnim->spriteSheetPath) + 1;  
+                fwrite(&len, sizeof(len), 1, file);
+                // Сохраняем путь до анимации
+                fwrite(pet.stayAnim->spriteSheetPath, sizeof(char), len, file);
+
+                // Общее количество кадров
+                fwrite(&pet.stayAnim->frameCount, sizeof(int), 1, file);
+
+                // Сохранение разметки анимации
+                fwrite(pet.stayAnim->frames, sizeof(SDL_Rect), pet.stayAnim->frameCount, file);
+
+                // Время кадра
+                fwrite(&pet.stayAnim->frameTime, sizeof(float), 1, file);
+
+            } else {
+                isAnim = false;
+                // Указываем что анимации нету
+                fwrite(&isAnim, sizeof(bool), 1, file);
+            }
+
             fclose(file);
     } else {
         SDL_Log("ERROR SAVE DATA! ");

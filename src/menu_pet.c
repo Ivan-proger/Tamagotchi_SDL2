@@ -9,7 +9,7 @@
 #include "pet.h"        
 
 // Количество скинов
-#define MAX_SKINS 5
+#define MAX_SKINS 4
 
 // Структура скинов дя пэтов
 typedef struct {
@@ -24,10 +24,10 @@ typedef struct {
 // Массив путей до скинов
 static SkinPet SKIN_PATHS[MAX_SKINS] = {
     {"assets/pets/pet.png", NULL, 0.2, 0.2},
-    {"assets/pets/pet_white.png", NULL, 1, 1},
-    {"assets/pets/pet_skin2.png", NULL, 0.2, 0.2},
-    {"assets/pets/pet_skin3.png", NULL, 0.2, 0.2},
-    {"assets/pets/pet_skin4.png", NULL, 0.2, 0.2}
+    {"assets/pets/pet_white.png", NULL, 0.8, 0.8},
+    {"assets/pets/pet_gsd.png", NULL, 1, 1},
+    {"assets/pets/pet_pug.png", NULL, 0.9, 0.9},
+
 };
 
 // Выбранный скин
@@ -59,9 +59,8 @@ static void menuPet_destroy(void) {
 
     // Очищаем анимации
     for(int i = 0; i < MAX_SKINS; i++){
-        if((SKIN_PATHS[selectedSkinIndex].anim != pet.stayAnim) && SKIN_PATHS[selectedSkinIndex].anim){
-            destroyAnimation(SKIN_PATHS[selectedSkinIndex].anim);
-        }
+        if(SKIN_PATHS[i].anim != SKIN_PATHS[selectedSkinIndex].anim)
+            destroyAnimation(SKIN_PATHS[i].anim);
     }
 }
 
@@ -86,8 +85,7 @@ static void reloadPreviewTexture(void) {
 // Реакция на нажатаю кнопку выхода
 static void onexittButtonClick() {
     extern SDL_Renderer* gRenderer;
-    // Логика при нажатии кнопки
-    menuPet_destroy();
+    // Логика при нажатии кнопки;
     set_scene(&GAME_SCENE);
 }
 // Кнопка назад
@@ -106,6 +104,7 @@ static void onNextClick() {
 static void onApplyClick() {
     // Применяем скин к питомцу
     invisible_pet();
+    pet.stayAnim = NULL;
     pet.texture = loadTexture(SKIN_PATHS[selectedSkinIndex].path);
     pet.pathImage = SKIN_PATHS[selectedSkinIndex].path;
 
@@ -114,8 +113,6 @@ static void onApplyClick() {
 
     if(SKIN_PATHS[selectedSkinIndex].anim){ // Если есть анимация для питомца
         pet.stayAnim = SKIN_PATHS[selectedSkinIndex].anim;
-    } else {
-        pet.stayAnim = NULL;
     }
 
     onexittButtonClick();
@@ -132,13 +129,19 @@ static void menuPet_init() {
 
     // Инициализация анимаций
     SKIN_PATHS[1].anim = createAnimationOneType(
-        loadTexture("assets/animations/pet_white_anim.png"), 
-        300 * SKIN_PATHS[1].scaleW,
-        300 * SKIN_PATHS[1].scaleH,
+        "assets/animations/pet_white_anim.png", 
+        300,
+        300,
         9, 
         0.5
     );
-
+    SKIN_PATHS[2].anim = createAnimationOneType(
+        "assets/animations/pet_gsd_anim.png", 
+        300,
+        300,
+        8, 
+        0.6
+    );
     // Загрузите текущий скин в "previewTexture"
     selectedSkinIndex = 0;
     reloadPreviewTexture();
