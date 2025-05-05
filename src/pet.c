@@ -157,11 +157,7 @@ void init_pet(int id)
                 SDL_Log("Ошибка загрузки SDL_Rect для анимации %s", SDL_GetError());
                 fclose(file);
                 return; 
-            } else{
-                for(int i=0; i < pet.stayAnim->frameCount; i++){
-                    SDL_Log("i: %d, x: %d, y: %d, w: %d, h: %d", i, pet.stayAnim->frames[i].x, pet.stayAnim->frames[i].y, pet.stayAnim->frames[i].w, pet.stayAnim->frames[i].h);
-                }
-            }
+            } 
 
             // Время кадра
             if(!(fread(&pet.stayAnim->frameTime, sizeof(float), 1, file))){
@@ -169,6 +165,15 @@ void init_pet(int id)
                 fclose(file);
             }
 
+            // Ставим в 0
+            pet.stayAnim->currentFrame = 0;
+            pet.stayAnim->elapsedTime = 0.0;
+
+        } else {
+            // Точно в нул ставим
+            if(pet.stayAnim)
+                destroyAnimation(pet.stayAnim);
+            pet.stayAnim = NULL;
         }
 
 
