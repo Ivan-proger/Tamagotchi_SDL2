@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include "menu_scene.h"
 #include "title_scene.h"
-#include "game_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
+#include "saves_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
 #include "scene_manager.h"
 #include "ui.h"             
 #include "globals.h"   
@@ -30,7 +30,7 @@ static void menu_destroy(void) {
 static void onStartButtonClick() {
     // Логика при нажатии кнопки
     menu_destroy();
-    set_scene(&GAME_SCENE);
+    set_scene(&SAVES_SCENE);
 }
 // Реакция на нажатаю кнопку
 static void onHelpButtonClick() {

@@ -61,14 +61,18 @@ static void menuPet_destroy(void) {
     destroyButton(&applyNameButton);
 
     SDL_DestroyTexture(prevSkin);
+    prevSkin = NULL;
     SDL_DestroyTexture(postSkin);
+    prevSkin = NULL;
     SDL_DestroyTexture(previewTexture);
+    previewTexture = NULL;
 
     // Очищаем анимации
     for(int i = 0; i < MAX_SKINS; i++){
         if(SKIN_PATHS[i].anim){
             if(SKIN_PATHS[i].anim != SKIN_PATHS[selectedSkinIndex].anim){
                 destroyAnimation(SKIN_PATHS[i].anim);
+                SKIN_PATHS[i].anim = NULL;
             }
         }
     }
@@ -135,7 +139,6 @@ static void onApplyClick() {
 // Кнопка применить новое имя
 static void onApplyClickSetName() {
     char* new_name = InputField_GetText(&nameField);
-    SDL_Log("Новое имя: %s", new_name);
     pet_set_name(new_name);
     // Смена названия окна
     SDL_SetWindowTitle(gWindow, new_name);

@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <stdbool.h>
+#include <locale.h>
 #include <string.h>
 #include "graphics.h"
 #include "text_input.h"
@@ -98,7 +99,7 @@ void InputField_Render(const InputField *field)
     SDL_RenderDrawRect(gRenderer, &field->rect);
 
     // Рендер текста через SDL_ttf
-    SDL_Surface *surf = TTF_RenderText_Blended(field->font,
+    SDL_Surface *surf = TTF_RenderUTF8_Blended(field->font,
                                               field->buffer,
                                               field->color);
     if (surf) {

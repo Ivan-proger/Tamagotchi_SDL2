@@ -35,13 +35,15 @@ typedef struct
     unsigned char health;           // Здоровье чудика
     unsigned char satiety;           // Голод
     unsigned char cheer;            // Настроение
+    long long timeLife;  // Общение время жизни
+    int id;              // Номер питомца
 } Pet;
 
 // Питомец
 extern Pet pet;
 
 // Создания питомца и загрузка его сохранения
-void init_pet(void);
+void init_pet(int id);
 
 // Показывать питомца посреди экрана
 void show_pet(void);
@@ -65,6 +67,6 @@ void update_pet(double delta, float scaling);
 void pet_set_name(const char *new_name);
 
 // Сохранить данные о питомце
-void save_game(void);
+void save_game(int id);
 
 #endif

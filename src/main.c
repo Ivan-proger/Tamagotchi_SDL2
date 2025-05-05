@@ -1,3 +1,4 @@
+#include <locale.h>
 #include "graphics.h"
 #include "globals.h"
 #include <SDL2/SDL.h>
@@ -19,6 +20,14 @@ int VALUE_SOUND = MIX_MAX_VOLUME;
 Mix_Chunk *clickSound;
 
 int main(int argc, char* argv[]) {
+    // Установка локали
+    const char *loc = setlocale(LC_ALL, "ru_RU.UTF-8");
+    if (!loc) {
+        SDL_Log("Локаль ru_RU.UTF-8 не установлена!\n");
+    } else {
+        SDL_Log("Текущая локаль: %s\n", loc);
+    }
+
     // Инициализация графики
     if (!initGraphics("Tamagotchi Game", WINDOW_WIDTH, WINDOW_HEIGHT)) {
         SDL_ShowSimpleMessageBox(
@@ -57,9 +66,6 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return -1;
     }
-
-    // Инициализация питомца
-    init_pet();
 
     // Базовый звук нажатия кнопки (если не указан иной в ее инициализации)
     clickSound = Mix_LoadWAV("assets/sounds/click.wav");
@@ -157,7 +163,8 @@ int main(int argc, char* argv[]) {
     }
 
     // Уничтожаем сцену
-    save_game(); //! Сохранение
+    if(pet.pathImage)
+        save_game(pet.id); //! Сохранение
     scene_destroy();
     Mix_CloseAudio(); // Закрываем музыку
     Mix_FreeChunk(clickSound); // Закрываем базовый звук для нажатия на кнопку

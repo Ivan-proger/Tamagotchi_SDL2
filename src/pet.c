@@ -4,7 +4,6 @@
 #include <time.h>
 #include "pet.h"
 #include "SDL_error.h"
-#include "SDL_log.h"
 #include "SDL_render.h"
 #include "animation.h"
 #include "graphics.h"
@@ -19,34 +18,87 @@ Pet pet;
 time_t lastSavedTime;
 
 //! Инициализация питомца (и загрузка из файла в будущем)
-void init_pet(void)
+void init_pet(int id)
 {
-    FILE *file = fopen("tamagotchi_save.dat", "rb");
+    const char *prefix = "saves/save№";
+    const char *suffix = ".dat";
+
+    // Вычисляем необходимую длину для итоговой строки
+    size_t len = snprintf(NULL, 0, "%s%d%s", prefix, id, suffix);
+    char *filename = malloc(len + 1); // +1 для нулевого терминатора
+
+    if (filename) {
+        snprintf(filename, len + 1, "%s%d%s", prefix, id, suffix);
+    } else {
+        fprintf(stderr, "Ошибка выделения памяти\n");
+        return;
+    }
+
+    FILE *file = fopen(filename, "rb");
     if(file) {
         // Загружаем длину строки pathImage
         size_t len;
-        fread(&len, sizeof(len), 1, file);
+        if(!(fread(&len, sizeof(len), 1, file))){
+            SDL_Log("Ошибка загрузки длины строки для пути изображения %s", SDL_GetError());
+            fclose(file);
+        }
         // Выделяем память для pathImage
         pet.pathImage = (char*)malloc(len);
         // Загружаем строку pathImage
-        fread(pet.pathImage, sizeof(char), len, file);
+        if(!(fread(pet.pathImage, sizeof(char), len, file))){
+            SDL_Log("Ошибка загрузки строки%s", SDL_GetError());
+            fclose(file);
+        }
 
         // Считываем имя питомца
-        fread(&len, sizeof(len), 1, file);
+        if(!(fread(&len, sizeof(len), 1, file))){
+            SDL_Log("Ошибка загрузки длины строки для имени питомца %s", SDL_GetError());
+            fclose(file);
+        }
         pet.name = malloc(len);
-        fread(pet.name, sizeof(char), len, file);
+        if(!(fread(pet.name, sizeof(char), len, file))){
+            SDL_Log("Ошибка загрузки имени питомца %s", SDL_GetError());
+            fclose(file);
+        }
 
-        fread(&pet.health, sizeof(unsigned char), 1, file);
-        fread(&pet.satiety, sizeof(unsigned char), 1, file);
-        fread(&pet.cheer, sizeof(unsigned char), 1, file);
-        fread(&pet.scaleW, sizeof(pet.scaleW), 1, file);
-        fread(&pet.scaleH, sizeof(pet.scaleH), 1, file);
+        if(!(fread(&pet.health, sizeof(unsigned char), 1, file))){
+            SDL_Log("Ошибка загрузки здоровья%s", SDL_GetError());
+            fclose(file);
+        }
+        if(!(fread(&pet.satiety, sizeof(unsigned char), 1, file))){
+            SDL_Log("Ошибка загрузки насыщенности %s", SDL_GetError());
+            fclose(file);
+        }
+        if(!(fread(&pet.cheer, sizeof(unsigned char), 1, file))){
+            SDL_Log("Ошибка загрузки настроения%s", SDL_GetError());
+            fclose(file);
+        }
+        if(!(fread(&pet.scaleW, sizeof(pet.scaleW), 1, file))){
+            SDL_Log("Ошибка загрузки масштаба в ширину%s", SDL_GetError());
+            fclose(file);
+        }
+        if(!(fread(&pet.scaleH, sizeof(pet.scaleH), 1, file))){
+            SDL_Log("Ошибка загрузки масштаба в высоту%s", SDL_GetError());
+            fclose(file);
+        }
 
-        fread(&lastSavedTime, sizeof(lastSavedTime), 1, file);
+        if(!(fread(&lastSavedTime, sizeof(lastSavedTime), 1, file))){
+            SDL_Log("Ошибка загрузки последнего времени сохранения%s", SDL_GetError());
+            fclose(file);
+        }
+
+        // Считываем время жизни из сохранения
+        if(!(fread(&pet.timeLife, sizeof(long long), 1, file))){
+            SDL_Log("Ошибка загрузки общего времени жизни %s", SDL_GetError());
+            fclose(file);
+        }
 
         // Считываем анимацию если есть
         bool isAnim;
-        fread(&isAnim, sizeof(bool), 1, file);
+        if(!(fread(&isAnim, sizeof(bool), 1, file))){
+            SDL_Log("Ошибка загрузки наличия у питомца анимации%s", SDL_GetError());
+            fclose(file);
+        }
         if(isAnim) {
             // Выделяем память под структуру Animation
             pet.stayAnim = malloc(sizeof(Animation));
@@ -55,7 +107,10 @@ void init_pet(void)
                 return;
             }
             // Считываем длину строки
-            fread(&len, sizeof(len), 1, file);
+            if(!(fread(&len, sizeof(len), 1, file))){
+                SDL_Log("Ошибка загрузки длины строки для пути изображения анимации%s", SDL_GetError());
+                fclose(file);
+            }
 
             // Выделяем память под такую длинну строки
             pet.stayAnim->spriteSheetPath = malloc(len);
@@ -69,10 +124,13 @@ void init_pet(void)
                 SDL_Log("Ошибка загрузки пути к анимации %s", SDL_GetError());
                 fclose(file);
                 return;
-            }
+            } else {pet.stayAnim->spriteSheet = loadTexture(pet.stayAnim->spriteSheetPath);}
 
             // Общее количество кадров
-            fread(&pet.stayAnim->frameCount, sizeof(int), 1, file);
+            if(!(fread(&pet.stayAnim->frameCount, sizeof(int), 1, file))){
+                SDL_Log("Ошибка загрузки числа кадров анимации %s", SDL_GetError());
+                fclose(file);
+            }
 
             // Выделяем память под кадры
             pet.stayAnim->frames = malloc(pet.stayAnim->frameCount * sizeof(SDL_Rect));
@@ -83,7 +141,10 @@ void init_pet(void)
             }
 
             // Время кадра
-            fread(&pet.stayAnim->frameTime, sizeof(float), 1, file);
+            if(!(fread(&pet.stayAnim->frameTime, sizeof(float), 1, file))){
+                SDL_Log("Ошибка загрузки времени кадра %s", SDL_GetError());
+                fclose(file);
+            }
 
         }
 
@@ -93,6 +154,8 @@ void init_pet(void)
         time_t currentTime = time(NULL);
         // timeDiff - Секнуды с момента последнего сохранения 
         int timeDiff = difftime(currentTime, lastSavedTime);
+        // Добавляем время жизни
+        pet.timeLife += timeDiff;
 
         // Сытость 
         if((int)pet.satiety - timeDiff <= 0){
@@ -107,6 +170,7 @@ void init_pet(void)
             pet.health = 0;
         } else {pet.health -= timeDiff/6;}
 
+        free(filename);
         return;
     }    
     pet.name = malloc(1);
@@ -182,18 +246,25 @@ void update_pet(double delta, float scaling)
             pet.
             health = ((int)pet.health - 3*scaling < 0) ? 0 : pet.health - 1*scaling;
         }
+        pet.timeLife += gtimer;
         gtimer = 0.0;
-        
     }
     
-    if (pet.health < 40){
-        if(notify_timer >= 40.0){
-            notify_user("Тамагочи", "У меня мало здоровья!");
+    if(notify_timer >= 10.0){
+        if (pet.health < 40){
+            notify_user(pet.name, "У меня мало здоровья!");
             notify_timer=0.0;
         }
-
-        notify_timer+=delta;
+        if (pet.cheer >= 250){
+            notify_user(pet.name, "Я полностью доволен");
+            notify_timer=0.0;
+        }
+        if (pet.satiety >= 250){
+            notify_user(pet.name, "Я больше не голоден");
+            notify_timer=0.0;
+        }
     }
+    notify_timer+=delta;
 }
 
 // Отображение питомца
@@ -213,7 +284,7 @@ void show_pet(void)
 
             renderTextureScaled(pet.texture, pet.x, pet.y, pet.scaleW, pet.scaleH);
         } else {
-            renderAnimation(pet.stayAnim, pet.x, pet.y, pet.w*pet.scaleW, pet.h*pet.scaleH);
+            renderAnimation(pet.stayAnim, pet.x, pet.y, (int)(pet.w*pet.scaleW), (int)(pet.h*pet.scaleH));
         }
     }
 }
@@ -242,10 +313,19 @@ void invisible_pet(void) {
     }
 }
 
-void save_game(void) {
+void save_game(int id) {
     lastSavedTime = time(NULL);
 
-    FILE *file = fopen("tamagotchi_save.dat", "wb");
+    const char *prefix = "saves/save№";
+    const char *suffix = ".dat";
+
+    // Вычисляем необходимую длину для итоговой строки
+    size_t len = snprintf(NULL, 0, "%s%d%s", prefix, id, suffix);
+    char *filename = malloc(len + 1); // +1 для нулевого терминатора
+
+    snprintf(filename, len + 1, "%s%d%s", prefix, id, suffix);
+
+    FILE *file = fopen(filename, "wb");
         if (file) {
             // Сохраняем длину строки pathImage
             size_t len = strlen(pet.pathImage) + 1;  // включая терминальный ноль
@@ -265,6 +345,9 @@ void save_game(void) {
             fwrite(&pet.scaleH, sizeof(pet.scaleH), 1, file);
 
             fwrite(&lastSavedTime, sizeof(lastSavedTime), 1, file);
+
+            // Считываем время жизни из сохранения
+            fwrite(&pet.timeLife, sizeof(long long), 1, file);
             
             bool isAnim;
             // Сохранение анимации если она есть у скина питомца
@@ -293,6 +376,8 @@ void save_game(void) {
                 // Указываем что анимации нету
                 fwrite(&isAnim, sizeof(bool), 1, file);
             }
+
+            free(filename);
 
             fclose(file);
     } else {

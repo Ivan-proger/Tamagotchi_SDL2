@@ -89,9 +89,13 @@ void renderAnimation(Animation *anim, int x, int y, int w, int h) {
         SDL_Log("Ошибка получения анимации текстуры: %s", SDL_GetError());
         return;
     }
-    // Если текстурка удалена но есть путь до нее
-    if (!anim->spriteSheet && anim->spriteSheetPath)
+    // Если текстура удалена но есть путь до нее
+    if (!(anim->spriteSheet) && !(anim->spriteSheetPath)) {
+        SDL_Log("Ошибка получения анимации текстуры");
+    } else if (anim->spriteSheet == NULL) {
+        SDL_Log("Текстура заново загружена!");
         anim->spriteSheet = loadTexture(anim->spriteSheetPath);
+    }
 
     SDL_Rect src = anim->frames[anim->currentFrame];
     SDL_Rect dst;

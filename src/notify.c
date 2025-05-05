@@ -46,7 +46,7 @@
         if (!pixbuf) {
             g_printerr("Ошибка загрузки изображения: %s\n", error->message);
             g_error_free(error);
-            // Обработка ошибки
+            // Обработка ошибки+
         }
         notify_notification_set_image_from_pixbuf(n, pixbuf);
 

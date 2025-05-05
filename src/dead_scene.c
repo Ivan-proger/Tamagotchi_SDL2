@@ -134,8 +134,16 @@ static void dead_destroy(void) {
 // Реакция на нажатаю кнопку
 static void onexitButtonClick() {
     // Логика при нажатии кнопки
-    remove("tamagotchi_save.dat");
-    init_pet();
+    const char *prefix = "saves/save№";
+    const char *suffix = ".dat";
+
+    // Вычисляем необходимую длину для итоговой строки
+    size_t len = snprintf(NULL, 0, "%s%d%s", prefix, pet.id, suffix);
+    char *filename = malloc(len + 1); // +1 для нулевого терминатора
+
+    snprintf(filename, len + 1, "%s%d%s", prefix, pet.id, suffix);
+    remove(filename);
+    init_pet(pet.id);
     set_scene(&GAME_SCENE);
 }
 

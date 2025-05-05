@@ -196,6 +196,7 @@ static void game_handle_events(SDL_Event* e) {
         // Пример: ESC -> вернуть в меню
         if (e->key.keysym.sym == SDLK_ESCAPE) {
             extern Scene MENU_SCENE;
+            save_game(pet.id);
             set_scene(&MENU_SCENE);
         }
     }
