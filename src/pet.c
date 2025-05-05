@@ -148,10 +148,19 @@ void init_pet(int id)
 
             // Выделяем память под кадры
             pet.stayAnim->frames = malloc(pet.stayAnim->frameCount * sizeof(SDL_Rect));
+            if (!pet.stayAnim->frames) {
+                SDL_Log("Не удалось выделить память под кадры");
+                fclose(file);
+                return;
+            }
             if(!(fread(pet.stayAnim->frames, sizeof(SDL_Rect), pet.stayAnim->frameCount, file))){
                 SDL_Log("Ошибка загрузки SDL_Rect для анимации %s", SDL_GetError());
                 fclose(file);
                 return; 
+            } else{
+                for(int i=0; i < pet.stayAnim->frameCount; i++){
+                    SDL_Log("i: %d, x: %d, y: %d, w: %d, h: %d", i, pet.stayAnim->frames[i].x, pet.stayAnim->frames[i].y, pet.stayAnim->frames[i].w, pet.stayAnim->frames[i].h);
+                }
             }
 
             // Время кадра
