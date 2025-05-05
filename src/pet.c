@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <time.h>
+#include <stdbool.h>
 #include "pet.h"
 #include "SDL_error.h"
 #include "SDL_render.h"
@@ -46,6 +47,19 @@ void init_pet(int id)
         pet.pathImage = (char*)malloc(len);
         // Загружаем строку pathImage
         if(!(fread(pet.pathImage, sizeof(char), len, file))){
+            SDL_Log("Ошибка загрузки строки%s", SDL_GetError());
+            fclose(file);
+        }
+
+        // Загружаем картинку с костью в зубах
+        if(!(fread(&len, sizeof(len), 1, file))){
+            SDL_Log("Ошибка загрузки длины строки для пути изображения с костью %s", SDL_GetError());
+            fclose(file);
+        }
+        // Выделяем память для pathImageWithBone
+        pet.pathImageWithBone = (char*)malloc(len);
+        // Загружаем строку pathImageWithBone
+        if(!(fread(pet.pathImageWithBone, sizeof(char), len, file))){
             SDL_Log("Ошибка загрузки строки%s", SDL_GetError());
             fclose(file);
         }
@@ -176,6 +190,7 @@ void init_pet(int id)
     pet.name = malloc(1);
     pet_set_name("dog");    
     pet.pathImage = "assets/pets/pet.png";
+    pet.pathImageWithBone = "assets/pets/pet_bone.png";
     pet.stayAnim = NULL;
     pet.scaleH = 0.2;
     pet.scaleW = 0.2;
@@ -214,6 +229,7 @@ void add_satiety(unsigned char value)
 void load_texture_pet(void)
 {
     pet.texture = loadTexture(pet.pathImage);
+    pet.textureWithBone = loadTexture(pet.pathImageWithBone);
     sizeTexture(pet.texture, &pet.w, &pet.h); // Записываем ширину и высоту
 }
 
@@ -268,7 +284,7 @@ void update_pet(double delta, float scaling)
 }
 
 // Отображение питомца
-void show_pet(void)
+void show_pet(bool isFeed)
 {
     if(pet.health == 0){
         //! СМЕРТЬ
@@ -277,6 +293,15 @@ void show_pet(void)
     } else{
         pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
         pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;
+
+        // Если собачка ест
+        if(isFeed && pet.pathImageWithBone){
+            if(pet.textureWithBone == NULL)
+                loadTexture(pet.pathImageWithBone);
+            renderTextureScaled(pet.textureWithBone, pet.x, pet.y, pet.scaleW, pet.scaleH);
+
+            return;
+        }
 
         if(!pet.stayAnim){
             if(!pet.texture)
@@ -311,6 +336,10 @@ void invisible_pet(void) {
         SDL_DestroyTexture(pet.texture);
         pet.texture = NULL;
     }
+    if (pet.textureWithBone) {
+        SDL_DestroyTexture(pet.textureWithBone);
+        pet.textureWithBone = NULL;
+    }
 }
 
 void save_game(int id) {
@@ -333,6 +362,10 @@ void save_game(int id) {
 
             // Сохраняем саму строку pathImage
             fwrite(pet.pathImage, sizeof(char), len, file);
+
+            len = strlen(pet.pathImageWithBone) + 1;  // включая терминальный ноль
+            fwrite(&len, sizeof(len), 1, file);
+            fwrite(pet.pathImageWithBone, sizeof(char), len, file);
 
             len = strlen(pet.name) + 1;  // включая терминальный ноль
             fwrite(&len, sizeof(len), 1, file);

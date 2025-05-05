@@ -3,6 +3,7 @@
 
 #include "animation.h"
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 
 
 /**
@@ -25,6 +26,8 @@ typedef struct
     char   *name;          // Динамический буфер для имени
     SDL_Texture* texture; // Текстура 
     Animation* stayAnim;   // АФК анимация 
+    SDL_Texture* textureWithBone; // Текстура с костью в зубах
+    char* pathImageWithBone; // Путь до картинки с костью
     char* pathImage;      // Текущие изображение питомца
     int x;               // Позиция
     int y;
@@ -46,7 +49,7 @@ extern Pet pet;
 void init_pet(int id);
 
 // Показывать питомца посреди экрана
-void show_pet(void);
+void show_pet(bool isFeed);
 
 // Удалить питомца с экрана - перестать показывать и очистить память всвязи с этим
 void invisible_pet(void);

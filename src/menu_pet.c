@@ -19,16 +19,21 @@ typedef struct {
     Animation* anim;
     float scaleW;
     float scaleH;
+    char pathBone[64];
 } SkinPet ;
 
 
 
 // Массив путей до скинов
 static SkinPet SKIN_PATHS[MAX_SKINS] = {
-    {"assets/pets/pet.png", NULL, 0.2, 0.2},
-    {"assets/pets/pet_white.png", NULL, 0.8, 0.8},
-    {"assets/pets/pet_gsd.png", NULL, 1, 1},
-    {"assets/pets/pet_pug.png", NULL, 0.9, 0.9},
+    {"assets/pets/pet.png", NULL, 0.2, 0.2, 
+        "assets/pets/pet_bone.png"},
+    {"assets/pets/pet_white.png", NULL, 0.8, 0.8, 
+        "assets/pets/pet_white_bone.png"},
+    {"assets/pets/pet_gsd.png", NULL, 1, 1,
+    "assets/pets/pet_gsd_bone.png"},
+    {"assets/pets/pet_pug.png", NULL, 0.9, 0.9,
+    "assets/pets/pet_pug_bone.png"},
 
 };
 
@@ -131,6 +136,9 @@ static void onApplyClick() {
     if(SKIN_PATHS[selectedSkinIndex].anim){ // Если есть анимация для питомца
         pet.stayAnim = SKIN_PATHS[selectedSkinIndex].anim;
     }
+
+    pet.pathImageWithBone = SKIN_PATHS[selectedSkinIndex].pathBone;
+    pet.textureWithBone = loadTexture(SKIN_PATHS[selectedSkinIndex].pathBone);
 
     onexittButtonClick();
     // Дополнительно: обновить сцену или вывести сообщение «Скин применён»

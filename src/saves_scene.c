@@ -76,7 +76,7 @@ static void saves_render() {
     for(int i = 0; i < SAVES; i++){
         // Рисуем кнопку
         savesButton[i].rect.x = WINDOW_WIDTH/2-300/2;
-        savesButton[i].rect.y = (WINDOW_HEIGHT/2)-(100)+(i*150);
+        savesButton[i].rect.y = (WINDOW_HEIGHT/2)-(250)+(i*150);
         renderButton(&savesButton[i]);
     }
 }

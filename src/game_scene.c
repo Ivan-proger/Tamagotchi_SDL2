@@ -290,8 +290,7 @@ static void game_render() {
     customButton.rect.y = 100;    
     renderButton(&customButton); 
 
-    // Рисуем картинку
-    show_pet();
+
 
     // Эффект гладить (сердечки)
     if(duration < durationcheer){
@@ -308,6 +307,9 @@ static void game_render() {
 
     // Эффект летящей кости к собаке при кормлении 
     if(movingBone.elapsed < movingBone.duration){
+        // Рисуем картинку питомца
+        show_pet(true);
+
         // Обновляем точки полета
         movingBone.startX = feedButton.rect.x-20; 
         movingBone.startY = feedButton.rect.y-20;
@@ -337,7 +339,7 @@ static void game_render() {
                         &center,       // точка вращения
                         SDL_FLIP_NONE  // без отражения 
         );
-    }
+    } else {show_pet(false);}
 }
 
 // Удаление сцены

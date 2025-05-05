@@ -4,5 +4,5 @@
 
 game.exe
 game
-tamagotchi_save.dat
+*.dat
 compile_commands.json
