@@ -31,6 +31,11 @@ void init_pet(void)
         // Загружаем строку pathImage
         fread(pet.pathImage, sizeof(char), len, file);
 
+        // Считываем имя питомца
+        fread(&len, sizeof(len), 1, file);
+        pet.name = malloc(len);
+        fread(pet.name, sizeof(char), len, file);
+
         fread(&pet.health, sizeof(unsigned char), 1, file);
         fread(&pet.satiety, sizeof(unsigned char), 1, file);
         fread(&pet.cheer, sizeof(unsigned char), 1, file);
@@ -104,7 +109,8 @@ void init_pet(void)
 
         return;
     }    
-
+    pet.name = malloc(1);
+    pet_set_name("dog");    
     pet.pathImage = "assets/pets/pet.png";
     pet.stayAnim = NULL;
     pet.scaleH = 0.2;
@@ -212,6 +218,22 @@ void show_pet(void)
     }
 }
 
+// Смена имени питомца
+void pet_set_name(const char *new_name) {
+    // Вычисляем длину новой строки
+    size_t new_len = strlen(new_name);
+
+    size_t want = new_len + 1;
+    char *tmp = realloc(pet.name, want);
+    if (!tmp) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Pet_SetName: realloc(%zu) failed\n", want);
+        return;
+    }
+    pet.name = tmp;
+    memcpy(pet.name, new_name, want);
+}
+
 // Удаление сцены
 void invisible_pet(void) {
     if (pet.texture) {
@@ -231,6 +253,10 @@ void save_game(void) {
 
             // Сохраняем саму строку pathImage
             fwrite(pet.pathImage, sizeof(char), len, file);
+
+            len = strlen(pet.name) + 1;  // включая терминальный ноль
+            fwrite(&len, sizeof(len), 1, file);
+            fwrite(pet.name, sizeof(char), len, file);
 
             fwrite(&pet.health, sizeof(unsigned char), 1, file);
             fwrite(&pet.satiety, sizeof(unsigned char), 1, file);

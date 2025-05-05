@@ -6,7 +6,9 @@
 #include "scene_manager.h"
 #include "menu_pet.h"
 #include "ui.h"     
-#include "pet.h"        
+#include "pet.h"  
+#include "text_input.h"      
+#include "notify.h"
 
 // Количество скинов
 #define MAX_SKINS 4
@@ -44,6 +46,10 @@ static Button exittButton; // Кнопка выход
 static Button prevButton; // Кнопка назад проматать ленту скинов
 static Button nextButton; // Кнопка вперед проматать ленту скинов
 static Button applyButton; // Кнопка выбрать скин
+static Button applyNameButton; // Кнопка подтверждения смены имени
+
+// Поле для смены имени питомца
+static InputField nameField;
 
 // Метод для удаления меню
 static void menuPet_destroy(void) {
@@ -52,6 +58,7 @@ static void menuPet_destroy(void) {
     destroyButton(&applyButton);
     destroyButton(&nextButton);
     destroyButton(&prevButton);
+    destroyButton(&applyNameButton);
 
     SDL_DestroyTexture(prevSkin);
     SDL_DestroyTexture(postSkin);
@@ -65,6 +72,9 @@ static void menuPet_destroy(void) {
             }
         }
     }
+
+    // Выключаем поле
+    InputField_Destroy(&nameField);
 }
 
 // Перезагрузка изображений(скинов)
@@ -122,6 +132,15 @@ static void onApplyClick() {
     // Дополнительно: обновить сцену или вывести сообщение «Скин применён»
 }
 
+// Кнопка применить новое имя
+static void onApplyClickSetName() {
+    char* new_name = InputField_GetText(&nameField);
+    SDL_Log("Новое имя: %s", new_name);
+    pet_set_name(new_name);
+    // Смена названия окна
+    SDL_SetWindowTitle(gWindow, new_name);
+    notify_user(pet.name, "Имя изменено!");
+}
 // Инициализация меню(его создание и отображение)
 static void menuPet_init() {
     // Инициализация кнопки (координаты, размеры)
@@ -129,7 +148,6 @@ static void menuPet_init() {
     initButton(&prevButton, 50, 400, 50, 50, "assets/button_left.png", NULL, NULL , onPrevClick, NULL);
     initButton(&nextButton, 100, 400, 50, 50, "assets/button_right.png", NULL, NULL , onNextClick, NULL);
     initButton(&applyButton, 200, 400, 100, 50, "assets/button_accept.png", NULL, NULL , onApplyClick, NULL);
-
     // Инициализация анимаций
     SKIN_PATHS[1].anim = createAnimationOneType(
         "assets/animations/pet_white_anim.png", 
@@ -148,6 +166,21 @@ static void menuPet_init() {
     // Загрузите текущий скин в "previewTexture"
     selectedSkinIndex = 0;
     reloadPreviewTexture();
+
+    // Шрифт для смены имени питомца
+    TTF_Font* font = TTF_OpenFont("assets/fonts/BenbowSemibold.ttf", 24);
+    if (!font) {
+        SDL_Log("Ошибка загрузки шрифта: %s", TTF_GetError());
+        // Обработка ошибки
+    }
+
+    SDL_Rect rectNameField = {100, 25, 300, 55};
+    SDL_Color colornameField = {0,0,0,255};
+    InputField_Init(&nameField, font, colornameField, rectNameField);
+    InputField_SetText(&nameField, pet.name);
+    // Кнопка подтверждения смены имени
+    initButton(&applyNameButton, 110+300, 25, 100/3, 50/2, "assets/button_accept.png", NULL, NULL , onApplyClickSetName, NULL);
+    
 }
 
 
@@ -159,6 +192,10 @@ static void menuPet_handle_events(SDL_Event* e) {
     handleButtonEvent(&applyButton, e);
     handleButtonEvent(&nextButton, e);
     handleButtonEvent(&prevButton, e);
+    handleButtonEvent(&applyNameButton, e);
+
+    // Поле для ввода
+    InputField_HandleEvent(&nameField, e);
 }
 
 // Логика во время меня(обновляется в бесконечном цикле)
@@ -177,6 +214,7 @@ static void menuPet_render() {
     renderButton(&applyButton);
     renderButton(&nextButton);
     renderButton(&prevButton);
+    renderButton(&applyNameButton);
 
     if (previewTexture) {
         SDL_Rect dstRect = { 150, 100, 170, 170 }; // примерное место и размер
@@ -192,6 +230,9 @@ static void menuPet_render() {
             renderTexture(prevSkin, &dstRect);
         }
     }
+
+    // Поле для ввода
+    InputField_Render(&nameField);
 }
 
 

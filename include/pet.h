@@ -22,6 +22,7 @@
  */
 typedef struct
 {
+    char   *name;          // Динамический буфер для имени
     SDL_Texture* texture; // Текстура 
     Animation* stayAnim;   // АФК анимация 
     char* pathImage;      // Текущие изображение питомца
@@ -59,6 +60,9 @@ void add_satiety(unsigned char value);
 
 // Отрисовка анимации
 void update_pet(double delta, float scaling);
+
+// Смена имени питомца
+void pet_set_name(const char *new_name);
 
 // Сохранить данные о питомце
 void save_game(void);
