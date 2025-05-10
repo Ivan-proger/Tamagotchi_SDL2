@@ -194,7 +194,9 @@ static void game_handle_events(SDL_Event* e) {
 
     if (e->type == SDL_KEYDOWN) {
         // Пример: ESC -> вернуть в меню
-        if (e->key.keysym.sym == SDLK_ESCAPE) {
+        if (e->key.keysym.sym == SDLK_ESCAPE ||
+            e->key.keysym.scancode == SDL_SCANCODE_AC_BACK
+        ) {
             extern Scene MENU_SCENE;
             save_game(pet.id);
             set_scene(&MENU_SCENE);
