@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "scene_manager.h"
 
 static Scene* current_scene = NULL;

@@ -1,5 +1,6 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "SDL_render.h"
+#include "globals.h"
 #include "graphics.h"
 #include "animation.h"
 #include "game_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
@@ -26,14 +27,14 @@ typedef struct {
 
 // Массив путей до скинов
 static SkinPet SKIN_PATHS[MAX_SKINS] = {
-    {"assets/pets/pet.png", NULL, 0.2, 0.2, 
-        "assets/pets/pet_bone.png"},
-    {"assets/pets/pet_white.png", NULL, 0.8, 0.8, 
-        "assets/pets/pet_white_bone.png"},
-    {"assets/pets/pet_gsd.png", NULL, 1, 1,
-    "assets/pets/pet_gsd_bone.png"},
-    {"assets/pets/pet_pug.png", NULL, 0.9, 0.9,
-    "assets/pets/pet_pug_bone.png"},
+    {"pets/pet.png", NULL, 0.2, 0.2, 
+        "pets/pet_bone.png"},
+    {"pets/pet_white.png", NULL, 0.8, 0.8, 
+        "pets/pet_white_bone.png"},
+    {"pets/pet_gsd.png", NULL, 1, 1,
+    "pets/pet_gsd_bone.png"},
+    {"pets/pet_pug.png", NULL, 0.9, 0.9,
+    "pets/pet_pug_bone.png"},
 
 };
 
@@ -155,20 +156,20 @@ static void onApplyClickSetName() {
 // Инициализация меню(его создание и отображение)
 static void menuPet_init() {
     // Инициализация кнопки (координаты, размеры)
-    initButton(&exittButton, 25, 25, 50, 50, "assets/button-return.png", NULL, NULL, onexittButtonClick, NULL);
-    initButton(&prevButton, 50, 400, 50, 50, "assets/button_left.png", NULL, NULL , onPrevClick, NULL);
-    initButton(&nextButton, 100, 400, 50, 50, "assets/button_right.png", NULL, NULL , onNextClick, NULL);
-    initButton(&applyButton, 200, 400, 100, 50, "assets/button_accept.png", NULL, NULL , onApplyClick, NULL);
+    initButton(&exittButton, 25, 25, 50, 50, "button-return.png", NULL, NULL, onexittButtonClick, NULL);
+    initButton(&prevButton, 50, 400, 50, 50, "button_left.png", NULL, NULL , onPrevClick, NULL);
+    initButton(&nextButton, 100, 400, 50, 50, "button_right.png", NULL, NULL , onNextClick, NULL);
+    initButton(&applyButton, 200, 400, 100, 50, "button_accept.png", NULL, NULL , onApplyClick, NULL);
     // Инициализация анимаций
     SKIN_PATHS[1].anim = createAnimationOneType(
-        "assets/animations/pet_white_anim.png", 
+        "animations/pet_white_anim.png", 
         300,
         300,
         9, 
         0.5
     );
     SKIN_PATHS[2].anim = createAnimationOneType(
-        "assets/animations/pet_gsd_anim.png", 
+        "animations/pet_gsd_anim.png", 
         300,
         300,
         8, 
@@ -179,7 +180,7 @@ static void menuPet_init() {
     reloadPreviewTexture();
 
     // Шрифт для смены имени питомца
-    TTF_Font* font = TTF_OpenFont("assets/fonts/BenbowSemibold.ttf", 24);
+    TTF_Font* font = TTF_OpenFont(getAssetPath("fonts/BenbowSemibold.ttf"), 24);
     if (!font) {
         SDL_Log("Ошибка загрузки шрифта: %s", TTF_GetError());
         // Обработка ошибки
@@ -190,7 +191,7 @@ static void menuPet_init() {
     InputField_Init(&nameField, font, colornameField, rectNameField);
     InputField_SetText(&nameField, pet.name);
     // Кнопка подтверждения смены имени
-    initButton(&applyNameButton, 110+300, 25, 100/3, 50/2, "assets/button_accept.png", NULL, NULL , onApplyClickSetName, NULL);
+    initButton(&applyNameButton, 110+300, 25, 100/3, 50/2, "button_accept.png", NULL, NULL , onApplyClickSetName, NULL);
     
 }
 

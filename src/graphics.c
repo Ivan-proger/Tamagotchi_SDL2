@@ -1,7 +1,8 @@
 #include "graphics.h"
+#include "file_manager.h"
 #include <stdio.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL_image.h>
+#include <SDL2_gfxPrimitives.h>
 
 
 // Глобальные переменные для работы с графикой из вне
@@ -55,6 +56,14 @@ bool initGraphics(const char* title, int width, int height) {
         );
         return false;
     }
+
+    #if defined(__ANDROID__) // Если у нас андроид устанавливаем фулскрин
+
+        // Установим полноэкранный «рабочий стол» (без изменения разрешения)
+        SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    #endif
+
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!gRenderer) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Не удалось создать рендерер: %s", SDL_GetError());
@@ -74,7 +83,9 @@ bool initGraphics(const char* title, int width, int height) {
     return true;
 }
 
-SDL_Texture* loadTexture(const char* filePath) {
+SDL_Texture* loadTexture(char* filePath) {
+    filePath = getAssetPath(filePath);// Передаем нужную директорию
+
     SDL_Texture* texture = IMG_LoadTexture(gRenderer, filePath);
     if (!texture) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ошибка загрузки текстуры (%s): %s", filePath, IMG_GetError());
@@ -94,6 +105,9 @@ SDL_Texture* loadTexture(const char* filePath) {
             NULL // или указатель на ваше окно
         );
     }
+
+    SDL_free(filePath); // Очищаем память
+
     return texture;
 }
 /**

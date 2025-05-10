@@ -1,5 +1,5 @@
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
+#include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "globals.h"
 #include "graphics.h"
 #include "ui.h"
@@ -21,16 +21,16 @@
  */
 void initButton(Button *button,
                 int x, int y, int w, int h,
-                const char *defaultImagePath,
-                const char *hoverImagePath,
-                const char *clickImagePath,
+                char *defaultImagePath,
+                char *hoverImagePath,
+                char *clickImagePath,
                 void (*onClick)(void),
                 Mix_Chunk *clickSound)
 {
     button->rect.x = x;
     button->rect.y = y;
-    button->rect.w = w;
-    button->rect.h = h;
+    button->rect.w = w;// * WINDOW_HEIGHT/700;
+    button->rect.h = h;// * WINDOW_HEIGHT/700;
 
     // Загружаем основную текстуру
     button->defaultTexture = loadTexture(defaultImagePath);

@@ -1,8 +1,9 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdbool.h>
+#include "file_manager.h"
 
 // Ширина окна
 extern int WINDOW_WIDTH;

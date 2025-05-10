@@ -1,7 +1,7 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 // Структура анимации
 /**

@@ -1,5 +1,5 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 #include "graphics.h"
 #include "menu_scene.h"
 #include "title_scene.h"
@@ -83,14 +83,14 @@ static void menu_init() {
     // Инициализация кнопки (координаты, размеры)
     initButton(&startButton,
         0, 0, 500*0.4, 300*0.4,
-        "assets/button_start.png",
-        "assets/button_start_watch.png", // используем для hover
-        "assets/button_start_click.png", // используем для click
+        "button_start.png",
+        "button_start_watch.png", // используем для hover
+        "button_start_click.png", // используем для click
         onStartButtonClick,
         NULL
     );
 
-    TTF_Font* font = TTF_OpenFont("assets/fonts/BenbowSemibold.ttf", 24);
+    TTF_Font* font = TTF_OpenFont(getAssetPath("fonts/BenbowSemibold.ttf"), 24);
     if (!font) {
         SDL_Log("Ошибка загрузки шрифта: %s", TTF_GetError());
         // Обработка ошибки

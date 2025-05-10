@@ -1,5 +1,5 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL2_gfxPrimitives.h> // Для aaLineRGBA (антиалиасинговой линии)
+#include <SDL.h>
+#include <SDL2_gfxPrimitives.h> // Для aaLineRGBA (антиалиасинговой линии)
 #include <stdlib.h>
 #include "graphics.h"
 #include "pet.h"
@@ -134,7 +134,7 @@ static void dead_destroy(void) {
 // Реакция на нажатаю кнопку
 static void onexitButtonClick() {
     // Логика при нажатии кнопки
-    const char *prefix = "saves/save№";
+    const char *prefix = "save№";
     const char *suffix = ".dat";
 
     // Вычисляем необходимую длину для итоговой строки
@@ -142,7 +142,8 @@ static void onexitButtonClick() {
     char *filename = malloc(len + 1); // +1 для нулевого терминатора
 
     snprintf(filename, len + 1, "%s%d%s", prefix, pet.id, suffix);
-    remove(filename);
+    remove(get_save_path(filename));
+    SDL_free(filename); // очищаем
     init_pet(pet.id);
     set_scene(&GAME_SCENE);
 }
@@ -151,7 +152,7 @@ static void onexitButtonClick() {
 // Инициализация меню(его создание и отображение)
 static void dead_init() {
     // Загрузка фона
-    background = loadTexture("assets/Background.png");
+    background = loadTexture("Background.png");
 
     // Инициализация капель
     for (int i = 0; i < NUM_DROPLETS; i++) {
@@ -170,9 +171,9 @@ static void dead_init() {
     // Инициализация кнопки (координаты, размеры)
     initButton(&exitButton,
         WINDOW_WIDTH/2-101, WINDOW_HEIGHT-100, 203, 108,
-        "assets/button_restart.png",
-        "assets/button_restart_hover.png", // используем default для hover
-        "assets/button_restart_hover.png", // используем default для click
+        "button_restart.png",
+        "button_restart_hover.png", // используем default для hover
+        "button_restart_hover.png", // используем default для click
         onexitButtonClick,
         NULL
     );
@@ -181,14 +182,14 @@ static void dead_init() {
     dif_pieces = 1;
 
     // Разделяем на эллементы
-    petTextures = splitTextureFour(pet.pathImage);
+    petTextures = splitTextureFour(getAssetPath(pet.pathImage));
     if(!(pet.x) && !(pet.y)){
         pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
         pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;        
     }
     
     // Спрайты 
-    text_dead = loadTexture("assets/potracheno.png");
+    text_dead = loadTexture("potracheno.png");
     int textW, textH;
     sizeTexture(text_dead, &textW, &textH);
     text_dead_rect.w = textW/2;
@@ -197,7 +198,7 @@ static void dead_init() {
 
     if(IS_SOUND){
         // Музыка
-        backgroundMusic = Mix_LoadMUS("assets/sounds/music_dead.mp3");
+        backgroundMusic = Mix_LoadMUS(getAssetPath("sounds/music_dead.mp3"));
         if (!backgroundMusic) {
             SDL_Log("Failed to load music: %s\n", Mix_GetError());
         }

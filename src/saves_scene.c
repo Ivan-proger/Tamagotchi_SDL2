@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "saves_scene.h"
 #include "game_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
 #include "pet.h"
@@ -35,7 +35,7 @@ static void onButtonClick() {
 
 // Инициализация меню(его создание и отображение)
 static void saves_init() {
-    char* s1 = "assets/save_button";
+    char* s1 = "save_button";
     char* s3 = ".png";
 
     // Инициализация кнопки (координаты, размеры)

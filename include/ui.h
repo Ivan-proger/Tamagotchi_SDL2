@@ -1,9 +1,9 @@
 #ifndef UI_H
 #define UI_H
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdbool.h>
-#include <SDL2/SDL_mixer.h>
+#include <SDL_mixer.h>
 #include "animation.h"
 
 // Вытаскиваем базовый звук для нажатия на кнопку
@@ -38,9 +38,9 @@ typedef struct {
  */
 void initButton(Button *button,
                 int x, int y, int w, int h,
-                const char *defaultImagePath,
-                const char *hoverImagePath,
-                const char *clickImagePath,
+                char *defaultImagePath,
+                char *hoverImagePath,
+                char *clickImagePath,
                 void (*onClick)(void),
                 Mix_Chunk *clickSound);
 

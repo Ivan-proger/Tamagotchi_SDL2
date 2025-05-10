@@ -1,7 +1,7 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_mixer.h>
+#include <SDL2_gfxPrimitives.h>
 #include "SDL_render.h"
 #include "animation.h"
 #include "graphics.h"
@@ -101,38 +101,38 @@ static void onCustomize(void){
 static void game_init() {
     load_texture_pet();
 
-    background = loadTexture("assets/Background.png");
+    background = loadTexture("Background.png");
     rectdict.x = 0;
     rectdict.y = 0;
 
     //* Кнопка погладить
     initButton(&caressButton,
         0, 0, 100, 100,
-        "assets/button_caress1.png",
+        "button_caress1.png",
         NULL, // используем default для hover
         NULL, // используем default для click
         onCaressButton,
-        Mix_LoadWAV("assets/sounds/petting_dog.wav")
+        Mix_LoadWAV(getAssetPath("sounds/petting_dog.wav"))
     );
     // Анимация кнопки
-    initButtonAnimation(&caressButton, "assets/animations/button_caress_anim.png", 4, 0.2, 300, 300);
+    initButtonAnimation(&caressButton, "animations/button_caress_anim.png", 4, 0.2, 300, 300);
 
     //* Кнопка покормить
     initButton(&feedButton,
         0, 0, 100, 100,
-        "assets/button_feed1.png",
-        "assets/button_feed2.png", // используем default для hover
-        "assets/button_feed1.png", // используем default для click
+        "button_feed1.png",
+        "button_feed2.png", // используем default для hover
+        "button_feed1.png", // используем default для click
         onFeedButton,
-        Mix_LoadWAV("assets/sounds/eat.wav")
+        Mix_LoadWAV(getAssetPath("sounds/eat.wav"))
     );
     // Анимация кнопки
-    initButtonAnimation(&feedButton, "assets/animations/button_feed_anim.png", 12, 0.1, 135, 135);
+    initButtonAnimation(&feedButton, "animations/button_feed_anim.png", 12, 0.1, 135, 135);
 
     //* Кнопка кастомизация
     initButton(&customButton,
         0, 0, 80, 80,
-        "assets/customize_button.png",
+        "customize_button.png",
         NULL, // используем default для hover
         NULL, // используем default для click
         onCustomize,
@@ -140,25 +140,25 @@ static void game_init() {
     ); 
 
     int tempW, tempH;
-    heart = loadTexture("assets/heart.png");
+    heart = loadTexture("heart.png");
     
     sizeTexture(heart, &tempW, &tempH);
     heartrect.w = tempW*0.1;
     heartrect.h = tempH*0.1;
 
-    satiety = loadTexture("assets/satiety.png");
+    satiety = loadTexture("satiety.png");
     sizeTexture(heart, &tempW, &tempH);
     satietyrect.w = tempW*0.1;
     satietyrect.h = tempH*0.1;
 
-    tcheer = loadTexture("assets/cheer.png");
+    tcheer = loadTexture("cheer.png");
     sizeTexture(tcheer, &tempW, &tempH);
     cheerrect.w = tempW*0.1;
     cheerrect.h = tempH*0.1;
 
     if(IS_SOUND){
         // Музыка
-        backgroundMusic = Mix_LoadMUS("assets/sounds/main_music.mp3");
+        backgroundMusic = Mix_LoadMUS(getAssetPath("sounds/main_music.mp3"));
         if (!backgroundMusic) {
             SDL_Log("Failed to load music: %s\n", Mix_GetError());
         }
@@ -167,10 +167,10 @@ static void game_init() {
     }
 
     // Текстура для эффекта сердечек
-    hearteffect = loadTexture("assets/heart.png");
+    hearteffect = loadTexture("heart.png");
 
     // Инициализация кости
-    movingBone.texture = loadTexture("assets/bone.png");
+    movingBone.texture = loadTexture("bone.png");
     movingBone.startAngle = 0; movingBone.targetAngle = 360;
     movingBone.duration = 1.0;  // 2 секунды полёт+вращение
     movingBone.elapsed = 3.0;
@@ -279,10 +279,10 @@ static void game_render() {
 
     // Кнопка гладить
     caressButton.rect.x = WINDOW_WIDTH/2-50;
-    caressButton.rect.y = WINDOW_HEIGHT-150;    
+    caressButton.rect.y = WINDOW_HEIGHT-150+30;    
     renderButton(&caressButton);
     // Кнопка кормить
-    feedButton.rect.x = caressButton.rect.x+140; 
+    feedButton.rect.x = caressButton.rect.x+150; 
     feedButton.rect.y = caressButton.rect.y-70;
     renderButton(&feedButton);
     // Кнопка кастомизвция

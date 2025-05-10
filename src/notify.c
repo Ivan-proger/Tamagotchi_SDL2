@@ -1,7 +1,7 @@
 #include "notify.h"
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "file_manager.h"
 
 // LINUX 👨‍❤️‍💋‍👨
 #if defined(__linux__)    
@@ -42,7 +42,7 @@
 
         // Встраиваем иконку (стандартная иконка info)
         // можно также load pixbuf из файла
-        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(pet.pathImage, &error);
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(getAssetPath(pet.pathImage), &error);
         if (!pixbuf) {
             g_printerr("Ошибка загрузки изображения: %s\n", error->message);
             g_error_free(error);
@@ -68,7 +68,7 @@
 
 #else
   // Всё остальное: fallback на SDL2 modal message box :contentReference[oaicite:7]{index=7}
-  #include <SDL2/SDL.h>
+  #include <SDL.h>
   void notify_user(const char* title, const char* msg) {
       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
                                title, msg, NULL);

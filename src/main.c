@@ -1,9 +1,9 @@
 #include <locale.h>
 #include "graphics.h"
 #include "globals.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <stdio.h>
 #include "scene_manager.h"
 #include "title_scene.h"
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Базовый звук нажатия кнопки (если не указан иной в ее инициализации)
-    clickSound = Mix_LoadWAV("assets/sounds/click.wav");
+    clickSound = Mix_LoadWAV(getAssetPath("sounds/click.wav"));
     if (!clickSound) {
         SDL_Log("Failed to load sound: %s\n", Mix_GetError());
     }

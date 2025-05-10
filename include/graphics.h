@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 // Глобальные указатели на окно и рендерер (если они нужны во многих модулях)
 extern SDL_Window* gWindow;
@@ -15,7 +15,7 @@ extern SDL_Renderer* gRenderer;
 bool initGraphics(const char* title, int width, int height);
 
 // Функция для загрузки текстуры из файла.
-SDL_Texture* loadTexture(const char* filePath);
+SDL_Texture* loadTexture(char* filePath);
 
 // Функция для отрисовки текстуры на экране.
 // texture — указатель на текстуру, dstRect — область, куда выводить.

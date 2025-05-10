@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "menu_scene.h"
 #include "title_scene.h"
 #include "saves_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
@@ -56,7 +56,7 @@ void onSoundFalseClick(){
     VALUE_SOUND = MIX_MAX_VOLUME;
     initButton(&soundButton,
         0, 0, 256/2, 256/2,
-        "assets/sound_true.png",
+        "sound_true.png",
         NULL, // используем для hover
         NULL, // используем для click
         onSoundTrueClick,
@@ -70,7 +70,7 @@ void onSoundTrueClick(){
     VALUE_SOUND = 0;
     initButton(&soundButton,
         0, 0, 256/2, 256/2,
-        "assets/sound_false.png",
+        "sound_false.png",
         NULL, // используем для hover
         NULL, // используем для click
         onSoundFalseClick,
@@ -83,15 +83,15 @@ static void menu_init() {
     // Инициализация кнопки (координаты, размеры)
     initButton(&startButton,
         WINDOW_WIDTH/2-250, WINDOW_HEIGHT/2-150, 500, 300,
-        "assets/button_start.png",
-        "assets/button_start_watch.png", // используем для hover
-        "assets/button_start_click.png", // используем для click
+        "button_start.png",
+        "button_start_watch.png", // используем для hover
+        "button_start_click.png", // используем для click
         onStartButtonClick,
         NULL
     );
     initButton(&powerOffButton,
         0, 0, 100, 100,
-        "assets/poweroff.png",
+        "poweroff.png",
         NULL, // используем для hover
         NULL, // используем для click
         onPowerOFFButtonClick,
@@ -99,7 +99,7 @@ static void menu_init() {
     );
     initButton(&helpButton,
         0, 0, 100, 100,
-        "assets/info.png",
+        "info.png",
         NULL, // используем для hover
         NULL, // используем для click
         onHelpButtonClick,
@@ -109,7 +109,7 @@ static void menu_init() {
     if(IS_SOUND){
         initButton(&soundButton,
             0, 0, 256/2, 256/2,
-            "assets/sound_true.png",
+            "sound_true.png",
             NULL, // используем для hover
             NULL, // используем для click
             onSoundTrueClick,
@@ -118,7 +118,7 @@ static void menu_init() {
     } else{
         initButton(&soundButton,
             0, 0, 256/2, 256/2,
-            "assets/sound_false.png",
+            "sound_false.png",
             NULL, // используем для hover
             NULL, // используем для click
             onSoundFalseClick,

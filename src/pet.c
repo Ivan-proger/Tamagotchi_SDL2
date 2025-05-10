@@ -1,5 +1,5 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include <time.h>
 #include <stdbool.h>
@@ -14,6 +14,8 @@
 #include "notify.h"
 
 
+char* get_save_path(const char* filename);
+
 Pet pet;
 
 time_t lastSavedTime;
@@ -21,7 +23,7 @@ time_t lastSavedTime;
 //! Инициализация питомца (и загрузка из файла в будущем)
 void init_pet(int id)
 {
-    const char *prefix = "saves/save№";
+    const char *prefix = "save№";
     const char *suffix = ".dat";
 
     // Вычисляем необходимую длину для итоговой строки
@@ -35,7 +37,7 @@ void init_pet(int id)
         return;
     }
 
-    FILE *file = fopen(filename, "rb");
+    FILE *file = fopen(get_save_path(filename), "rb");
     if(file) {
         // Загружаем длину строки pathImage
         size_t len;
@@ -203,8 +205,8 @@ void init_pet(int id)
     }    
     pet.name = malloc(1);
     pet_set_name("dog");    
-    pet.pathImage = "assets/pets/pet.png";
-    pet.pathImageWithBone = "assets/pets/pet_bone.png";
+    pet.pathImage = "pets/pet.png";
+    pet.pathImageWithBone = "pets/pet_bone.png";
     pet.stayAnim = NULL;
     pet.scaleH = 0.2;
     pet.scaleW = 0.2;
@@ -306,7 +308,7 @@ void show_pet(bool isFeed)
         set_scene(&DEAD_SCENE);
     } else{
         pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
-        pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;
+        pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2+50;
 
         // Если собачка ест
         if(isFeed && pet.pathImageWithBone){
@@ -359,7 +361,7 @@ void invisible_pet(void) {
 void save_game(int id) {
     lastSavedTime = time(NULL);
 
-    const char *prefix = "saves/save№";
+    const char *prefix = "save№";
     const char *suffix = ".dat";
 
     // Вычисляем необходимую длину для итоговой строки
@@ -368,7 +370,7 @@ void save_game(int id) {
 
     snprintf(filename, len + 1, "%s%d%s", prefix, id, suffix);
 
-    FILE *file = fopen(filename, "wb");
+    FILE *file = fopen(get_save_path(filename), "wb");
         if (file) {
             // Сохраняем длину строки pathImage
             size_t len = strlen(pet.pathImage) + 1;  // включая терминальный ноль

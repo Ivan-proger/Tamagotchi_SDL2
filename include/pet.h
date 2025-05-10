@@ -2,7 +2,7 @@
 #define PET_H
 
 #include "animation.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdbool.h>
 
 
