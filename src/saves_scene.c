@@ -11,12 +11,23 @@
 // Кнопка старт
 static Button savesButton[SAVES];
 
+// Кнопка назад
+static Button exittButton; // Кнопка выход
+
 // Метод для удаления меню
 static void saves_destroy(void) {
+    destroyButton(&exittButton);
     // Удаляем ресурсы кнопки (если есть текстуры)
     for(int i = 0; i < SAVES; i++){
         destroyButton(&savesButton[i]);
     }
+}
+
+// Реакция на нажатаю кнопку выхода
+static void onexittButtonClick() {
+    extern Scene MENU_SCENE;
+    // Логика при нажатии кнопки;
+    set_scene(&MENU_SCENE);
 }
 
 // Реакция на нажатаю кнопку
@@ -46,7 +57,7 @@ static void saves_init() {
         snprintf(result, len + 1, "%s%d%s", s1, i+1, s3);
 
         initButton(&savesButton[i],
-            WINDOW_WIDTH/2-150/2, WINDOW_HEIGHT/2-250/2+i*50, 300, 160,
+            0, 0, 300, 160,
             result,
             NULL, // используем для hover
             NULL, // используем для click
@@ -54,15 +65,37 @@ static void saves_init() {
             NULL
         );
     }
+
+    initButton(&exittButton, 
+        50*sizerW*0.5,50*sizerH*0.5, 
+        50*sizerH, 50*sizerH, 
+        "button-return.png", 
+        NULL, 
+        NULL, 
+        onexittButtonClick, 
+        NULL
+    );
 }
 
 // Обработка эвентов когда меню инициализировано 
 // @param e - эвенты из SDL_Event
-static void saves_handle_events(SDL_Event* e) {
+static void saves_handle_events(SDL_Event* e) {\
+    handleButtonEvent(&exittButton, e);
     // Обрабатываем кнопку
     for(int i = 0; i < SAVES; i++){
         handleButtonEvent(&savesButton[i], e);
     }
+
+    if (e->type == SDL_KEYDOWN) {
+        // Пример: ESC -> вернуть в меню
+        if (e->key.keysym.sym == SDLK_ESCAPE ||
+            e->key.keysym.scancode == SDL_SCANCODE_AC_BACK
+        ) {
+            extern Scene MENU_SCENE;
+            set_scene(&MENU_SCENE);
+        }
+    }
+
 }
 
 // Логика во время меня(обновляется в бесконечном цикле)
@@ -75,9 +108,17 @@ static void saves_update(float delta) {
 static void saves_render() {
     for(int i = 0; i < SAVES; i++){
         // Рисуем кнопку
-        savesButton[i].rect.x = WINDOW_WIDTH/2-300/2;
-        savesButton[i].rect.y = (WINDOW_HEIGHT/2)-(250)+(i*150);
+        savesButton[i].rect.w = 300*sizerH*0.9;
+        savesButton[i].rect.h = 160*sizerH*0.9;
+        savesButton[i].rect.x = WINDOW_WIDTH/2-savesButton[i].rect.w/2;
+        savesButton[i].rect.y = (1.0*WINDOW_HEIGHT/2)-(1.0*savesButton[i].rect.h*SAVES/2)+(i*150*sizerH);
         renderButton(&savesButton[i]);
+
+        exittButton.rect.w = 100*sizerH*0.5;
+        exittButton.rect.h = 100*sizerH*0.5, 
+        exittButton.rect.x = 50*sizerW; 
+        exittButton.rect.y = 30*sizerH; 
+        renderButton(&exittButton);
     }
 }
 

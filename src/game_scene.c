@@ -11,6 +11,7 @@
 #include "ui.h"
 #include "globals.h"
 #include "menu_pet.h"
+#include "file_manager.h"
 
 // Количество эффектов в анимации (спрайтов)
 #define counteffects 7
@@ -143,18 +144,18 @@ static void game_init() {
     heart = loadTexture("heart.png");
     
     sizeTexture(heart, &tempW, &tempH);
-    heartrect.w = tempW*0.1;
-    heartrect.h = tempH*0.1;
+    heartrect.w = tempW*0.1*sizerW;
+    heartrect.h = tempH*0.1*sizerW;
 
     satiety = loadTexture("satiety.png");
     sizeTexture(heart, &tempW, &tempH);
-    satietyrect.w = tempW*0.1;
-    satietyrect.h = tempH*0.1;
+    satietyrect.w = tempW*0.1*sizerW;
+    satietyrect.h = tempH*0.1*sizerW;
 
     tcheer = loadTexture("cheer.png");
     sizeTexture(tcheer, &tempW, &tempH);
-    cheerrect.w = tempW*0.1;
-    cheerrect.h = tempH*0.1;
+    cheerrect.w = tempW*0.1*sizerW;
+    cheerrect.h = tempH*0.1*sizerW;
 
     if(IS_SOUND){
         // Музыка
@@ -250,6 +251,11 @@ static void game_render() {
     rectdict.h = WINDOW_HEIGHT;
     renderTexture(background, &rectdict);
 
+    sparm.x = 30*sizerW;
+    sparm.y = 30*sizerH;
+    sparm.w = 40*sizerW;
+    sparm.h = 110*sizerH;
+
     // Рисуем здоровье
     renderProgressBarRounded(sparm.x, sparm.y, 
                             sparm.w, sparm.h, 
@@ -280,16 +286,22 @@ static void game_render() {
     renderTexture(tcheer, &cheerrect); // Картинка мясо под шкалой
 
     // Кнопка гладить
-    caressButton.rect.x = WINDOW_WIDTH/2-50;
-    caressButton.rect.y = WINDOW_HEIGHT-150+30;    
+    caressButton.rect.w = 100*MIN(sizerH, sizerW);
+    caressButton.rect.h = 100*MIN(sizerH, sizerW);
+    caressButton.rect.x = WINDOW_WIDTH/2 - caressButton.rect.w/2;
+    caressButton.rect.y = WINDOW_HEIGHT-1.0*caressButton.rect.h*2+30*sizerH;    
     renderButton(&caressButton);
     // Кнопка кормить
-    feedButton.rect.x = caressButton.rect.x+150; 
-    feedButton.rect.y = caressButton.rect.y-70;
+    feedButton.rect.w = 100*MIN(sizerH, sizerW);
+    feedButton.rect.h = 100*MIN(sizerH, sizerW);
+    feedButton.rect.x = caressButton.rect.x+150*MIN(sizerH, sizerW); 
+    feedButton.rect.y = caressButton.rect.y-70*MIN(sizerH, sizerW);
     renderButton(&feedButton);
     // Кнопка кастомизвция
-    customButton.rect.x = WINDOW_WIDTH-100;
-    customButton.rect.y = 100;    
+    customButton.rect.w = 80*MIN(sizerH, sizerW);
+    customButton.rect.h = 80*MIN(sizerH, sizerW);
+    customButton.rect.x = WINDOW_WIDTH-100*sizerW;
+    customButton.rect.y = 100*sizerH;    
     renderButton(&customButton); 
 
 

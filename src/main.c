@@ -9,9 +9,14 @@
 #include "title_scene.h"
 #include "menu_scene.h"
 #include "pet.h"
+#include "file_manager.h"
 
-int WINDOW_WIDTH = 460;
-int WINDOW_HEIGHT = 700;
+int WINDOW_WIDTH = BASE_WINDOW_WIDTH;
+int WINDOW_HEIGHT = BASE_WINDOW_HEIGH;
+
+// Переменная для масштабирования интерфейса
+float sizerW = 1;
+float sizerH = 1; 
 
 // звук on
 bool IS_SOUND = true;
@@ -99,6 +104,10 @@ int main(int argc, char* argv[]) {
     float fpsTimer = 0.0f;
     float currentFPS = 0.0f;
 
+    // Если вдруг откроется не в том разрешение 
+    sizerW = 1.0*WINDOW_WIDTH/BASE_WINDOW_WIDTH;
+    sizerH = 1.0*WINDOW_HEIGHT/BASE_WINDOW_HEIGH;
+
     while (running) {
         // Выход по кнопке
         if(POWEROFF){
@@ -111,11 +120,16 @@ int main(int argc, char* argv[]) {
                 running = 0;
                 break;
             }
-            // Обработка оконных событий
+            // Обработка оконных событий ИЗМЕНЕНИЯ ОКНА
             if (e.type == SDL_WINDOWEVENT) {
                 if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                     WINDOW_WIDTH = e.window.data1;
                     WINDOW_HEIGHT = e.window.data2;
+
+                    sizerW = 1.0*WINDOW_WIDTH/BASE_WINDOW_WIDTH;
+                    sizerH = 1.0*WINDOW_HEIGHT/BASE_WINDOW_HEIGH;
+
+                    SDL_Log("Изменения размеров окна w: %d  h: %d", WINDOW_WIDTH, WINDOW_HEIGHT);
                     // Дополнительно можно обновлять матрицы или другие параметры рендеринга
                 }
             }

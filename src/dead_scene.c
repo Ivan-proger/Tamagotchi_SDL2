@@ -8,6 +8,7 @@
 #include "scene_manager.h"
 #include "ui.h"             
 #include "globals.h"   
+#include "file_manager.h"
 
 
 // Константы
@@ -210,6 +211,17 @@ static void dead_init() {
 // Обработка эвентов когда меню инициализировано 
 // @param e - эвенты из SDL_Event
 static void dead_handle_events(SDL_Event* e) {
+    // Выход в меню
+    if (e->type == SDL_KEYDOWN) {
+        // Пример: ESC -> вернуть в меню
+        if (e->key.keysym.sym == SDLK_ESCAPE ||
+            e->key.keysym.scancode == SDL_SCANCODE_AC_BACK
+        ) {
+            extern Scene MENU_SCENE;
+            save_game(pet.id);
+            set_scene(&MENU_SCENE);
+        }
+    }
     // Обрабатываем кнопку
     handleButtonEvent(&exitButton, e);
 }

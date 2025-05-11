@@ -208,8 +208,8 @@ void init_pet(int id)
     pet.pathImage = "pets/pet.png";
     pet.pathImageWithBone = "pets/pet_bone.png";
     pet.stayAnim = NULL;
-    pet.scaleH = 0.2;
-    pet.scaleW = 0.2;
+    pet.scaleH = 0.2 * MIN(sizerW, sizerH);
+    pet.scaleW = 0.2* MIN(sizerW, sizerH);
     pet.health = 200;
     pet.satiety = 100;
     pet.cheer = 50;
@@ -262,41 +262,44 @@ double gtimer;
  */
 void update_pet(double delta, float scaling)
 {
-    // Складываем и ждем секунды
-    gtimer += delta;
-    if (gtimer >= 10.0){
-        if((int)pet.satiety - 2*scaling > 0){
-            pet.satiety -= (unsigned char)2*scaling;
+    // Проверяем есть ли вообще питомец 
+    if(pet.name){
+        // Складываем и ждем секунды
+        gtimer += delta;
+        if (gtimer >= 10.0){
+            if((int)pet.satiety - 2*scaling > 0){
+                pet.satiety -= (unsigned char)2*scaling;
+            }
+            if((int)pet.cheer - 1*scaling > 0){
+                pet.cheer -= (unsigned char)1*scaling;
+            }
+            // Изменение здоровья от характеристик 
+            if(pet.cheer > 150 && pet.satiety > 80){
+                pet.health = ((int)pet.health + 10*scaling > 255) ? 255 : pet.health + 10*scaling;
+            } else{
+                pet.
+                health = ((int)pet.health - 3*scaling < 0) ? 0 : pet.health - 1*scaling;
+            }
+            pet.timeLife += gtimer;
+            gtimer = 0.0;
         }
-        if((int)pet.cheer - 1*scaling > 0){
-            pet.cheer -= (unsigned char)1*scaling;
+        
+        if(notify_timer >= 10.0){
+            if (pet.health < 40){
+                notify_user(pet.name, "У меня мало здоровья!");
+                notify_timer=0.0;
+            }
+            if (pet.cheer >= 250){
+                notify_user(pet.name, "Я полностью доволен");
+                notify_timer=0.0;
+            }
+            if (pet.satiety >= 250){
+                notify_user(pet.name, "Я больше не голоден");
+                notify_timer=0.0;
+            }
         }
-        // Изменение здоровья от характеристик 
-        if(pet.cheer > 150 && pet.satiety > 80){
-            pet.health = ((int)pet.health + 10*scaling > 255) ? 255 : pet.health + 10*scaling;
-        } else{
-            pet.
-            health = ((int)pet.health - 3*scaling < 0) ? 0 : pet.health - 1*scaling;
-        }
-        pet.timeLife += gtimer;
-        gtimer = 0.0;
+        notify_timer+=delta;
     }
-    
-    if(notify_timer >= 10.0){
-        if (pet.health < 40){
-            notify_user(pet.name, "У меня мало здоровья!");
-            notify_timer=0.0;
-        }
-        if (pet.cheer >= 250){
-            notify_user(pet.name, "Я полностью доволен");
-            notify_timer=0.0;
-        }
-        if (pet.satiety >= 250){
-            notify_user(pet.name, "Я больше не голоден");
-            notify_timer=0.0;
-        }
-    }
-    notify_timer+=delta;
 }
 
 // Отображение питомца
@@ -307,8 +310,8 @@ void show_pet(bool isFeed)
         notify_user("Тамагочи", "Хозяин я умер!");
         set_scene(&DEAD_SCENE);
     } else{
-        pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
-        pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2+50;
+        pet.x = 1.0*WINDOW_WIDTH/2-((pet.w*pet.scaleW))/2;
+        pet.y = 1.0*WINDOW_HEIGHT/2-((pet.h*pet.scaleH))/2+pet.h*pet.scaleH/4;
 
         // Если собачка ест
         if(isFeed && pet.pathImageWithBone){

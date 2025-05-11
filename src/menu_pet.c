@@ -1,6 +1,6 @@
 #include <SDL.h>
 #include "SDL_render.h"
-#include "globals.h"
+#include "file_manager.h"
 #include "graphics.h"
 #include "animation.h"
 #include "game_scene.h"        // Чтобы при нажатии перейти в GAME_SCENE
@@ -10,6 +10,7 @@
 #include "pet.h"  
 #include "text_input.h"      
 #include "notify.h"
+#include "globals.h"
 
 // Количество скинов
 #define MAX_SKINS 4
@@ -107,7 +108,6 @@ static void reloadPreviewTexture(void) {
 
 // Реакция на нажатаю кнопку выхода
 static void onexittButtonClick() {
-    extern SDL_Renderer* gRenderer;
     // Логика при нажатии кнопки;
     set_scene(&GAME_SCENE);
 }
@@ -131,8 +131,8 @@ static void onApplyClick() {
     pet.texture = loadTexture(SKIN_PATHS[selectedSkinIndex].path);
     pet.pathImage = SKIN_PATHS[selectedSkinIndex].path;
 
-    pet.scaleW = SKIN_PATHS[selectedSkinIndex].scaleW;
-    pet.scaleH = SKIN_PATHS[selectedSkinIndex].scaleH;
+    pet.scaleW = SKIN_PATHS[selectedSkinIndex].scaleW * MIN(sizerW, sizerH);
+    pet.scaleH = SKIN_PATHS[selectedSkinIndex].scaleH * MIN(sizerW, sizerH);
 
     if(SKIN_PATHS[selectedSkinIndex].anim){ // Если есть анимация для питомца
         pet.stayAnim = SKIN_PATHS[selectedSkinIndex].anim;
@@ -156,7 +156,7 @@ static void onApplyClickSetName() {
 // Инициализация меню(его создание и отображение)
 static void menuPet_init() {
     // Инициализация кнопки (координаты, размеры)
-    initButton(&exittButton, 25, 25, 50, 50, "button-return.png", NULL, NULL, onexittButtonClick, NULL);
+    initButton(&exittButton, 0, 0, 0, 0, "button-return.png", NULL, NULL, onexittButtonClick, NULL);
     initButton(&prevButton, 50, 400, 50, 50, "button_left.png", NULL, NULL , onPrevClick, NULL);
     initButton(&nextButton, 100, 400, 50, 50, "button_right.png", NULL, NULL , onNextClick, NULL);
     initButton(&applyButton, 200, 400, 100, 50, "button_accept.png", NULL, NULL , onApplyClick, NULL);
@@ -180,13 +180,13 @@ static void menuPet_init() {
     reloadPreviewTexture();
 
     // Шрифт для смены имени питомца
-    TTF_Font* font = TTF_OpenFont(getAssetPath("fonts/BenbowSemibold.ttf"), 24);
+    TTF_Font* font = TTF_OpenFont(getAssetPath("fonts/BenbowSemibold.ttf"), 24*sizerH);
     if (!font) {
         SDL_Log("Ошибка загрузки шрифта: %s", TTF_GetError());
         // Обработка ошибки
     }
 
-    SDL_Rect rectNameField = {100, 25, 300, 55};
+    SDL_Rect rectNameField = {0, 0, 0, 0};
     SDL_Color colornameField = {0,0,0,255};
     InputField_Init(&nameField, font, colornameField, rectNameField);
     InputField_SetText(&nameField, pet.name);
@@ -219,32 +219,64 @@ static void menuPet_update(float delta) {
 // Отображение меню(его статической состоявляющей)
 static void menuPet_render() {
     // Рисуем кнопку
-    exittButton.rect.x = 25;
-    exittButton.rect.y = 25;
-
+    exittButton.rect.w = 75*sizerH*0.5;
+    exittButton.rect.h = 75*sizerH*0.5, 
+    exittButton.rect.x = 25*sizerW; 
+    exittButton.rect.y = 30*sizerH; 
     renderButton(&exittButton);
-    renderButton(&applyButton);
-    renderButton(&nextButton);
-    renderButton(&prevButton);
-    renderButton(&applyNameButton);
 
+    applyButton.rect.w = 100*sizerH;
+    applyButton.rect.h = 50*sizerH;
+    applyButton.rect.x = WINDOW_WIDTH/2 - applyButton.rect.w/2;
+    applyButton.rect.y = WINDOW_HEIGHT - applyButton.rect.h - 100*sizerH;
+    renderButton(&applyButton);
+
+    nextButton.rect.w = 50*sizerH;
+    nextButton.rect.h = 50*sizerH;
+    nextButton.rect.x = applyButton.rect.x + applyButton.rect.w + 20*sizerW;
+    nextButton.rect.y = applyButton.rect.y;
+    renderButton(&nextButton);
+
+    prevButton.rect.w = 50*sizerH;
+    prevButton.rect.h = 50*sizerH;
+    prevButton.rect.x = applyButton.rect.x - prevButton.rect.w - 20*sizerW;
+    prevButton.rect.y = applyButton.rect.y;
+    renderButton(&prevButton);
+
+
+    nameField.rect.w = WINDOW_WIDTH - exittButton.rect.x*2 - exittButton.rect.w/2 - applyNameButton.rect.w*2;
+    nameField.rect.h = 55*sizerH;
+    nameField.rect.x = 25*sizerW + exittButton.rect.x + exittButton.rect.w;
+    nameField.rect.y = 25*sizerH;
+    // Поле для ввода
+    InputField_Render(&nameField);
+
+    applyNameButton.rect.w = (1.0*60)*sizerH;
+    applyNameButton.rect.h = nameField.rect.h;
+    applyNameButton.rect.x = WINDOW_WIDTH - (WINDOW_WIDTH - nameField.rect.w - nameField.rect.x)/2 - applyNameButton.rect.w/2;
+    applyNameButton.rect.y = nameField.rect.y;
+    renderButton(&applyNameButton);   
+    
     if (previewTexture) {
-        SDL_Rect dstRect = { 150, 100, 170, 170 }; // примерное место и размер
+        SDL_Rect dstRect = { 
+            150*sizerW, 
+            nameField.rect.y+nameField.rect.h + 100 * sizerH, 
+            170*MIN(sizerH, sizerW), 
+            170*MIN(sizerH, sizerW) 
+        }; // место и размер
+
         renderTexture(previewTexture, &dstRect);
 
         if(selectedSkinIndex+1 < MAX_SKINS){
-            dstRect.x += 170;
+            dstRect.x += dstRect.w + 10*sizerW;
             renderTexture(postSkin, &dstRect);
         }
 
         if(selectedSkinIndex - 1 >= 0){
-            dstRect.x = 10;
+            dstRect.x = 10*sizerW;
             renderTexture(prevSkin, &dstRect);
         }
-    }
-
-    // Поле для ввода
-    InputField_Render(&nameField);
+    }    
 }
 
 

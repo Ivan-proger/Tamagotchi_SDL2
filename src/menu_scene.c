@@ -55,7 +55,8 @@ void onSoundFalseClick(){
     IS_SOUND = true;
     VALUE_SOUND = MIX_MAX_VOLUME;
     initButton(&soundButton,
-        0, 0, 256/2, 256/2,
+        0, 0, 
+        0, 0, // Обновляем в рендере
         "sound_true.png",
         NULL, // используем для hover
         NULL, // используем для click
@@ -69,7 +70,8 @@ void onSoundTrueClick(){
     IS_SOUND = false;
     VALUE_SOUND = 0;
     initButton(&soundButton,
-        0, 0, 256/2, 256/2,
+        0, 0, 
+        0, 0, // Обновляем в рендере
         "sound_false.png",
         NULL, // используем для hover
         NULL, // используем для click
@@ -82,7 +84,7 @@ void onSoundTrueClick(){
 static void menu_init() {
     // Инициализация кнопки (координаты, размеры)
     initButton(&startButton,
-        WINDOW_WIDTH/2-250, WINDOW_HEIGHT/2-150, 500, 300,
+        0, 0, 500, 300,
         "button_start.png",
         "button_start_watch.png", // используем для hover
         "button_start_click.png", // используем для click
@@ -90,7 +92,8 @@ static void menu_init() {
         NULL
     );
     initButton(&powerOffButton,
-        0, 0, 100, 100,
+        0, 0, 
+        0, 0,
         "poweroff.png",
         NULL, // используем для hover
         NULL, // используем для click
@@ -98,7 +101,7 @@ static void menu_init() {
         NULL
     );
     initButton(&helpButton,
-        0, 0, 100, 100,
+        0, 0, 100*sizerH, 100*sizerH,
         "info.png",
         NULL, // используем для hover
         NULL, // используем для click
@@ -146,20 +149,28 @@ static void menu_update(float delta) {
 // Отображение меню(его статической состоявляющей)
 static void menu_render() {
     // Рисуем кнопку
-    startButton.rect.x = WINDOW_WIDTH/2-250;
-    startButton.rect.y = WINDOW_HEIGHT/2-150;
+    startButton.rect.w = 500*MIN(sizerH, sizerW);
+    startButton.rect.h = 300*MIN(sizerH, sizerW);
+    startButton.rect.x = WINDOW_WIDTH/2-startButton.rect.w/2;
+    startButton.rect.y = WINDOW_HEIGHT/2-startButton.rect.h/2;
     renderButton(&startButton);
 
-    powerOffButton.rect.x = WINDOW_WIDTH-120;
-    powerOffButton.rect.y = 50;
+    powerOffButton.rect.x = WINDOW_WIDTH-powerOffButton.rect.w-20*sizerW;
+    powerOffButton.rect.y = 30*sizerH/2;
+    powerOffButton.rect.w = 75*sizerH*0.9;
+    powerOffButton.rect.h = 75*sizerH*0.9;
     renderButton(&powerOffButton);
 
-    helpButton.rect.x = 50;
-    helpButton.rect.y = 50;
+    helpButton.rect.x = 80*sizerW;
+    helpButton.rect.y = 30*sizerH/2;
+    helpButton.rect.w = 75*sizerH*0.9;
+    helpButton.rect.h = 75*sizerH*0.9;
     renderButton(&helpButton);
 
-    soundButton.rect.x = WINDOW_WIDTH-140;
-    soundButton.rect.y = WINDOW_HEIGHT-140;
+    soundButton.rect.x = WINDOW_WIDTH-0.9*soundButton.rect.w-20*sizerH;
+    soundButton.rect.y = WINDOW_HEIGHT-0.9*soundButton.rect.w-10*sizerH;
+    soundButton.rect.w = (0.8*256/2)*sizerH*0.9;
+    soundButton.rect.h = (0.8*256/2)*sizerH*0.9;
     renderButton(&soundButton);
 }
 

@@ -1,11 +1,13 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include "SDL_render.h"
 #include "graphics.h"
 #include "menu_scene.h"
 #include "title_scene.h"
 #include "scene_manager.h"
 #include "ui.h"             
-#include "globals.h"   
+#include "globals.h" 
+#include "file_manager.h"  
 
 // Кнопка старт
 static Button startButton;
@@ -26,9 +28,15 @@ SDL_Color textColor = {0, 0, 0, 255}; // Белый цвет
  * @return SDL_Texture*, содержащая отрендеренный текст, или NULL в случае ошибки.
  */
  SDL_Texture* renderTextFromFile(const char* filePath, TTF_Font* font, SDL_Color textColor, int wrapLength) {
-    FILE *file = fopen(filePath, "r");
+    FILE *file = fopen(getAssetPath(filePath), "r");
     if (!file) {
         SDL_Log("Не удалось открыть файл: %s", filePath);
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Не удалось открыть файл", 
+            NULL
+        );
         return NULL;
     }
     
@@ -41,6 +49,12 @@ SDL_Color textColor = {0, 0, 0, 255}; // Белый цвет
     char* text = malloc(fileSize + 1);
     if (!text) {
         SDL_Log("Ошибка выделения памяти для текста");
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Ошибка выделения памяти для текста", 
+            NULL
+        );
         fclose(file);
         return NULL;
     }
@@ -55,6 +69,12 @@ SDL_Color textColor = {0, 0, 0, 255}; // Белый цвет
     
     if (!textSurface) {
         SDL_Log("Ошибка рендеринга текста: %s", TTF_GetError());
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Ошибка рендеринга текста", 
+            NULL
+        );
         return NULL;
     }
     
@@ -68,6 +88,7 @@ SDL_Color textColor = {0, 0, 0, 255}; // Белый цвет
 static void menu_destroy(void) {
     // Удаляем ресурсы кнопки (если есть текстуры)
     destroyButton(&startButton);
+    SDL_DestroyTexture(textTexture);
 }
 
 // Реакция на нажатаю кнопку
@@ -82,7 +103,9 @@ static void onStartButtonClick() {
 static void menu_init() {
     // Инициализация кнопки (координаты, размеры)
     initButton(&startButton,
-        0, 0, 500*0.4, 300*0.4,
+        0, 0, 
+        500*sizerH*0.5, 
+        300*sizerH*0.5,
         "button_start.png",
         "button_start_watch.png", // используем для hover
         "button_start_click.png", // используем для click
@@ -93,13 +116,25 @@ static void menu_init() {
     TTF_Font* font = TTF_OpenFont(getAssetPath("fonts/BenbowSemibold.ttf"), 24);
     if (!font) {
         SDL_Log("Ошибка загрузки шрифта: %s", TTF_GetError());
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Ошибка загрузки шрифта", 
+            NULL
+        );
         // Обработка ошибки
     }
     
     // Создаем текстуру из файла с переносом строк по ширине окна
-    textTexture = renderTextFromFile("info.txt", font, textColor, WINDOW_WIDTH);
+    textTexture = renderTextFromFile("txt/info.txt", font, textColor, WINDOW_WIDTH);
     if (!textTexture) {
         SDL_Log("Не удалось создать текстуру из файла");
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            "Не удалось создать текстуру из файла", 
+            NULL
+        );
         return;
     }
 }
@@ -125,8 +160,10 @@ static void menu_render() {
     renderTexture(textTexture, &destRect);
     
     // Рисуем кнопку
-    startButton.rect.x = WINDOW_WIDTH-200;
-    startButton.rect.y = WINDOW_HEIGHT-100;
+    startButton.rect.x = WINDOW_WIDTH-0.9*startButton.rect.w - 10*sizerH;
+    startButton.rect.y = WINDOW_HEIGHT-0.9*startButton.rect.h - 10*sizerH;
+    startButton.rect.w = 500*sizerH*0.5;
+    startButton.rect.h = 300*sizerH*0.5;    
 
     renderButton(&startButton);
 }
