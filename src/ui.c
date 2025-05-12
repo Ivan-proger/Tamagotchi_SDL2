@@ -137,7 +137,8 @@ void renderButton(Button *button)
         currentTexture = button->hoverTexture;
     
     // Отрисовка выбранной текстуры
-    renderTexture(currentTexture, &button->rect);
+    if(button->defaultTexture)
+        renderTexture(currentTexture, &button->rect);
 }
 
 /**
@@ -201,14 +202,20 @@ void handleButtonEvent(Button *button, SDL_Event *event)
  */
 void destroyButton(Button *button)
 {
-    if (button->defaultTexture)
+    if (button->defaultTexture) {
         SDL_DestroyTexture(button->defaultTexture);
+        button->defaultTexture=NULL;
+    }
 
     // Если hover и click текстуры отличаются от default, удаляем их отдельно
-    if (button->hoverTexture && button->hoverTexture != button->defaultTexture)
+    if (button->hoverTexture && button->hoverTexture != button->defaultTexture) {
         SDL_DestroyTexture(button->hoverTexture);
-    if (button->clickTexture && button->clickTexture != button->defaultTexture)
+        button->hoverTexture=NULL;
+    }
+    if (button->clickTexture && button->clickTexture != button->defaultTexture) {
         SDL_DestroyTexture(button->clickTexture);
+        button->clickTexture = NULL;
+    }
     
     // Анимация
     if (button->clickAnim)
@@ -217,4 +224,6 @@ void destroyButton(Button *button)
     // Звук
     if (button->clickSound)
         Mix_FreeChunk(button->clickSound);
+
+    button = NULL;
 }

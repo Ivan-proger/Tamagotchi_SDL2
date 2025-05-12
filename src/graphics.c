@@ -1,5 +1,6 @@
 #include "graphics.h"
 #include "file_manager.h"
+#include "globals.h"
 #include <stdio.h>
 #include <SDL_image.h>
 #include <SDL2_gfxPrimitives.h>
@@ -83,8 +84,10 @@ bool initGraphics(const char* title, int width, int height) {
     return true;
 }
 
-SDL_Texture* loadTexture(char* filePath) {
+SDL_Texture* loadTexture(char* filePath) {     
     filePath = getAssetPath(filePath);// Передаем нужную директорию
+
+    if(!filePath || !gRenderer) return NULL;
 
     SDL_Texture* texture = IMG_LoadTexture(gRenderer, filePath);
     if (!texture) {
@@ -439,29 +442,26 @@ void renderProgressBarRounded(int x, int y,
 
     // Рисуем обводку шкалы с округлёнными углами
     filledRoundedRectangleRGBA(
-        x-5, y-5, x + width + 5, y + height + 5,
-        borderRadius,
+        x-4*sizerH, 
+        y-4*sizerH, 
+        x + width + 4*sizerH, 
+        y + height + 4*sizerH,
+        borderRadius*sizerH,
         borderColor.r, borderColor.g, borderColor.b, borderColor.a
         );
 
     // Рисуем фон шкалы с округлёнными углами
     filledRoundedRectangleRGBA(
         x, y, x + width, y + height,
-        borderRadius,
+        borderRadius*sizerH,
         bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
     // Рисуем заполненную область, если значение > 0
     if (fillHeight > 0) {
         // Подбираем подходящий радиус для заполненной области,
-        // чтобы избежать слишком сильного округления, если fillWidth маленький
-        int fillRadius = borderRadius;
-        if (fillHeight < borderRadius * 2) {
-            fillRadius = fillHeight / 2;
-        }
-
         filledRoundedRectangleRGBA(
             x, (height - fillHeight) + y, width + x, height + y,
-            fillRadius,
+            borderRadius*sizerH,
             fgColor.r-value, fgColor.g+value, fgColor.b, fgColor.a
         );
     }

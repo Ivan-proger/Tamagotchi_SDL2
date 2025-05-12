@@ -311,7 +311,7 @@ void show_pet(bool isFeed)
         set_scene(&DEAD_SCENE);
     } else{
         pet.x = 1.0*WINDOW_WIDTH/2-((pet.w*pet.scaleW))/2;
-        pet.y = 1.0*WINDOW_HEIGHT/2-((pet.h*pet.scaleH))/2+pet.h*pet.scaleH/4;
+        pet.y = 1.0*WINDOW_HEIGHT/2-((pet.h*pet.scaleH))/2+(pet.h*pet.scaleH)/5;
 
         // Если собачка ест
         if(isFeed && pet.pathImageWithBone){
@@ -358,6 +358,10 @@ void invisible_pet(void) {
     if (pet.textureWithBone) {
         SDL_DestroyTexture(pet.textureWithBone);
         pet.textureWithBone = NULL;
+    }
+    if(pet.stayAnim) {
+        SDL_DestroyTexture(pet.stayAnim->spriteSheet);
+        pet.stayAnim->spriteSheet=NULL;
     }
 }
 

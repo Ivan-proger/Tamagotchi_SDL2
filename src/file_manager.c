@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <SDL_image.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,6 +15,23 @@
 // - На других платформах (Linux, Windows, macOS) возвращает "<path_to_exe>/assets/filename".
 // Освобождать возвращённую строку нужно через SDL_free().
 char* getAssetPath(const char* filename) {
+    if(!filename){
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ошибка: пути не существует (%s): %s", filename, IMG_GetError());
+        // Форматируем сообщение в буфер
+        char errorMsg[512];
+        snprintf(errorMsg, sizeof(errorMsg), 
+            "Нету пути до файла\nОшибка: %s", 
+            IMG_GetError()
+        );
+
+        // Выводим сообщение
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Ошибка",
+            errorMsg,
+            NULL // или указатель на ваше окно
+        );
+    }
 #if defined(__ANDROID__)
     // Для Android внутри APK SDL_RWFromFile ищет сразу в assets/
     return SDL_strdup(filename);

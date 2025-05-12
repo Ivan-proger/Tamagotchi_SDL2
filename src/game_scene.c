@@ -305,8 +305,9 @@ static void game_render() {
     renderButton(&customButton); 
 
 
-
     // Эффект гладить (сердечки)
+    areaheart.w=40*sizerH;
+    areaheart.h=40*sizerH;
     if(duration < durationcheer){
         fade_anim_with_timer(
             hearteffect, 
@@ -340,8 +341,8 @@ static void game_render() {
         };
         // Подготовка размеров dst
         SDL_QueryTexture(movingBone.texture, NULL, NULL, &dst.w, &dst.h);
-        dst.w *= 0.5;  // Немного уменьшаем
-        dst.h *= 0.5;
+        dst.w *= 0.5*sizerH;  // Немного уменьшаем
+        dst.h *= 0.5*sizerH;
         // Центр вращения — середина текстуры
         SDL_Point center = { dst.w / 2, dst.h / 2 };  // по умолчанию центр
         // Отрисовка с поворотом

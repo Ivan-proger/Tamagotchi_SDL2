@@ -128,8 +128,9 @@ static void dead_destroy(void) {
         petTextures = NULL;
     }
 
-    if(IS_SOUND)
-    Mix_FreeMusic(backgroundMusic); // Перестать воспроизводить музыку
+    if(IS_SOUND && backgroundMusic){
+        Mix_FreeMusic(backgroundMusic); // Перестать воспроизводить музыку
+    }
 }
 
 // Реакция на нажатаю кнопку
@@ -202,9 +203,10 @@ static void dead_init() {
         backgroundMusic = Mix_LoadMUS(getAssetPath("sounds/music_dead.mp3"));
         if (!backgroundMusic) {
             SDL_Log("Failed to load music: %s\n", Mix_GetError());
+        } else {
+            // Проиграть музыку бесконечно (-1)
+            Mix_PlayMusic(backgroundMusic, -1);
         }
-        // Проиграть музыку бесконечно (-1)
-        Mix_PlayMusic(backgroundMusic, -1);
     }
 }
 
@@ -341,7 +343,7 @@ static void dead_render() {
         if (splashes[i].active) {
             filledCircleRGBA(gRenderer,
                 (Sint16)splashes[i].x,(Sint16)splashes[i].y,
-                (Sint16)splashes[i].radius,
+                (Sint16)splashes[i].radius*MIN(sizerH, sizerW),
                 splashes[i].color.r,
                 splashes[i].color.g,
                 splashes[i].color.b,
@@ -354,7 +356,7 @@ static void dead_render() {
     for (int i = 0; i < NUM_DROPLETS; i++) {
         aalineRGBA(gRenderer, 
                    (Sint16)droplets[i].x, (Sint16)droplets[i].y, 
-                   (Sint16)droplets[i].x, (Sint16)(droplets[i].y + droplets[i].length), 
+                   (Sint16)droplets[i].x+2, (Sint16)(droplets[i].y + droplets[i].length), 
                    1, 5, 249, droplets[i].alpha);
     }
 
@@ -363,8 +365,10 @@ static void dead_render() {
     renderTexture(text_dead, &text_dead_rect);
 
     // Рисуем кнопку
-    exitButton.rect.x = WINDOW_WIDTH/2-101;
-    exitButton.rect.y = WINDOW_HEIGHT-150;
+    exitButton.rect.w = 203*sizerH;
+    exitButton.rect.h = 108*sizerH;
+    exitButton.rect.x = WINDOW_WIDTH/2-exitButton.rect.w/2;
+    exitButton.rect.y = WINDOW_HEIGHT-exitButton.rect.h-20*sizerH;
     renderButton(&exitButton);
 }
 

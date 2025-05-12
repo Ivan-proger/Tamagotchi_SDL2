@@ -32,7 +32,7 @@ static SkinPet SKIN_PATHS[MAX_SKINS] = {
         "pets/pet_bone.png"},
     {"pets/pet_white.png", NULL, 0.8, 0.8, 
         "pets/pet_white_bone.png"},
-    {"pets/pet_gsd.png", NULL, 1, 1,
+    {"pets/pet_gsd.png", NULL, 0.9, 0.9,
     "pets/pet_gsd_bone.png"},
     {"pets/pet_pug.png", NULL, 0.9, 0.9,
     "pets/pet_pug_bone.png"},
@@ -70,14 +70,14 @@ static void menuPet_destroy(void) {
     SDL_DestroyTexture(prevSkin);
     prevSkin = NULL;
     SDL_DestroyTexture(postSkin);
-    prevSkin = NULL;
+    postSkin = NULL;
     SDL_DestroyTexture(previewTexture);
     previewTexture = NULL;
 
     // Очищаем анимации
     for(int i = 0; i < MAX_SKINS; i++){
         if(SKIN_PATHS[i].anim){
-            if(SKIN_PATHS[i].anim != SKIN_PATHS[selectedSkinIndex].anim){
+            if(strcmp(SKIN_PATHS[i].path ,SKIN_PATHS[selectedSkinIndex].path) != 0){
                 destroyAnimation(SKIN_PATHS[i].anim);
                 SKIN_PATHS[i].anim = NULL;
             }
@@ -127,6 +127,8 @@ static void onNextClick() {
 static void onApplyClick() {
     // Применяем скин к питомцу
     invisible_pet();
+    if(pet.stayAnim)
+        destroyAnimation(pet.stayAnim);
     pet.stayAnim = NULL;
     pet.texture = loadTexture(SKIN_PATHS[selectedSkinIndex].path);
     pet.pathImage = SKIN_PATHS[selectedSkinIndex].path;
@@ -156,10 +158,30 @@ static void onApplyClickSetName() {
 // Инициализация меню(его создание и отображение)
 static void menuPet_init() {
     // Инициализация кнопки (координаты, размеры)
-    initButton(&exittButton, 0, 0, 0, 0, "button-return.png", NULL, NULL, onexittButtonClick, NULL);
-    initButton(&prevButton, 50, 400, 50, 50, "button_left.png", NULL, NULL , onPrevClick, NULL);
-    initButton(&nextButton, 100, 400, 50, 50, "button_right.png", NULL, NULL , onNextClick, NULL);
-    initButton(&applyButton, 200, 400, 100, 50, "button_accept.png", NULL, NULL , onApplyClick, NULL);
+    initButton(&exittButton, 0, 0, 0, 0, 
+        "button-return.png", 
+        "button-return.png", 
+        "button-return.png", 
+        onexittButtonClick, NULL);
+
+    initButton(&prevButton, 50, 400, 50, 50, 
+        "button_left.png", 
+        "button_accept.png", 
+        "button_accept.png" , 
+        onPrevClick, NULL);
+
+    initButton(&nextButton, 100, 400, 50, 50, 
+        "button_right.png", 
+        "button_right.png", 
+        "button_right.png" , 
+        onNextClick, NULL);
+
+    initButton(&applyButton, 200, 400, 100, 50, 
+        "button_accept.png", 
+        "button_accept.png", 
+        "button_accept.png" , 
+        onApplyClick, NULL);
+
     // Инициализация анимаций
     SKIN_PATHS[1].anim = createAnimationOneType(
         "animations/pet_white_anim.png", 

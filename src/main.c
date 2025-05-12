@@ -1,4 +1,5 @@
 #include <locale.h>
+#include "SDL_timer.h"
 #include "graphics.h"
 #include "globals.h"
 #include <SDL.h>

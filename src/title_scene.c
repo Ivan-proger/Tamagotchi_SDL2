@@ -28,9 +28,9 @@ SDL_Color textColor = {0, 0, 0, 255}; // Белый цвет
  * @return SDL_Texture*, содержащая отрендеренный текст, или NULL в случае ошибки.
  */
  SDL_Texture* renderTextFromFile(const char* filePath, TTF_Font* font, SDL_Color textColor, int wrapLength) {
-    FILE *file = fopen(getAssetPath(filePath), "r");
-    if (!file) {
-        SDL_Log("Не удалось открыть файл: %s", filePath);
+    SDL_RWops *rw = SDL_RWFromFile(getAssetPath(filePath), "rb");
+    if (!rw) {
+        SDL_Log("Ошибка открытия: %s", SDL_GetError());
         SDL_ShowSimpleMessageBox(
             SDL_MESSAGEBOX_ERROR,
             "Ошибка",
@@ -39,33 +39,15 @@ SDL_Color textColor = {0, 0, 0, 255}; // Белый цвет
         );
         return NULL;
     }
-    
-    // Определяем размер файла
-    fseek(file, 0, SEEK_END);
-    long fileSize = ftell(file);
-    rewind(file);
-    
-    // Выделяем память для хранения текста
-    char* text = malloc(fileSize + 1);
-    if (!text) {
-        SDL_Log("Ошибка выделения памяти для текста");
-        SDL_ShowSimpleMessageBox(
-            SDL_MESSAGEBOX_ERROR,
-            "Ошибка",
-            "Ошибка выделения памяти для текста", 
-            NULL
-        );
-        fclose(file);
-        return NULL;
-    }
-    
-    fread(text, 1, fileSize, file);
-    text[fileSize] = '\0';
-    fclose(file);
-    
+    Sint64 size = SDL_RWsize(rw);
+    char* text = SDL_malloc(size + 1);
+    SDL_RWread(rw, text, 1, size);
+    text[size] = '\0';
+    SDL_RWclose(rw);
+
     // Рендерим текст с автоматическим переносом строк
     SDL_Surface* textSurface = TTF_RenderUTF8_Blended_Wrapped(font, text, textColor, wrapLength);
-    free(text);
+    SDL_free(text);
     
     if (!textSurface) {
         SDL_Log("Ошибка рендеринга текста: %s", TTF_GetError());
@@ -113,7 +95,7 @@ static void menu_init() {
         NULL
     );
 
-    TTF_Font* font = TTF_OpenFont(getAssetPath("fonts/BenbowSemibold.ttf"), 24);
+    TTF_Font* font = TTF_OpenFont(getAssetPath("fonts/BenbowSemibold.ttf"), 24*sizerW);
     if (!font) {
         SDL_Log("Ошибка загрузки шрифта: %s", TTF_GetError());
         SDL_ShowSimpleMessageBox(
@@ -156,7 +138,12 @@ static void menu_update(float delta) {
 static void menu_render() {
     
     // Устанавливаем прямоугольник для вывода на весь экран
-    SDL_Rect destRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+    SDL_Rect destRect = { 
+        35*sizerW, 
+        35*sizerH, 
+        WINDOW_WIDTH-50*sizerW, 
+        WINDOW_HEIGHT-50*sizerH 
+    };
     renderTexture(textTexture, &destRect);
     
     // Рисуем кнопку

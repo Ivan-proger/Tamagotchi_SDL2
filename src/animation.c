@@ -64,10 +64,16 @@ Animation* createAnimationOneType(char* spriteSheetPath, int wight, int hight, i
 void destroyAnimation(Animation *anim) {
     if (!anim) return;
     if (anim->frames) {
-        free(anim->frames);
+        SDL_free(anim->frames);
         anim->frames = NULL;
     }
+    if(anim->spriteSheet) {
+        SDL_DestroyTexture(anim->spriteSheet);
+        anim->spriteSheet=NULL;
+    }
+
     free(anim);
+    anim=NULL;
 }
 
 // Обновление анимации: накапливаем время и переключаем кадр, если оно превышает заданное время кадра
