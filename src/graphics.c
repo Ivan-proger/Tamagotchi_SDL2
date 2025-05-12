@@ -456,13 +456,11 @@ void renderProgressBarRounded(int x, int y,
         borderRadius*sizerH,
         bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
-    // Рисуем заполненную область, если значение > 0
-    if (fillHeight > 0) {
-        // Подбираем подходящий радиус для заполненной области,
-        filledRoundedRectangleRGBA(
-            x, (height - fillHeight) + y, width + x, height + y,
-            borderRadius*sizerH,
-            fgColor.r-value, fgColor.g+value, fgColor.b, fgColor.a
-        );
-    }
+    // Подбираем подходящий радиус для заполненной области,
+    filledRoundedRectangleRGBA(
+        x, (height - fillHeight) + y, width + x, height + y,
+        borderRadius*sizerH,
+        fgColor.r-value, fgColor.g+value, fgColor.b, fgColor.a
+    );
+
 }

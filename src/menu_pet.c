@@ -15,28 +15,29 @@
 // Количество скинов
 #define MAX_SKINS 4
 
-// Структура скинов дя пэтов
+// Структура скинов для питомцев
 typedef struct {
-    char path[64];
-    Animation* anim;
-    float scaleW;
-    float scaleH;
-    char pathBone[64];
-} SkinPet ;
-
-
+    char path[64]; // Путь до изображения
+    Animation* anim; // Указатель на анимацию
+    float scaleW; // Скалирование по ширине
+    float scaleH; // Скалирование по высоте
+    char pathBone[64]; // Путь до изображения кормления
+} SkinPet;
 
 // Массив путей до скинов
 static SkinPet SKIN_PATHS[MAX_SKINS] = {
-    {"pets/pet.png", NULL, 0.2, 0.2, 
+    {"pets/pet.png", NULL, 
+        0.2, 0.2, 
         "pets/pet_bone.png"},
-    {"pets/pet_white.png", NULL, 0.8, 0.8, 
+    {"pets/pet_white.png", NULL, 
+        0.8, 0.8, 
         "pets/pet_white_bone.png"},
-    {"pets/pet_gsd.png", NULL, 0.9, 0.9,
+    {"pets/pet_gsd.png", NULL, 
+        0.9, 0.9,
     "pets/pet_gsd_bone.png"},
-    {"pets/pet_pug.png", NULL, 0.9, 0.9,
-    "pets/pet_pug_bone.png"},
-
+    {"pets/pet_pug.png", NULL, 
+        0.9, 0.9,
+        "pets/pet_pug_bone.png"},
 };
 
 // Выбранный скин

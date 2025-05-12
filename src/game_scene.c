@@ -203,8 +203,6 @@ static void game_handle_events(SDL_Event* e) {
             set_scene(&MENU_SCENE);
         }
     }
-
-
 }
 
 /**

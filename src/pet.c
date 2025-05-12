@@ -306,18 +306,22 @@ void update_pet(double delta, float scaling)
 void show_pet(bool isFeed)
 {
     if(pet.health == 0){
-        //! СМЕРТЬ
-        notify_user("Тамагочи", "Хозяин я умер!");
+        //! В случае смерти
+        notify_user(pet.name, "Хозяин я умер!");
         set_scene(&DEAD_SCENE);
     } else{
         pet.x = 1.0*WINDOW_WIDTH/2-((pet.w*pet.scaleW))/2;
         pet.y = 1.0*WINDOW_HEIGHT/2-((pet.h*pet.scaleH))/2+(pet.h*pet.scaleH)/5;
 
-        // Если собачка ест
+        //* Если питомец ест показываем другое изображение
         if(isFeed && pet.pathImageWithBone){
             if(pet.textureWithBone == NULL)
                 loadTexture(pet.pathImageWithBone);
-            renderTextureScaled(pet.textureWithBone, pet.x, pet.y, pet.scaleW, pet.scaleH);
+            renderTextureScaled(
+                pet.textureWithBone,
+                pet.x, pet.y,
+                pet.scaleW, pet.scaleH
+            );
 
             return;
         }
@@ -326,9 +330,15 @@ void show_pet(bool isFeed)
             if(!pet.texture)
                 pet.texture = loadTexture(pet.pathImage);
 
-            renderTextureScaled(pet.texture, pet.x, pet.y, pet.scaleW, pet.scaleH);
+            renderTextureScaled(
+                pet.texture, pet.x, pet.y, 
+                pet.scaleW, pet.scaleH
+            );
         } else {
-            renderAnimation(pet.stayAnim, pet.x, pet.y, (int)(pet.w*pet.scaleW), (int)(pet.h*pet.scaleH));
+            renderAnimation(
+                pet.stayAnim, pet.x, pet.y, 
+                (int)(pet.w*pet.scaleW), (int)(pet.h*pet.scaleH)
+            );
         }
     }
 }
