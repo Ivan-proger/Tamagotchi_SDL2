@@ -166,8 +166,8 @@ static void menuPet_init() {
 
     initButton(&prevButton, 50, 400, 50, 50, 
         "button_left.png", 
-        "button_accept.png", 
-        "button_accept.png" , 
+        "button_left.png", 
+        "button_left.png" , 
         onPrevClick, NULL);
 
     initButton(&nextButton, 100, 400, 50, 50, 
