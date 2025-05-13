@@ -43,13 +43,52 @@ typedef struct
 } Pet;
 
 // Питомец
-extern Pet pet;
+//extern Pet pet;
 
 // Создания питомца и загрузка его сохранения
 void init_pet(int id);
 
+// Возвращает путь (относительный) до статичной картинки 
+char* getTexturePet();
+
+// Установить новую текстуру питомца (Статичное изображение, изображение во время кормления и анимация(по желанию))
+void setTexturePet(char* path, float scaleW, float scaleH, char* pathImageWithBone, Animation* anim);
+
+// Возвращает id питомца
+int getIdPet();
+
+// Возвращает шириину изображения питомца
+int getWidthPet();
+// Возвращает высоту изображения питомца
+int getHighPet();
+
+// Возвращает коэффициент ширины изображения
+float getScaleW();
+// Возвращает коэффициент высоты изображения
+float getScaleH();
+
+// Возвращает имя питомца
+char* getNamePet();
+
+// Возвращает x координату
+int getXpet();
+// Возвращает y координату
+int getYpet();
+
+// Получить здоровье питомца
+unsigned char getHealthPet();
+// Получить настроение питомца
+unsigned char getCheerPet();
+// Получить насыщенность питомца
+unsigned char getSatietyPet();
+
+
+
+// Ставит питомца чуть ниже середины экрана нужно чтобы адаптировать игру под разные разрешения
+void centeringImagePet();
+
 // Показывать питомца посреди экрана
-void show_pet(bool isFeed);
+void showPet(bool isFeed);
 
 // Удалить питомца с экрана - перестать показывать и очистить память всвязи с этим
 void invisible_pet(void);
@@ -67,9 +106,9 @@ void add_satiety(unsigned char value);
 void update_pet(double delta, float scaling);
 
 // Смена имени питомца
-void pet_set_name(const char *new_name);
+void setNamePet(const char *new_name);
 
 // Сохранить данные о питомце
-void save_game(int id);
+void save_game();
 
 #endif

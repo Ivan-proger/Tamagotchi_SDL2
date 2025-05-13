@@ -178,8 +178,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Уничтожаем сцену
-    if(pet.pathImage)
-        save_game(pet.id); //! Сохранение
+    save_game(); //! Сохранение
     scene_destroy();
     Mix_CloseAudio(); // Закрываем музыку
     Mix_FreeChunk(clickSound); // Закрываем базовый звук для нажатия на кнопку

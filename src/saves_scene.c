@@ -34,7 +34,6 @@ static void onexittButtonClick() {
 static void onButtonClick() {
     for(int i = 0; i < SAVES; i++){
         if(savesButton[i].isClicked){
-            pet.id = i;
             init_pet(i);
         }
     }

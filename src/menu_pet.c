@@ -127,34 +127,30 @@ static void onNextClick() {
 // Кнопка применить
 static void onApplyClick() {
     // Применяем скин к питомцу
-    invisible_pet();
-    if(pet.stayAnim)
-        destroyAnimation(pet.stayAnim);
-    pet.stayAnim = NULL;
-    pet.texture = loadTexture(SKIN_PATHS[selectedSkinIndex].path);
-    pet.pathImage = SKIN_PATHS[selectedSkinIndex].path;
+    setTexturePet(
+        SKIN_PATHS[selectedSkinIndex].path,
+        SKIN_PATHS[selectedSkinIndex].scaleW,
+        SKIN_PATHS[selectedSkinIndex].scaleH,
+        SKIN_PATHS[selectedSkinIndex].pathBone,
+        SKIN_PATHS[selectedSkinIndex].anim
+    );
 
-    pet.scaleW = SKIN_PATHS[selectedSkinIndex].scaleW * MIN(sizerW, sizerH);
-    pet.scaleH = SKIN_PATHS[selectedSkinIndex].scaleH * MIN(sizerW, sizerH);
-
-    if(SKIN_PATHS[selectedSkinIndex].anim){ // Если есть анимация для питомца
-        pet.stayAnim = SKIN_PATHS[selectedSkinIndex].anim;
+    char* new_name = InputField_GetText(&nameField);
+    if(strcmp(getNamePet(), new_name) != 0) {
+        setNamePet(new_name);
+        notify_user(getNamePet(), "Имя изменено!");
     }
 
-    pet.pathImageWithBone = SKIN_PATHS[selectedSkinIndex].pathBone;
-    pet.textureWithBone = loadTexture(SKIN_PATHS[selectedSkinIndex].pathBone);
-
+    
     onexittButtonClick();
-    // Дополнительно: обновить сцену или вывести сообщение «Скин применён»
 }
 
 // Кнопка применить новое имя
 static void onApplyClickSetName() {
     char* new_name = InputField_GetText(&nameField);
-    pet_set_name(new_name);
+    setNamePet(new_name);
     // Смена названия окна
     SDL_SetWindowTitle(gWindow, new_name);
-    notify_user(pet.name, "Имя изменено!");
 }
 // Инициализация меню(его создание и отображение)
 static void menuPet_init() {
@@ -212,7 +208,7 @@ static void menuPet_init() {
     SDL_Rect rectNameField = {0, 0, 0, 0};
     SDL_Color colornameField = {0,0,0,255};
     InputField_Init(&nameField, font, colornameField, rectNameField);
-    InputField_SetText(&nameField, pet.name);
+    InputField_SetText(&nameField, getNamePet());
     // Кнопка подтверждения смены имени
     initButton(&applyNameButton, 110+300, 25, 100/3, 50/2, "button_accept.png", NULL, NULL , onApplyClickSetName, NULL);
     

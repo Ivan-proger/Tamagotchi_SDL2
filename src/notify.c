@@ -67,7 +67,7 @@
 
          // Встраиваем иконку (стандартная иконка info)
          // можно также load pixbuf из файла
-         GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(getAssetPath(pet.pathImage), &error);
+         GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(getAssetPath(getTexturePet()), &error);
          if (!pixbuf) {
              g_printerr("Ошибка загрузки изображения: %s\n", error->message);
              g_error_free(error);

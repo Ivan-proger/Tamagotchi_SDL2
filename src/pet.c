@@ -204,7 +204,7 @@ void init_pet(int id)
         return;
     }    
     pet.name = malloc(1);
-    pet_set_name("dog");    
+    setNamePet("dog");    
     pet.pathImage = "pets/pet.png";
     pet.pathImageWithBone = "pets/pet_bone.png";
     pet.stayAnim = NULL;
@@ -302,16 +302,94 @@ void update_pet(double delta, float scaling)
     }
 }
 
+// Возвращает путь (относительный) до статичной картинки 
+char* getTexturePet() {
+    return pet.pathImage;
+}
+
+// Установить новую текстуру питомца (Статичное изображение, изображение во время кормления и анимация(по желанию))
+void setTexturePet(char* path, float scaleW, float scaleH, char* pathImageWithBone, Animation* anim) {
+    invisible_pet();
+
+    pet.texture = loadTexture(path);
+    pet.pathImage = path;
+
+    pet.scaleW = scaleW * MIN(sizerW, sizerH);
+    pet.scaleH = scaleH * MIN(sizerW, sizerH);
+
+    if(anim){ // Если есть анимация для питомца
+        pet.stayAnim = anim;
+    }
+
+    pet.pathImageWithBone = pathImageWithBone;
+    pet.textureWithBone = loadTexture(pathImageWithBone);
+}
+
+// Возвращает id питомца
+int getIdPet() {
+    return pet.id;
+}
+
+// Возвращает шириину изображения питомца
+int getWidthPet() {
+    return pet.w;
+}
+// Возвращает высоту изображения питомца
+int getHighPet() {
+    return pet.w;
+}
+
+// Возвращает коэффициент ширины изображения
+float getScaleW() {
+    return pet.scaleW;
+}
+// Возвращает коэффициент высоты изображения
+float getScaleH() {
+    return pet.scaleH;
+}
+
+// Возвращает имя питомца
+char* getNamePet() {
+    return pet.name;
+}
+
+// Возвращает x координату
+int getXpet() {
+    return pet.x;
+}
+// Возвращает y координату
+int getYpet() {
+    return pet.y;
+}
+
+// Получить здоровье питомца
+unsigned char getHealthPet() {
+    return pet.health;
+}
+// Получить настроение питомца
+unsigned char getCheerPet() {
+    return pet.cheer;
+}
+// Получить насыщенность питомца
+unsigned char getSatietyPet() {
+    return pet.satiety;
+}
+
+// Ставит питомца чуть ниже середины экрана нужно чтобы адаптировать игру под разные разрешения
+void centeringImagePet() {
+    pet.x = 1.0*WINDOW_WIDTH/2-((pet.w*pet.scaleW))/2;
+    pet.y = 1.0*WINDOW_HEIGHT/2-((pet.h*pet.scaleH))/2+(pet.h*pet.scaleH)/5;
+}
+
 // Отображение питомца
-void show_pet(bool isFeed)
+void showPet(bool isFeed)
 {
     if(pet.health == 0){
         //! В случае смерти
         notify_user(pet.name, "Хозяин я умер!");
         set_scene(&DEAD_SCENE);
     } else{
-        pet.x = 1.0*WINDOW_WIDTH/2-((pet.w*pet.scaleW))/2;
-        pet.y = 1.0*WINDOW_HEIGHT/2-((pet.h*pet.scaleH))/2+(pet.h*pet.scaleH)/5;
+        centeringImagePet();
 
         //* Если питомец ест показываем другое изображение
         if(isFeed && pet.pathImageWithBone){
@@ -344,7 +422,7 @@ void show_pet(bool isFeed)
 }
 
 // Смена имени питомца
-void pet_set_name(const char *new_name) {
+void setNamePet(const char *new_name) {
     // Вычисляем длину новой строки
     size_t new_len = strlen(new_name);
 
@@ -358,6 +436,7 @@ void pet_set_name(const char *new_name) {
     pet.name = tmp;
     memcpy(pet.name, new_name, want);
 }
+
 
 // Удаление сцены
 void invisible_pet(void) {
@@ -375,79 +454,81 @@ void invisible_pet(void) {
     }
 }
 
-void save_game(int id) {
-    lastSavedTime = time(NULL);
+void save_game() {
+    if(pet.pathImage) {
+        lastSavedTime = time(NULL);
 
-    const char *prefix = "save№";
-    const char *suffix = ".dat";
+        const char *prefix = "save№";
+        const char *suffix = ".dat";
 
-    // Вычисляем необходимую длину для итоговой строки
-    size_t len = snprintf(NULL, 0, "%s%d%s", prefix, id, suffix);
-    char *filename = malloc(len + 1); // +1 для нулевого терминатора
+        // Вычисляем необходимую длину для итоговой строки
+        size_t len = snprintf(NULL, 0, "%s%d%s", prefix, pet.id, suffix);
+        char *filename = malloc(len + 1); // +1 для нулевого терминатора
 
-    snprintf(filename, len + 1, "%s%d%s", prefix, id, suffix);
+        snprintf(filename, len + 1, "%s%d%s", prefix, pet.id, suffix);
 
-    FILE *file = fopen(get_save_path(filename), "wb");
-        if (file) {
-            // Сохраняем длину строки pathImage
-            size_t len = strlen(pet.pathImage) + 1;  // включая терминальный ноль
-            fwrite(&len, sizeof(len), 1, file);
-
-            // Сохраняем саму строку pathImage
-            fwrite(pet.pathImage, sizeof(char), len, file);
-
-            len = strlen(pet.pathImageWithBone) + 1;  // включая терминальный ноль
-            fwrite(&len, sizeof(len), 1, file);
-            fwrite(pet.pathImageWithBone, sizeof(char), len, file);
-
-            len = strlen(pet.name) + 1;  // включая терминальный ноль
-            fwrite(&len, sizeof(len), 1, file);
-            fwrite(pet.name, sizeof(char), len, file);
-
-            fwrite(&pet.health, sizeof(unsigned char), 1, file);
-            fwrite(&pet.satiety, sizeof(unsigned char), 1, file);
-            fwrite(&pet.cheer, sizeof(unsigned char), 1, file);
-            fwrite(&pet.scaleW, sizeof(pet.scaleW), 1, file);
-            fwrite(&pet.scaleH, sizeof(pet.scaleH), 1, file);
-
-            fwrite(&lastSavedTime, sizeof(lastSavedTime), 1, file);
-
-            // Считываем время жизни из сохранения
-            fwrite(&pet.timeLife, sizeof(long long), 1, file);
-            
-            bool isAnim;
-            // Сохранение анимации если она есть у скина питомца
-            if(pet.stayAnim) {
-                // Указываем что анимация есть
-                isAnim = true;
-                fwrite(&isAnim, sizeof(bool), 1, file);
-
-                // Сохраняем размер строки чтобы потом правильно считать ее
-                len = strlen(pet.stayAnim->spriteSheetPath) + 1;  
+        FILE *file = fopen(get_save_path(filename), "wb");
+            if (file) {
+                // Сохраняем длину строки pathImage
+                size_t len = strlen(pet.pathImage) + 1;  // включая терминальный ноль
                 fwrite(&len, sizeof(len), 1, file);
-                // Сохраняем путь до анимации
-                fwrite(pet.stayAnim->spriteSheetPath, sizeof(char), len, file);
 
-                // Общее количество кадров
-                fwrite(&pet.stayAnim->frameCount, sizeof(int), 1, file);
+                // Сохраняем саму строку pathImage
+                fwrite(pet.pathImage, sizeof(char), len, file);
 
-                // Сохранение разметки анимации
-                fwrite(pet.stayAnim->frames, sizeof(SDL_Rect), pet.stayAnim->frameCount, file);
+                len = strlen(pet.pathImageWithBone) + 1;  // включая терминальный ноль
+                fwrite(&len, sizeof(len), 1, file);
+                fwrite(pet.pathImageWithBone, sizeof(char), len, file);
 
-                // Время кадра
-                fwrite(&pet.stayAnim->frameTime, sizeof(float), 1, file);
+                len = strlen(pet.name) + 1;  // включая терминальный ноль
+                fwrite(&len, sizeof(len), 1, file);
+                fwrite(pet.name, sizeof(char), len, file);
 
-            } else {
-                isAnim = false;
-                // Указываем что анимации нету
-                fwrite(&isAnim, sizeof(bool), 1, file);
-            }
+                fwrite(&pet.health, sizeof(unsigned char), 1, file);
+                fwrite(&pet.satiety, sizeof(unsigned char), 1, file);
+                fwrite(&pet.cheer, sizeof(unsigned char), 1, file);
+                fwrite(&pet.scaleW, sizeof(pet.scaleW), 1, file);
+                fwrite(&pet.scaleH, sizeof(pet.scaleH), 1, file);
 
-            free(filename);
+                fwrite(&lastSavedTime, sizeof(lastSavedTime), 1, file);
 
-            fclose(file);
-    } else {
-        SDL_Log("ERROR SAVE DATA! ");
+                // Считываем время жизни из сохранения
+                fwrite(&pet.timeLife, sizeof(long long), 1, file);
+                
+                bool isAnim;
+                // Сохранение анимации если она есть у скина питомца
+                if(pet.stayAnim) {
+                    // Указываем что анимация есть
+                    isAnim = true;
+                    fwrite(&isAnim, sizeof(bool), 1, file);
+
+                    // Сохраняем размер строки чтобы потом правильно считать ее
+                    len = strlen(pet.stayAnim->spriteSheetPath) + 1;  
+                    fwrite(&len, sizeof(len), 1, file);
+                    // Сохраняем путь до анимации
+                    fwrite(pet.stayAnim->spriteSheetPath, sizeof(char), len, file);
+
+                    // Общее количество кадров
+                    fwrite(&pet.stayAnim->frameCount, sizeof(int), 1, file);
+
+                    // Сохранение разметки анимации
+                    fwrite(pet.stayAnim->frames, sizeof(SDL_Rect), pet.stayAnim->frameCount, file);
+
+                    // Время кадра
+                    fwrite(&pet.stayAnim->frameTime, sizeof(float), 1, file);
+
+                } else {
+                    isAnim = false;
+                    // Указываем что анимации нету
+                    fwrite(&isAnim, sizeof(bool), 1, file);
+                }
+
+                free(filename);
+
+                fclose(file);
+        } else {
+            SDL_Log("ERROR SAVE DATA! ");
+        }
     }
 }
 

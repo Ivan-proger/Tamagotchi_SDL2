@@ -86,11 +86,11 @@ static void menu_init() {
     // Инициализация кнопки (координаты, размеры)
     initButton(&startButton,
         0, 0, 
-        500*sizerH*0.5, 
-        300*sizerH*0.5,
+        1558*sizerH*0.5, 
+        834*sizerH*0.5,
         "button_start.png",
-        "button_start_watch.png", // используем для hover
-        "button_start_click.png", // используем для click
+        "button_start.png", // используем для hover
+        "button_start.png", // используем для click
         onStartButtonClick,
         NULL
     );
@@ -147,10 +147,10 @@ static void menu_render() {
     renderTexture(textTexture, &destRect);
     
     // Рисуем кнопку
-    startButton.rect.x = WINDOW_WIDTH-0.9*startButton.rect.w - 10*sizerH;
-    startButton.rect.y = WINDOW_HEIGHT-0.9*startButton.rect.h - 10*sizerH;
-    startButton.rect.w = 500*sizerH*0.5;
-    startButton.rect.h = 300*sizerH*0.5;    
+    startButton.rect.w = 1558*sizerH*0.15;
+    startButton.rect.h = 834*sizerH*0.15;     
+    startButton.rect.x = WINDOW_WIDTH-0.9*startButton.rect.w - 40*sizerH;
+    startButton.rect.y = WINDOW_HEIGHT-0.9*startButton.rect.h - 40*sizerH;
 
     renderButton(&startButton);
 }

@@ -138,15 +138,16 @@ static void onexitButtonClick() {
     // Логика при нажатии кнопки
     const char *prefix = "save№";
     const char *suffix = ".dat";
+    int petID = getIdPet();
 
     // Вычисляем необходимую длину для итоговой строки
-    size_t len = snprintf(NULL, 0, "%s%d%s", prefix, pet.id, suffix);
+    size_t len = snprintf(NULL, 0, "%s%d%s", prefix, petID, suffix);
     char *filename = malloc(len + 1); // +1 для нулевого терминатора
 
-    snprintf(filename, len + 1, "%s%d%s", prefix, pet.id, suffix);
+    snprintf(filename, len + 1, "%s%d%s", prefix, petID, suffix);
     remove(get_save_path(filename));
     SDL_free(filename); // очищаем
-    init_pet(pet.id);
+    init_pet(petID);
     set_scene(&GAME_SCENE);
 }
 
@@ -184,11 +185,7 @@ static void dead_init() {
     dif_pieces = 1;
 
     // Разделяем на эллементы
-    petTextures = splitTextureFour(getAssetPath(pet.pathImage));
-    if(!(pet.x) && !(pet.y)){
-        pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
-        pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;        
-    }
+    petTextures = splitTextureFour(getAssetPath(getTexturePet()));
     
     // Спрайты 
     text_dead = loadTexture("potracheno.png");
@@ -220,7 +217,7 @@ static void dead_handle_events(SDL_Event* e) {
             e->key.keysym.scancode == SDL_SCANCODE_AC_BACK
         ) {
             extern Scene MENU_SCENE;
-            save_game(pet.id);
+            save_game();
             set_scene(&MENU_SCENE);
         }
     }
@@ -334,9 +331,13 @@ static void dead_render() {
     drawTransparentBlackSquare(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Рисуем анимацию и т.д.
-    pet.x = WINDOW_WIDTH/2-((int)(pet.w*pet.scaleW))/2;
-    pet.y = WINDOW_HEIGHT/2-((int)(pet.h*pet.scaleH))/2;  
-    deadAnimation(dstRects, petTextures, pet.x, pet.y,pet. scaleW, pet.scaleH, dif_pieces/3);
+    deadAnimation(
+        dstRects, petTextures, 
+        WINDOW_WIDTH/2-((int)(getWidthPet()*getScaleW()))/2, 
+        WINDOW_HEIGHT/2-((int)(getHighPet()*getScaleH()))/2,
+        getScaleW(), getScaleH(), 
+        dif_pieces/3
+    );
 
     // Отрисовка брызгов крови
     for (int i = 0; i < MAX_SPLASHES; i++) {

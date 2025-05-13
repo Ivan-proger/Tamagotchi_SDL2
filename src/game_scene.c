@@ -3,7 +3,6 @@
 #include <SDL_mixer.h>
 #include <SDL2_gfxPrimitives.h>
 #include "SDL_render.h"
-#include "animation.h"
 #include "graphics.h"
 #include "game_scene.h"
 #include "scene_manager.h"
@@ -81,8 +80,8 @@ static void onCaressButton(void){
     duration = 0.0;
     // Заполняем спрайтами со случайными позициями
     for(int k=0; k < counteffects; k++){
-        listeffects[k][0] = (int)(rand() % pet.w * pet.scaleW) + pet.x;
-        listeffects[k][1] = (int)(rand() % pet.y * pet.scaleH) + pet.y;
+        listeffects[k][0] = (int)(rand() % getWidthPet() * getScaleW()) + getXpet();
+        listeffects[k][1] = (int)(rand() % getYpet() * getScaleH()) + getYpet();
     }
     add_cheer(15);
 }
@@ -177,8 +176,8 @@ static void game_init() {
     movingBone.elapsed = 3.0;
     movingBone.startX = feedButton.rect.x-20; 
     movingBone.startY = feedButton.rect.y-20;
-    movingBone.targetX = pet.x + (int)(pet.w*pet.scaleW/2); 
-    movingBone.targetY = pet.y + (int)(pet.h*pet.scaleH/2);
+    movingBone.targetX = getXpet() + (int)(getWidthPet()*getScaleW()/2); 
+    movingBone.targetY = getYpet() + (int)(getHighPet()*getScaleH()/2);
 
 }
 
@@ -199,7 +198,7 @@ static void game_handle_events(SDL_Event* e) {
             e->key.keysym.scancode == SDL_SCANCODE_AC_BACK
         ) {
             extern Scene MENU_SCENE;
-            save_game(pet.id);
+            save_game();
             set_scene(&MENU_SCENE);
         }
     }
@@ -218,11 +217,6 @@ static void game_update(float delta) {
     // Эффект гладить (сердечки)
     if(duration < durationcheer){
         duration += delta;
-    }
-
-    if(pet.stayAnim) {
-        // Обновления анимации питомца
-        updateAnimation(pet.stayAnim, delta);
     }
 
     if(movingBone.elapsed < movingBone.duration){
@@ -257,7 +251,7 @@ static void game_render() {
     // Рисуем здоровье
     renderProgressBarRounded(sparm.x, sparm.y, 
                             sparm.w, sparm.h, 
-                            pet.health, 
+                            getHealthPet(), 
                             bg, fg, border, 
                             sparm.borderRadius);
     heartrect.x = sparm.x-5;
@@ -267,7 +261,8 @@ static void game_render() {
     // Рисуем голод(сытность)
     renderProgressBarRounded(sparm.x*4, sparm.y, 
                             sparm.w, sparm.h, 
-                            pet.satiety, bg, fg, border, 
+                            getSatietyPet(), 
+                            bg, fg, border, 
                             sparm.borderRadius);
     satietyrect.x = sparm.x*4-5;
     satietyrect.y = sparm.y*5+5;
@@ -276,7 +271,7 @@ static void game_render() {
     // Рисуем настроение
     renderProgressBarRounded(sparm.x*7, sparm.y, 
                             sparm.w, sparm.h, 
-                            pet.cheer, 
+                            getCheerPet(), 
                             bg, fg, border, 
                             sparm.borderRadius);
     cheerrect.x = sparm.x*7-5;
@@ -321,14 +316,14 @@ static void game_render() {
     // Эффект летящей кости к собаке при кормлении 
     if(movingBone.elapsed < movingBone.duration){
         // Рисуем картинку питомца
-        show_pet(true);
+        showPet(true);
 
         // Обновляем точки полета
         movingBone.startX = feedButton.rect.x-20; 
         movingBone.startY = feedButton.rect.y-20;
 
-        movingBone.targetX = pet.x + (int)(pet.w*pet.scaleW/2); 
-        movingBone.targetY = pet.y + (int)(pet.h*pet.scaleH/2);
+        movingBone.targetX = getXpet() + (int)(getWidthPet()*getScaleW()/2); 
+        movingBone.targetY = getYpet() + (int)(getHighPet()*getScaleH()/2);
 
         // Определяем целевой прямоугольник (тут без изменения размера)
         SDL_Rect dst = {
@@ -352,7 +347,7 @@ static void game_render() {
                         &center,       // точка вращения
                         SDL_FLIP_NONE  // без отражения 
         );
-    } else {show_pet(false);}
+    } else {showPet(false);}
 }
 
 // Удаление сцены

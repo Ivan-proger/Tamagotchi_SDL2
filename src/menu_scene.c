@@ -84,10 +84,10 @@ void onSoundTrueClick(){
 static void menu_init() {
     // Инициализация кнопки (координаты, размеры)
     initButton(&startButton,
-        0, 0, 500, 300,
+        0, 0, 1558, 834,
         "button_start.png",
-        "button_start_watch.png", // используем для hover
-        "button_start_click.png", // используем для click
+        "button_start.png", // используем для hover
+        "button_start.png", // используем для click
         onStartButtonClick,
         NULL
     );
@@ -149,8 +149,8 @@ static void menu_update(float delta) {
 // Отображение меню(его статической состоявляющей)
 static void menu_render() {
     // Рисуем кнопку
-    startButton.rect.w = 500*MIN(sizerH, sizerW);
-    startButton.rect.h = 300*MIN(sizerH, sizerW);
+    startButton.rect.w = 1558*MIN(sizerH, sizerW)*0.2;
+    startButton.rect.h = 834*MIN(sizerH, sizerW)*0.2;
     startButton.rect.x = WINDOW_WIDTH/2-startButton.rect.w/2;
     startButton.rect.y = WINDOW_HEIGHT/2-startButton.rect.h/2;
     renderButton(&startButton);
