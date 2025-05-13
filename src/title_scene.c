@@ -89,8 +89,8 @@ static void menu_init() {
         1558*sizerH*0.5, 
         834*sizerH*0.5,
         "button_start.png",
-        "button_start.png", // используем для hover
-        "button_start.png", // используем для click
+        "button_start_hover.png", // используем для hover
+        "button_start_click.png", // используем для click
         onStartButtonClick,
         NULL
     );

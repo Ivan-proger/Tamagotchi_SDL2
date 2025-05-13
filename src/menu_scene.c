@@ -86,8 +86,8 @@ static void menu_init() {
     initButton(&startButton,
         0, 0, 1558, 834,
         "button_start.png",
-        "button_start.png", // используем для hover
-        "button_start.png", // используем для click
+        "button_start_hover.png", // используем для hover
+        "button_start_click.png", // используем для click
         onStartButtonClick,
         NULL
     );
