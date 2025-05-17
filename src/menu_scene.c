@@ -102,9 +102,9 @@ static void menu_init() {
     );
     initButton(&helpButton,
         0, 0, 100*sizerH, 100*sizerH,
-        "info.png",
-        NULL, // используем для hover
-        NULL, // используем для click
+        "button-return.png",
+        "button-return_click.png", // используем для hover
+        "button-return_click.png", // используем для click
         onHelpButtonClick,
         NULL
     );
@@ -155,16 +155,16 @@ static void menu_render() {
     startButton.rect.y = WINDOW_HEIGHT/2-startButton.rect.h/2;
     renderButton(&startButton);
 
-    powerOffButton.rect.x = WINDOW_WIDTH-powerOffButton.rect.w-20*sizerW;
+    powerOffButton.rect.x = WINDOW_WIDTH-powerOffButton.rect.w-50*sizerW;
     powerOffButton.rect.y = 30*sizerH/2;
     powerOffButton.rect.w = 75*sizerH*0.9;
     powerOffButton.rect.h = 75*sizerH*0.9;
     renderButton(&powerOffButton);
 
-    helpButton.rect.x = 80*sizerW;
-    helpButton.rect.y = 30*sizerH/2;
-    helpButton.rect.w = 75*sizerH*0.9;
-    helpButton.rect.h = 75*sizerH*0.9;
+    helpButton.rect.x = 50*sizerW; 
+    helpButton.rect.y = 30*sizerH;
+    helpButton.rect.w = 110*sizerH*0.5;
+    helpButton.rect.h = 110*sizerH*0.5;
     renderButton(&helpButton);
 
     soundButton.rect.x = WINDOW_WIDTH-0.9*soundButton.rect.w-20*sizerH;

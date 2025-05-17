@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
         scene_update(delta);
 
         // Рендер
-        SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(gRenderer, 255,226,226, 255);
         SDL_RenderClear(gRenderer);
         
         // Рендер сцены

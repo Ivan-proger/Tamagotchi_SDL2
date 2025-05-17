@@ -23,6 +23,7 @@ time_t lastSavedTime;
 //! Инициализация питомца (и загрузка из файла в будущем)
 void init_pet(int id)
 {
+    setIdPet(id);
     const char *prefix = "save№";
     const char *suffix = ".dat";
 
@@ -319,6 +320,12 @@ void setTexturePet(char* path, float scaleW, float scaleH, char* pathImageWithBo
 
     if(anim){ // Если есть анимация для питомца
         pet.stayAnim = anim;
+        SDL_Log("Anim is TRUE!");
+    } else {
+        if(pet.stayAnim) {
+            destroyAnimation(pet.stayAnim);
+        }
+        pet.stayAnim = NULL;
     }
 
     pet.pathImageWithBone = pathImageWithBone;
@@ -329,6 +336,12 @@ void setTexturePet(char* path, float scaleW, float scaleH, char* pathImageWithBo
 int getIdPet() {
     return pet.id;
 }
+
+// Возвращает id питомца
+void setIdPet(int id) {
+    pet.id = id;
+}
+
 
 // Возвращает шириину изображения питомца
 int getWidthPet() {
@@ -379,6 +392,12 @@ unsigned char getSatietyPet() {
 void centeringImagePet() {
     pet.x = 1.0*WINDOW_WIDTH/2-((pet.w*pet.scaleW))/2;
     pet.y = 1.0*WINDOW_HEIGHT/2-((pet.h*pet.scaleH))/2+(pet.h*pet.scaleH)/5;
+}
+
+// если у питомца есть анимация обновляем ее
+void isAnimationPetUpdate(float delta) {
+    if(pet.stayAnim)
+        updateAnimation(pet.stayAnim, delta);
 }
 
 // Отображение питомца

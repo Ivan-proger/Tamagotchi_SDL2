@@ -81,7 +81,7 @@ static void onCaressButton(void){
     // Заполняем спрайтами со случайными позициями
     for(int k=0; k < counteffects; k++){
         listeffects[k][0] = (int)(rand() % getWidthPet() * getScaleW()) + getXpet();
-        listeffects[k][1] = (int)(rand() % getYpet() * getScaleH()) + getYpet();
+        listeffects[k][1] = (int)(rand() % getHighPet() * getScaleH()) + getYpet();
     }
     add_cheer(15);
 }
@@ -133,8 +133,8 @@ static void game_init() {
     initButton(&customButton,
         0, 0, 80, 80,
         "customize_button.png",
-        NULL, // используем default для hover
-        NULL, // используем default для click
+        "customize_button_click.png", // используем default для hover
+        "customize_button_click.png", // используем default для click
         onCustomize,
         NULL
     ); 
@@ -210,6 +210,9 @@ static void game_handle_events(SDL_Event* e) {
  * @param delta -- тик времени
  */
 static void game_update(float delta) {
+    // Просчитываем анимцию питомца
+    isAnimationPetUpdate(delta);
+
     // delta – время, прошедшее с прошлого кадра
     updateButton(&caressButton, delta);
     updateButton(&feedButton, delta);
@@ -291,10 +294,10 @@ static void game_render() {
     feedButton.rect.y = caressButton.rect.y-70*MIN(sizerH, sizerW);
     renderButton(&feedButton);
     // Кнопка кастомизвция
-    customButton.rect.w = 80*MIN(sizerH, sizerW);
-    customButton.rect.h = 80*MIN(sizerH, sizerW);
-    customButton.rect.x = WINDOW_WIDTH-100*sizerW;
-    customButton.rect.y = 100*sizerH;    
+    customButton.rect.w = 100*MIN(sizerH, sizerW);
+    customButton.rect.h = 100*MIN(sizerH, sizerW);
+    customButton.rect.x = WINDOW_WIDTH-130*sizerW;
+    customButton.rect.y = 20*sizerH*2;    
     renderButton(&customButton); 
 
 

@@ -47,6 +47,8 @@ typedef struct
 
 // Создания питомца и загрузка его сохранения
 void init_pet(int id);
+// Возвращает id питомца
+void setIdPet(int id);
 
 // Возвращает путь (относительный) до статичной картинки 
 char* getTexturePet();
@@ -86,6 +88,9 @@ unsigned char getSatietyPet();
 
 // Ставит питомца чуть ниже середины экрана нужно чтобы адаптировать игру под разные разрешения
 void centeringImagePet();
+
+// если у питомца есть анимация обновляем ее
+void isAnimationPetUpdate(float delta);
 
 // Показывать питомца посреди экрана
 void showPet(bool isFeed);

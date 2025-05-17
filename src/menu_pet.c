@@ -30,10 +30,10 @@ static SkinPet SKIN_PATHS[MAX_SKINS] = {
         0.2, 0.2, 
         "pets/pet_bone.png"},
     {"pets/pet_white.png", NULL, 
-        0.8, 0.8, 
+        0.75, 0.75, 
         "pets/pet_white_bone.png"},
     {"pets/pet_gsd.png", NULL, 
-        0.9, 0.9,
+        0.82, 0.82,
     "pets/pet_gsd_bone.png"},
     {"pets/pet_pug.png", NULL, 
         0.9, 0.9,
@@ -157,8 +157,8 @@ static void menuPet_init() {
     // Инициализация кнопки (координаты, размеры)
     initButton(&exittButton, 0, 0, 0, 0, 
         "button-return.png", 
-        "button-return.png", 
-        "button-return.png", 
+        "button-return_click.png", 
+        "button-return_click.png", 
         onexittButtonClick, NULL);
 
     initButton(&prevButton, 50, 400, 50, 50, 
@@ -175,8 +175,8 @@ static void menuPet_init() {
 
     initButton(&applyButton, 200, 400, 100, 50, 
         "button_accept.png", 
-        "button_accept.png", 
-        "button_accept.png" , 
+        "button_accept_click.png", 
+        "button_accept_click.png" , 
         onApplyClick, NULL);
 
     // Инициализация анимаций
@@ -210,8 +210,15 @@ static void menuPet_init() {
     InputField_Init(&nameField, font, colornameField, rectNameField);
     InputField_SetText(&nameField, getNamePet());
     // Кнопка подтверждения смены имени
-    initButton(&applyNameButton, 110+300, 25, 100/3, 50/2, "button_accept.png", NULL, NULL , onApplyClickSetName, NULL);
-    
+    initButton(
+        &applyNameButton, 
+        110+300, 25, 100/3, 50/2, 
+        "button_accept_name.png", 
+        "button_accept_name_click.png", 
+        "button_accept_name_click.png" , 
+        onApplyClickSetName, 
+        NULL)
+        ;
 }
 
 
@@ -238,14 +245,14 @@ static void menuPet_update(float delta) {
 // Отображение меню(его статической состоявляющей)
 static void menuPet_render() {
     // Рисуем кнопку
-    exittButton.rect.w = 75*sizerH*0.5;
-    exittButton.rect.h = 75*sizerH*0.5, 
+    exittButton.rect.w = 110*sizerH*0.5;
+    exittButton.rect.h = 110*sizerH*0.5, 
     exittButton.rect.x = 25*sizerW; 
     exittButton.rect.y = 30*sizerH; 
     renderButton(&exittButton);
 
     applyButton.rect.w = 100*sizerH;
-    applyButton.rect.h = 50*sizerH;
+    applyButton.rect.h = 100*sizerH;
     applyButton.rect.x = WINDOW_WIDTH/2 - applyButton.rect.w/2;
     applyButton.rect.y = WINDOW_HEIGHT - applyButton.rect.h - 100*sizerH;
     renderButton(&applyButton);
@@ -253,13 +260,13 @@ static void menuPet_render() {
     nextButton.rect.w = 50*sizerH;
     nextButton.rect.h = 50*sizerH;
     nextButton.rect.x = applyButton.rect.x + applyButton.rect.w + 20*sizerW;
-    nextButton.rect.y = applyButton.rect.y;
+    nextButton.rect.y = applyButton.rect.y + applyButton.rect.h/4;
     renderButton(&nextButton);
 
     prevButton.rect.w = 50*sizerH;
     prevButton.rect.h = 50*sizerH;
     prevButton.rect.x = applyButton.rect.x - prevButton.rect.w - 20*sizerW;
-    prevButton.rect.y = applyButton.rect.y;
+    prevButton.rect.y = applyButton.rect.y + applyButton.rect.h/4;
     renderButton(&prevButton);
 
 

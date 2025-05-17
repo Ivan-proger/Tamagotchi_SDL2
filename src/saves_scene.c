@@ -69,8 +69,8 @@ static void saves_init() {
         50*sizerW*0.5,50*sizerH*0.5, 
         50*sizerH, 50*sizerH, 
         "button-return.png", 
-        NULL, 
-        NULL, 
+        "button-return_click.png", 
+        "button-return_click.png", 
         onexittButtonClick, 
         NULL
     );
@@ -113,8 +113,8 @@ static void saves_render() {
         savesButton[i].rect.y = (1.0*WINDOW_HEIGHT/2)-(1.0*savesButton[i].rect.h*SAVES/2)+(i*150*sizerH);
         renderButton(&savesButton[i]);
 
-        exittButton.rect.w = 100*sizerH*0.5;
-        exittButton.rect.h = 100*sizerH*0.5, 
+        exittButton.rect.w = 110*sizerH*0.5;
+        exittButton.rect.h = 110*sizerH*0.5; 
         exittButton.rect.x = 50*sizerW; 
         exittButton.rect.y = 30*sizerH; 
         renderButton(&exittButton);
