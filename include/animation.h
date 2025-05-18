@@ -3,7 +3,6 @@
 
 #include <SDL.h>
 
-// Структура анимации
 /**
  * @brief Объект анимации
  * 
@@ -23,7 +22,6 @@ typedef struct {
     float frameTime;           // Время (в секундах) показа одного кадра.
     float elapsedTime;         // Накопленное время для переключения кадров.
 } Animation;
-
 /**
  * Создаёт новую анимацию.
  *
@@ -36,9 +34,10 @@ typedef struct {
 Animation* createAnimation(SDL_Texture *spriteSheet, SDL_Rect *frames, 
                             int frameCount, float frameTime);
 
-// Создание анимации без массива REct для каждого кадра (подразумевается что каждый кдр одинаковый)
-Animation* createAnimationOneType(char* spriteSheetPath, int wight, int hight, int frameCount, float frameTime);
-
+// Создание анимации без массива REct для каждого кадра 
+// подразумевается что каждый кдр одинаковый
+Animation* createAnimationOneType(char* spriteSheetPath, int wight, int hight, 
+                                  int frameCount, float frameTime);
 /**
  * Освобождает память, занятую анимацией.
  * Обратите внимание: сама текстура спрайт-листа не освобождается,
@@ -47,7 +46,6 @@ Animation* createAnimationOneType(char* spriteSheetPath, int wight, int hight, i
  * @param anim Указатель на анимацию.
  */
 void destroyAnimation(Animation *anim);
-
 /**
  * Обновляет анимацию.
  *
@@ -55,7 +53,6 @@ void destroyAnimation(Animation *anim);
  * @param delta Время, прошедшее с предыдущего обновления (в секундах).
  */
 void updateAnimation(Animation *anim, float delta);
-
 /**
  * Отрисовывает текущий кадр анимации.
  *
