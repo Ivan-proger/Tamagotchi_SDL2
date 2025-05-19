@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include "scene_manager.h"
 #include "title_scene.h"
-#include "menu_scene.h"
 #include "pet.h"
 #include "file_manager.h"
 
@@ -110,10 +109,6 @@ int main(int argc, char* argv[]) {
     sizerH = 1.0*WINDOW_HEIGHT/BASE_WINDOW_HEIGH;
 
     while (running) {
-        // Выход по кнопке
-        if(POWEROFF){
-            running = 0;
-        }
         // Обработка событий
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
@@ -157,7 +152,7 @@ int main(int argc, char* argv[]) {
         // Если прошло 1 или более секунд, вычисляем FPS и сбрасываем счётчики
         if (fpsTimer >= 1.0f) {
             currentFPS = frameCount / fpsTimer;
-            printf("FPS: %.2f\n", currentFPS);
+            SDL_Log("FPS: %.2f\n", currentFPS);
             frameCount = 0;
             fpsTimer = 0.0f;
         }

@@ -5,8 +5,9 @@
 #include "scene_manager.h"
 #include "ui.h"             
 #include "globals.h"   
+#include "pet.h"
+#include "graphics.h"
 
-bool POWEROFF = false;
 
 // Кнопка старт
 static Button startButton;
@@ -41,8 +42,14 @@ static void onHelpButtonClick() {
 // Реакция на нажатаю кнопку
 static void onPowerOFFButtonClick() {
     // Логика при нажатии кнопки
-    menu_destroy();
-    POWEROFF = true;
+     // Уничтожаем сцену
+    save_game(); //! Сохранение
+    scene_destroy();
+    Mix_CloseAudio(); // Закрываем музыку
+    Mix_FreeChunk(clickSound); // Закрываем базовый звук для нажатия на кнопку
+    Mix_Quit();
+    cleanupGraphics();
+    exit(EXIT_SUCCESS);
     
 }
 
