@@ -18,18 +18,7 @@
             "args": [
             "-fdiagnostics-color=always",
             "-g",
-            "src/main.c",
-            "src/graphics.c",
-            "src/scene_manager.c",
-            "src/title_scene.c",
-            "src/menu_pet.c",
-            "src/menu_scene.c",
-            "src/game_scene.c",
-            "src/ui.c",
-            "src/pet.c",
-            "src/animation.c",
-            "src/dead_scene.c",
-            "src/notify.c",
+            "src/*",
             "-o",
             "${workspaceFolder}\\game.exe",
             "-I", "${workspaceFolder}\\include",
@@ -91,31 +80,53 @@
   <summary>tasks.json</summary>
   
     {
-        "version": "2.0.0",
-        "tasks": [
-          {
-            "label": "Build with Bear + clangd",
-            "type": "shell",
-            "command": "bash",
-            "args": [
-              "-lc",
-              "bear -- clang -fdiagnostics-color=always -g \
-              $(pkg-config --cflags libnotify glib-2.0 sdl2 SDL2_image SDL2_gfx SDL2_ttf) \
-              src/main.c src/graphics.c src/scene_manager.c src/menu_scene.c \
-              src/game_scene.c src/menu_pet.c src/dead_scene.c src/title_scene.c \
-              src/ui.c src/pet.c src/animation.c src/notify.c\
-              -o ${workspaceFolder}/game \
-              -I${workspaceFolder}/include \
-              $(pkg-config --libs libnotify glib-2.0 sdl2 SDL2_image SDL2_gfx SDL2_ttf)"
-            ],
-            "options": {
-              "cwd": "${workspaceFolder}"
-            },
-            "group": {
-              "kind": "build",
-              "isDefault": true
-            }
+      "version": "2.0.0",
+      "tasks": [
+        {
+          "label": "Build with Bear + clangd",
+          "type": "shell",
+          "command": "bash",
+          "args": [
+            "-lc",
+            "bear -- gcc -fdiagnostics-color=always -g \
+            $(pkg-config --cflags libnotify glib-2.0 sdl2 SDL2_image SDL2_gfx SDL2_ttf SDL2_mixer) \
+            src/main.c src/graphics.c src/scene_manager.c src/menu_scene.c src/file_manager.c\
+            src/game_scene.c src/menu_pet.c src/dead_scene.c src/title_scene.c src/text_input.c src/saves_scene.c\
+            src/ui.c src/pet.c src/animation.c src/notify.c\
+            -o ${workspaceFolder}/game \
+            -I${workspaceFolder}/include \
+            $(pkg-config --libs libnotify glib-2.0 sdl2 SDL2_image SDL2_gfx SDL2_ttf SDL2_mixer)"
+          ],
+          "options": {
+            "cwd": "${workspaceFolder}"
+          },
+          "group": {
+            "kind": "build",
+            "isDefault": true
           }
-        ]
+        }
+      ]
     }
 </details>
+
++ LLDB plugin in VScode for debug
+<details>
+  <summary>launch.json</summary>
+
+    {
+      "version": "0.2.0",
+      "configurations": [
+        {
+          "name": "Debug with LLDB",
+          "type": "lldb",          // Используем тип 'lldb' вместо 'cppdbg'
+          "request": "launch",
+          "program": "game",
+          "args": [],
+          "cwd": "${workspaceFolder}",
+          "preLaunchTask": "Build with Clang",
+          "environment": [],
+          "externalConsole": false
+        }
+      ]
+    }
+  </details>
